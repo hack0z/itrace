@@ -13,6 +13,7 @@ static tb_gstream_t* 		g_log = TB_NULL;
  */
 static tb_void_t __attribute__((constructor)) it_init()
 {
+	tb_abort();
 	// init tbox
 	tb_init(TB_NULL, 0);
 

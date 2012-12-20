@@ -3,7 +3,6 @@
  */
 #include "prefix.h"
 #include <mach/mach.h>
-#include <mach/mach_vm.h>
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
 #include <dlfcn.h>
@@ -262,8 +261,8 @@ static kern_return_t it_stuff(task_t task, cpu_type_t* cputype, it_addr_bundle_t
 #endif 
 	tb_trace("proc64: %p", proc64);	
 	struct mach_header 	mach_hdr = {0};
-	mach_vm_address_t 	dyldImageLoadAddress = proc64 ? u.data64.dyldImageLoadAddress : u.data.dyldImageLoadAddress;
-	if (mach_vm_read_overwrite(task, dyldImageLoadAddress, sizeof(mach_hdr), it_address_cast(&mach_hdr), &data_size)) return TB_FALSE;
+	mach_vm_address_t 	dyldImageLoadAddress = proc64? u.data64.dyldImageLoadAddress : u.data.dyldImageLoadAddress;
+	if (mach_vm_read_overwrite(task, dyldImageLoadAddress, (mach_vm_size_t)sizeof(mach_hdr), it_address_cast(&mach_hdr), &data_size)) return TB_FALSE;
 
 	// swap?
 	tb_bool_t 				swap = (mach_hdr.magic == MH_CIGAM || mach_hdr.magic == MH_CIGAM_64)? TB_TRUE : TB_FALSE;
@@ -276,8 +275,8 @@ static kern_return_t it_stuff(task_t task, cpu_type_t* cputype, it_addr_bundle_t
 	mach_vm_size_t 			sizeofcmds = it_swap_u32(mach_hdr.sizeofcmds);
 	struct load_command* 	cmds = malloc(sizeofcmds);
 	tb_bool_t 				mh64 = (mach_hdr.magic == MH_MAGIC_64 || mach_hdr.magic == MH_CIGAM_64)? TB_TRUE : TB_FALSE;
-	tb_trace("mh64: %p", mh64);	
-	if (mach_vm_read_overwrite(task, dyldImageLoadAddress + (mh64 ? sizeof(struct mach_header_64) : sizeof(struct mach_header)), sizeofcmds, it_address_cast(cmds), &sizeofcmds)) return TB_FALSE;
+	tb_trace("mh64: %u", mh64);	
+	if (mach_vm_read_overwrite(task, dyldImageLoadAddress + (mh64 ? sizeof(struct mach_header_64) : sizeof(struct mach_header)), (mach_vm_size_t)sizeofcmds, it_address_cast(cmds), &sizeofcmds)) return TB_FALSE;
 
 	// read symtab
 	mach_vm_address_t 		slide;
@@ -288,8 +287,8 @@ static kern_return_t it_stuff(task_t task, cpu_type_t* cputype, it_addr_bundle_t
 	// read strs & syms
 	tb_char_t* 		strs = malloc(symtab.strsize);
 	tb_pointer_t 	syms = malloc(symtab.nsyms * nlist_size);
-	if (mach_vm_read_overwrite(task, symtab.straddr, symtab.strsize, it_address_cast(strs), &data_size)) return TB_FALSE;
-	if (mach_vm_read_overwrite(task, symtab.symaddr, symtab.nsyms * nlist_size, it_address_cast(syms), &data_size)) return TB_FALSE;
+	if (mach_vm_read_overwrite(task, symtab.straddr, (mach_vm_size_t)(symtab.strsize), it_address_cast(strs), &data_size)) return TB_FALSE;
+	if (mach_vm_read_overwrite(task, symtab.symaddr, (mach_vm_size_t)(symtab.nsyms * nlist_size), it_address_cast(syms), &data_size)) return TB_FALSE;
 
 	// read address
 	memset(addrs, 0, sizeof(*addrs));
@@ -465,7 +464,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 		else
 		{
 			// init cond
-			tb_bool_t cond = false;
+			tb_bool_t cond = TB_FALSE;
 			switch(cputype)
 			{
 			case CPU_TYPE_ARM: 		cond = ((state.arm.pc & ~1) == 0xdeadbeee)? TB_TRUE : TB_FALSE; break;
@@ -498,7 +497,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 					break;
 				case CPU_TYPE_X86:
 					{
-						tb_uint32_t stack_stuff[3] = {0xdeadbeef, (tb_uint32_t) stack_address, RTLD_LAZY};
+						tb_uint32_t stack_stuff[3] = {0xdeadbeef, (tb_uint32_t)stack_address, RTLD_LAZY};
 						if (mach_vm_write(task, state.x86.esp, it_address_cast(&stack_stuff), sizeof(stack_stuff))) return TB_FALSE;
 					}
 					state.x86.eip = (tb_uint32_t) addrs.dlopen;
