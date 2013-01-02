@@ -4,7 +4,7 @@ include $(PRO_DIR)/prefix.mak
 # ############################################################################
 # names
 # #
-NAMES 						= demo itrace test
+NAMES 						= demo itrace test dump
 
 # root
 ifeq ($(PLAT),ios)
@@ -26,6 +26,16 @@ demo_INC_DIR 				+= ..
 demo_CXFLAGS 				+= -DTB_PRINT_TAG=\"itrace\" 
 demo_CXFLAGS-$(DEBUG) 		+= -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE
 demo_SUFFIX_CMD1 			+= $(TB_CONFIG_DEMO_CMD1)
+
+# dump
+dump_TYPE 					= BIN
+dump_C_FILES 				+= dump
+dump_LIBS 					+= tbox $(TB_CONFIG_DEMO_LIBS)
+dump_LIB_DIR 				+= ..
+dump_INC_DIR 				+= ..
+dump_CXFLAGS 				+= -DTB_PRINT_TAG=\"itrace\" 
+dump_CXFLAGS-$(DEBUG) 		+= -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE
+dump_SUFFIX_CMD1 			+= $(TB_CONFIG_DEMO_CMD1)
 
 # test
 test_TYPE 					= BIN

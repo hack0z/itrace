@@ -126,13 +126,6 @@ static __tb_inline__ tb_bool_t T$pcrel$ldrw(tb_uint16_t ic)
     return (ic & 0xff7f) == 0xf85f;
 }
 
-/* //////////////////////////////////////////////////////////////////////////////////////
- * declaration
- */
-
-// clear cache for gcc
-tb_void_t __clear_cache(tb_char_t* beg, tb_char_t* end);
-
 
 #endif
 

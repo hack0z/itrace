@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<itrace>
+	<!-- tracing arguments is enabled default-->
+	<class>
+		<NSView/>
+		<NSViewController/>
+		<NSString args="0"/>
+	</class>
+	<function>
+		<puts/>
+	</function>
+</itrace>
+

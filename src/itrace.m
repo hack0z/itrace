@@ -3,6 +3,8 @@
  */
 #include "prefix.h"
 #include "arm.h"
+#include "x86.h"
+#include "x64.h"
 #include <sys/mman.h>
 #include <mach/mach.h>
 #include <stdarg.h>
@@ -68,6 +70,13 @@ static IMP 					g_NSMutableString_init = TB_NULL;
 static IMP 					g_NSMutableString_appendFormat = TB_NULL;
 static IMP 					g_NSMutableString_UTF8String = TB_NULL;
 static IMP 					g_NSMutableString_release = TB_NULL;
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * declaration
+ */
+
+// clear cache for gcc
+tb_void_t __clear_cache(tb_char_t* beg, tb_char_t* end);
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * implementation
@@ -219,8 +228,8 @@ static __tb_inline__ tb_uint32_t* it_chook_method_done_for_class(tb_xml_node_t c
 			// ok?
 			if (imp)
 			{
-#ifdef TB_ARCH_ARM
 				// hook
+#if defined(TB_ARCH_ARM)
 				mmapfunc[0] = A$push$r0_r9_lr$;
 				mmapfunc[1] = A$movw_rd_im(A$r0, ((tb_uint32_t)node) & 0xffff);
 				mmapfunc[2] = A$movt_rd_im(A$r0, ((tb_uint32_t)node) >> 16);
@@ -231,6 +240,19 @@ static __tb_inline__ tb_uint32_t* it_chook_method_done_for_class(tb_xml_node_t c
 				mmapfunc[7] = A$blx(A$r9);
 				mmapfunc[8] = A$pop$r0_r9_lr$;
 				mmapfunc[9] = A$ldr_rd_$rn_im$(A$pc, A$pc, 4 - 8);
+				mmapfunc[10] = (tb_uint32_t)imp;
+				method_setImplementation(method, (IMP)mmapfunc);
+#elif defined(TB_ARCH_x86)
+				mmapfunc[0] = x86$pushal;
+//				mmapfunc[1] = A$movw_rd_im(A$r0, ((tb_uint32_t)node) & 0xffff);
+//				mmapfunc[2] = A$movt_rd_im(A$r0, ((tb_uint32_t)node) >> 16);
+//				mmapfunc[3] = A$movw_rd_im(A$r1, ((tb_uint32_t)method) & 0xffff);
+//				mmapfunc[4] = A$movt_rd_im(A$r1, ((tb_uint32_t)method) >> 16);
+//				mmapfunc[5] = A$movw_rd_im(A$r9, ((tb_uint32_t)&it_chook_method_puts) & 0xffff);
+//				mmapfunc[6] = A$movt_rd_im(A$r9, ((tb_uint32_t)&it_chook_method_puts) >> 16);
+//				mmapfunc[7] = A$blx(A$r9);
+				mmapfunc[8] = x86$popal;
+//				mmapfunc[9] = A$ldr_rd_$rn_im$(A$pc, A$pc, 4 - 8);
 				mmapfunc[10] = (tb_uint32_t)imp;
 				method_setImplementation(method, (IMP)mmapfunc);
 #endif
@@ -365,7 +387,26 @@ static __tb_inline__ tb_bool_t it_chook_init()
 	it_assert_and_check_return_val(method_size, TB_FALSE);
 	it_trace("chook: method_size: %u", method_size);
 
-#ifdef TB_ARCH_ARM
+#if defined(TB_ARCH_ARM)
+
+	// init mmap base
+	tb_size_t 		mmapmaxn = method_size * 11;
+	tb_size_t 		mmapsize = mmapmaxn * sizeof(tb_uint32_t);
+	tb_uint32_t* 	mmapbase = (tb_uint32_t*)mmap(TB_NULL, mmapsize, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+	it_assert_and_check_return_val(mmapbase != MAP_FAILED && mmapbase, TB_FALSE);
+	it_trace("mmapmaxn: %u, mmapbase: %p", mmapmaxn, mmapbase);
+
+	// hook
+	tb_uint32_t* 	mmaptail = it_chook_method_done(mmapbase, mmapbase + mmapmaxn);
+
+	// clear cache
+	if (mmapbase != mmaptail) __clear_cache((tb_char_t*)mmapbase, (tb_char_t*)mmaptail);
+
+	// protect: rx
+	tb_long_t ok = mprotect(mmapbase, mmapsize, PROT_READ | PROT_EXEC);
+	it_assert_and_check_return_val(!ok, TB_FALSE);
+
+#elif defined(TB_ARCH_x86)
 
 	// init mmap base
 	tb_size_t 		mmapmaxn = method_size * 11;
