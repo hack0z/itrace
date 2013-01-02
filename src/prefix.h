@@ -7,6 +7,13 @@
 #include "config.h"
 #include "tbox/tbox.h"
 
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * macros
+ */
+
+// debug
+#define IT_DEBUG 		itrace_CONFIG_DEBUG
+
 #endif
 
 

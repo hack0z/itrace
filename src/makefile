@@ -6,12 +6,27 @@ include $(PRO_DIR)/prefix.mak
 # #
 NAMES 							= itrace
 
+# root
+ifeq ($(PLAT),ios)
+SDKROOT 						= /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDK).sdk/
+endif
+
+ifeq ($(PLAT),mac)
+SDKROOT 						= /Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$(SDK).sdk/
+endif
+
+FWKROOT 						= $(SDKROOT)/System/Library/Frameworks
+
 # itrace
 itrace_TYPE 					= DLL
 itrace_M_FILES					+= itrace
 itrace_LIBS						+= tbox
 itrace_MXFLAGS 					+= -DTB_PRINT_TAG=\"itrace\" 
 itrace_MXFLAGS-$(DEBUG) 		+= -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE
+itrace_SHFLAGS					+= -F$(SDKROOT)/System/Library/PrivateFrameworks -framework Foundation -L$(SRC_DIR)/
+
+# includes
+INC_DIR 						+= $(FWKROOT)/Foundation.framework/Headers/
 
 # demo
 SUB_PROS 						= demo

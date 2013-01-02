@@ -5,6 +5,7 @@
 #include <mach/mach.h>
 #include <mach-o/loader.h>
 #include <mach-o/nlist.h>
+#include <sys/sysctl.h>
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <stddef.h>
@@ -13,6 +14,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <limits.h>
+#include <errno.h>
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * macros
@@ -138,6 +140,7 @@ typedef struct __it_symtab_bundle_t
  */
 static __tb_inline__ tb_void_t it_handle_sym(tb_char_t const* sym, tb_uint32_t size, mach_vm_address_t value, it_addr_bundle_t* bundle)
 {
+//	tb_trace("sym: %s", sym);
 	switch (sym[1])
 	{
 	case 'd':
@@ -338,12 +341,13 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	// pid => task
 	task_t task = 0;
 	if (task_for_pid(mach_task_self(), (tb_int_t)pid, &task)) return TB_FALSE;
-	tb_trace("pid: %u, task: %u", pid, task);
+	tb_trace("task: %u", task);
 
 	// stuff
 	cpu_type_t cputype; it_addr_bundle_t addrs;
 	if (!it_stuff(task, &cputype, &addrs)) return TB_FALSE;
-	tb_trace("cputype: %x, dlopen: %p", cputype, addrs.dlopen);
+	tb_trace("dlopen: %p", addrs.dlopen);
+	tb_trace("syscall: %p", addrs.syscall);
 
 	// alloc stack 
 	mach_vm_address_t stack_address = 0;
@@ -351,13 +355,13 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 
 	// write path
 	mach_vm_address_t stack_end = stack_address + it_stack_size - 0x100;
-	if (mach_vm_write(task, stack_address, it_address_cast(rpath), strlen(rpath) + 1)) return TB_FALSE;
+	if (mach_vm_write(task, stack_address, (vm_offset_t)it_address_cast(rpath), strlen(rpath) + 1)) return TB_FALSE;
 
 	// the first one is the return address
 	tb_uint32_t args_32[] = {0, 360, 0xdeadbeef, 0xdeadbeef, 128 * 1024, 0, 0};
 	tb_uint64_t args_64[] = {0, 360, 0xdeadbeef, 0xdeadbeef, 128 * 1024, 0, 0};
 
-	// init state
+	// init context: syscall(SYS_bsdthread_create, 0xdeadbeef, 0xdeadbeef, 128 * 1024, 0, 0)
 	union
 	{
 		it_arm_thread_state_t 		arm;
@@ -373,9 +377,9 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	{
 	case CPU_TYPE_ARM:
 		{
-			(void) args_64;
+			tb_trace("cputype: arm");
 			memcpy(&state.arm.r[0], args_32 + 1, 4 * 4);
-			if (mach_vm_write(task, stack_end, it_address_cast(args_32 + 5), 2 * 4)) return TB_FALSE;
+			if (mach_vm_write(task, stack_end, (vm_offset_t)it_address_cast(args_32 + 5), 2 * 4)) return TB_FALSE;
 
 			state.arm.sp 	= (tb_uint32_t) stack_end;
 			state.arm.pc 	= (tb_uint32_t) addrs.syscall;
@@ -387,7 +391,8 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 		break;
 	case CPU_TYPE_X86:
 		{
-			if (mach_vm_write(task, stack_end, it_address_cast(args_32), 7 * 4)) return TB_FALSE;
+			tb_trace("cputype: x86");
+			if (mach_vm_write(task, stack_end, (vm_offset_t)it_address_cast(args_32), 7 * 4)) return TB_FALSE;
 
 			state.x86.esp 	= state.x86.ebp = (tb_uint32_t) stack_end;
 			state.x86.eip 	= (tb_uint32_t) addrs.syscall;
@@ -398,6 +403,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 		break;
 	case CPU_TYPE_X86_64:
 		{
+			tb_trace("cputype: x64");
 			state.x64.rdi 	= args_64[1];
 			state.x64.rsi 	= args_64[2];
 			state.x64.rdx 	= args_64[3];
@@ -434,7 +440,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	if (task_swap_exception_ports(task, EXC_MASK_BAD_ACCESS, exc, EXCEPTION_STATE_IDENTITY, state_flavor, em, &em_count, eh, eb, ef)) return TB_FALSE;
 	tb_assert_and_check_return_val(em_count <= 1, TB_FALSE);
 
-	// resume thread
+	// resume thread, done: syscall(SYS_bsdthread_create, 0xdeadbeef, 0xdeadbeef, 128 * 1024, 0, 0)
 	if (thread_set_state(thread, state_flavor, &state.nat, state_count)) return TB_FALSE;
 	if (thread_resume(thread)) return TB_FALSE;
 
@@ -442,11 +448,9 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	tb_bool_t started_dlopen = TB_FALSE;
 	while (1) 
 	{
-		// wait msg
+		// recv msg
 		it_exception_message_t msg;
 		if (mach_msg_overwrite(TB_NULL, MACH_RCV_MSG, 0, sizeof(msg), exc, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL, (tb_pointer_t) &msg, sizeof(msg))) return TB_FALSE;
-
-		// trace
 		tb_trace("msg");
 
 		// check
@@ -459,6 +463,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 
 		if (msg.thread.name == thread)
 		{
+			tb_trace("terminate");
 			if (thread_terminate(thread)) return TB_FALSE;
 		} 
 		else
@@ -472,6 +477,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 			case CPU_TYPE_X86_64: 	cond = (state.x64.rip == 0xdeadbeef)? TB_TRUE : TB_FALSE; break;
 			}
 
+			tb_trace("cond: %d, started_dlopen: %d", cond, started_dlopen);
 			if (!cond)
 			{
 				// let the normal crash mechanism handle it
@@ -480,11 +486,13 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 			}
 			else if (started_dlopen)
 			{
+				tb_trace("terminate");
 				if (thread_terminate(msg.thread.name)) return TB_FALSE;
 				break;
 			}
 			else 
 			{
+				// done: dlopen(path, RTLD_LAZY)
 				switch(cputype)
 				{
 				case CPU_TYPE_ARM:
@@ -498,14 +506,14 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 				case CPU_TYPE_X86:
 					{
 						tb_uint32_t stack_stuff[3] = {0xdeadbeef, (tb_uint32_t)stack_address, RTLD_LAZY};
-						if (mach_vm_write(task, state.x86.esp, it_address_cast(&stack_stuff), sizeof(stack_stuff))) return TB_FALSE;
+						if (mach_vm_write(task, state.x86.esp, (vm_offset_t)it_address_cast(&stack_stuff), sizeof(stack_stuff))) return TB_FALSE;
 					}
 					state.x86.eip = (tb_uint32_t) addrs.dlopen;
 					break;
 				case CPU_TYPE_X86_64:
 					{
 						tb_uint64_t stack_stuff = 0xdeadbeef;
-						if (mach_vm_write(task, state.x64.rsp, it_address_cast(&stack_stuff), sizeof(stack_stuff))) return TB_FALSE;
+						if (mach_vm_write(task, state.x64.rsp, (vm_offset_t)it_address_cast(&stack_stuff), sizeof(stack_stuff))) return TB_FALSE;
 						state.x64.rip = addrs.dlopen;
 						state.x64.rdi = stack_address;
 						state.x64.rsi = RTLD_LAZY;
@@ -545,14 +553,82 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	tb_trace("ok");
 	return TB_TRUE;
 }
+static pid_t it_pid(tb_char_t const* name)
+{
+	tb_assert_and_check_return_val(name, 0);
+
+	// is pid?
+	tb_size_t pid = tb_atoi(name);
+	if (pid) return pid;
+
+	// init
+	struct kinfo_proc* p = TB_NULL;
+	struct kinfo_proc* q = TB_NULL;
+	tb_int_t 	mib[4] = {CTL_KERN, KERN_PROC, KERN_PROC_ALL, 0};
+	tb_size_t 	miblen = 4;
+	tb_size_t 	size = 0;
+	tb_long_t 	ok = sysctl(mib, miblen, TB_NULL, &size, TB_NULL, 0);
+
+	// walk
+	do 
+	{
+		// grow
+		size += size / 10;
+		q = tb_ralloc(p, size);
+
+		// no memory?
+		if (!q)
+		{
+			if (p) tb_free(p);
+			return 0;
+		}
+
+		// list
+		p = q;
+		ok = sysctl(mib, miblen, p, &size, TB_NULL, 0);
+
+	} while (ok == -1 && errno == ENOMEM);
+
+	// ok?
+	if (ok == 0)
+	{
+		if (!(size % sizeof(struct kinfo_proc)))
+		{
+			tb_size_t i = 0;
+			tb_size_t n = size / sizeof(struct kinfo_proc);
+			for (i = 0; i < n; i++)
+			{
+				if (p[i].kp_proc.p_comm && !tb_strncmp(p[i].kp_proc.p_comm, name, tb_strlen(name)))
+				{
+					tb_trace("name: %s, pid: %u", p[i].kp_proc.p_comm, p[i].kp_proc.p_pid);
+					pid = p[i].kp_proc.p_pid;
+					break;
+				}
+			}
+		}
+	}
+
+	// free
+	if (p) tb_free(p);
+
+	// ok
+	return pid;
+}
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * main
  */
 tb_int_t main(tb_int_t argc, tb_char_t const** argv)
 {
+	// wait pid
+	pid_t pid = 0;
+	while (!(pid = it_pid(argv[1]))) tb_msleep(500);
+
+	// wait some time
+	tb_msleep(1000);
+
 	// inject
-	it_inject(tb_atoi(argv[1]), argv[2]);
+	it_inject(pid, argv[2]);
 
 	// ok
 	return 0;
