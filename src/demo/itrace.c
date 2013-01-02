@@ -258,7 +258,7 @@ static kern_return_t it_stuff(task_t task, cpu_type_t* cputype, it_addr_bundle_t
 
 	// read mach header
 #if defined(TB_ARCH_x86) || defined(TB_ARCH_x64)
-	tb_bool_t proc64 = info.all_image_info_addr > 0? TB_TRUE : TB_FALSE;
+	tb_bool_t proc64 = u.data64.dyldImageLoadAddress > 0? TB_TRUE : TB_FALSE;
 #else
 	tb_bool_t proc64 = TB_FALSE;
 #endif 
@@ -506,14 +506,14 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 				case CPU_TYPE_X86:
 					{
 						tb_uint32_t stack_stuff[3] = {0xdeadbeef, (tb_uint32_t)stack_address, RTLD_LAZY};
-						if (mach_vm_write(task, state.x86.esp, (vm_offset_t)it_address_cast(&stack_stuff), sizeof(stack_stuff))) return TB_FALSE;
+						if (mach_vm_write(task, (mach_vm_address_t)state.x86.esp, (vm_offset_t)it_address_cast(&stack_stuff), sizeof(stack_stuff))) return TB_FALSE;
 					}
 					state.x86.eip = (tb_uint32_t) addrs.dlopen;
 					break;
 				case CPU_TYPE_X86_64:
 					{
 						tb_uint64_t stack_stuff = 0xdeadbeef;
-						if (mach_vm_write(task, state.x64.rsp, (vm_offset_t)it_address_cast(&stack_stuff), sizeof(stack_stuff))) return TB_FALSE;
+						if (mach_vm_write(task, (mach_vm_address_t)state.x64.rsp, (vm_offset_t)it_address_cast(&stack_stuff), sizeof(stack_stuff))) return TB_FALSE;
 						state.x64.rip = addrs.dlopen;
 						state.x64.rdi = stack_address;
 						state.x64.rsi = RTLD_LAZY;
@@ -598,7 +598,7 @@ static pid_t it_pid(tb_char_t const* name)
 			tb_size_t n = size / sizeof(struct kinfo_proc);
 			for (i = 0; i < n; i++)
 			{
-				if (p[i].kp_proc.p_comm && !tb_strncmp(p[i].kp_proc.p_comm, name, tb_strlen(name)))
+				if (p[i].kp_proc.p_comm && !tb_strnicmp(p[i].kp_proc.p_comm, name, tb_strlen(name)))
 				{
 					tb_trace("name: %s, pid: %u", p[i].kp_proc.p_comm, p[i].kp_proc.p_pid);
 					pid = p[i].kp_proc.p_pid;

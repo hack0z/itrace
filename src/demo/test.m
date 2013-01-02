@@ -26,6 +26,7 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 	tb_print("g_NSMutableString_UTF8String: %p", g_NSMutableString_UTF8String);
 	tb_print("g_NSMutableString_release: %p", g_NSMutableString_release);
 
+	getchar();
 	tb_pointer_t pool = objc_autoreleasePoolPush();
 	if (pool)
 	{

@@ -42,7 +42,7 @@ endif
 ifeq ($(ARCH),x64)
 ARCH_CXFLAGS 		= -m64
 ARCH_ASFLAGS 		= -m amd64
-ARCH_LDFLAGS 		=
+ARCH_LDFLAGS 		= -m64
 endif
 
 # cxflags: .c/.cc/.cpp files
@@ -118,7 +118,9 @@ ASFLAGS-o 			= -o
 ARFLAGS 			= -cr
 
 # share ldflags
-SHFLAGS 			= $(ARCH_LDFLAGS) -dynamiclib
+SHFLAGS 			= $(ARCH_LDFLAGS) -dynamiclib \
+					-isysroot /Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$(SDK).sdk/ \
+					--sysroot=/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$(SDK).sdk/
 
 # config
 include 			$(PLAT_DIR)/config.mak

@@ -15,6 +15,7 @@ ifeq ($(PLAT),mac)
 SDKROOT 						= /Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$(SDK).sdk/
 endif
 
+# framework
 FWKROOT 						= $(SDKROOT)/System/Library/Frameworks
 
 # itrace
