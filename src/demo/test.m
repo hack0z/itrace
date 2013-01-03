@@ -27,6 +27,12 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 	tb_print("g_NSMutableString_release: %p", g_NSMutableString_release);
 
 	getchar();
+
+//	[[NSString alloc] initWithUTF8String:"hello world!"];
+	[[NSString alloc] initWithFormat:@"hello world!"];
+
+	exit(0);
+	getchar();
 	tb_pointer_t pool = objc_autoreleasePoolPush();
 	if (pool)
 	{
@@ -38,7 +44,7 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 //		trace = g_NSMutableString_init(trace, @selector(init));
 		tb_print("trace: %p", trace);
 
-		g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @"[%s %s]", "NSMutableString", "hello world!");
+		g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @"[%@ %@]", @"NSMutableString", @"hello world!");
 		tb_print("trace: %s", g_NSMutableString_UTF8String(trace, @selector(UTF8String)));
 			
 		g_NSMutableString_release(trace, @selector(release));
