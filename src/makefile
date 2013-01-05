@@ -24,10 +24,11 @@ itrace_M_FILES					+= itrace
 itrace_LIBS						+= tbox
 itrace_MXFLAGS 					+= -DTB_PRINT_TAG=\"itrace\" 
 itrace_MXFLAGS-$(DEBUG) 		+= -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE
-itrace_SHFLAGS					+= -F$(SDKROOT)/System/Library/PrivateFrameworks -framework Foundation -L$(SRC_DIR)/
+itrace_SHFLAGS					+= -F$(SDKROOT)/System/Library/PrivateFrameworks -framework Foundation -framework CoreFoundation -L$(SRC_DIR)/
 
 # includes
-INC_DIR 						+= $(FWKROOT)/Foundation.framework/Headers/
+INC_DIR 						+= $(FWKROOT)/Foundation.framework/Headers/ \
+								   $(FWKROOT)/CoreFoundation.framework/Headers/
 
 # demo
 SUB_PROS 						= demo

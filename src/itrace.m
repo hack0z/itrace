@@ -13,6 +13,7 @@
 #include <objc/runtime.h>
 #include <objc/message.h>
 #include <Foundation.h>
+#include <CoreFoundation.h>
 #include "asl.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
@@ -64,12 +65,6 @@
  * globals
  */
 static tb_xml_node_t* 		g_cfg = TB_NULL;
-static id 					g_NSMutableString = TB_NULL;
-static IMP 					g_NSMutableString_alloc = TB_NULL;
-static IMP 					g_NSMutableString_init = TB_NULL;
-static IMP 					g_NSMutableString_appendFormat = TB_NULL;
-static IMP 					g_NSMutableString_UTF8String = TB_NULL;
-static IMP 					g_NSMutableString_release = TB_NULL;
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * declaration
@@ -85,7 +80,6 @@ tb_void_t 		objc_autoreleasePoolPop(tb_pointer_t pool);
 /* //////////////////////////////////////////////////////////////////////////////////////
  * implementation
  */
-#ifdef TB_ARCH_ARM
 static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, ...)
 {
 	it_assert_and_check_return(node && method);
@@ -105,32 +99,33 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 
 	if (args)
 	{
+		// init info
+		tb_char_t 	info[4096] = {0};
+		tb_char_t* 	data = info;
+		tb_long_t 	maxn = 4095;
+		tb_long_t 	size = 0;
+		
 		// init pool
-		tb_pointer_t pool = objc_autoreleasePoolPush();
-		if (pool)
+		//tb_pointer_t pool = objc_autoreleasePoolPush();
+		//if (pool)
 		{
 			// the method name
 			tb_char_t const* mname = sel_getName(method_getName(method));
 
-			// init trace
-			NSMutableString* trace = [[NSMutableString alloc] init];
-			//NSMutableString* trace = g_NSMutableString_init(g_NSMutableString_alloc(g_NSMutableString, @selector(alloc)), @selector(init));
-			it_assert_and_check_return(trace);
-			g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @"[%s %s]", cname, mname? mname : "");
-
 			// init args
 			tb_va_list_t vl;
 			tb_va_start(vl, method);
-
+		
 			// the arguments
-			// self, sel, args ...
 			tb_size_t argi = 0;
 			tb_size_t argn = method_getNumberOfArguments(method);
 			tb_char_t type[512 + 1];
-			for (argi = 2; argi < argn; argi++)
+			for (argi = 2; argi < argn && maxn > 0; argi++)
 			{
 				memset(type, 0, 513);
 				method_getArgumentType(method, argi, type, 512);
+				it_trace("type: %s", type);
+#if defined(TB_ARCH_ARM)
 				if (argi == 4)
 				{
 					__tb_volatile__ tb_size_t r0 = tb_va_arg(vl, tb_size_t);
@@ -145,207 +140,23 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 					__tb_volatile__ tb_size_t r9 = tb_va_arg(vl, tb_size_t);
 					__tb_volatile__ tb_size_t lr = tb_va_arg(vl, tb_size_t);
 				}
-				if (!strcmp(type, "@"))
-				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %@", tb_va_arg(vl, tb_pointer_t));
-				}
-				else if (!strcasecmp(type, "f"))
-				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %f", tb_va_arg(vl, tb_float_t));	
-				}
-				else if (!strcasecmp(type, "i"))
-				{				
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %ld", tb_va_arg(vl, tb_long_t));	
-				}
-				else if (!strcasecmp(type, "c"))
-				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %lu", tb_va_arg(vl, tb_size_t));
-				}
-				else if (!strcasecmp(type, "r*"))
-				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %s", tb_va_arg(vl, tb_char_t const*));
-				}
-				else 
-				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": <type(%s)>", type);
-					__tb_volatile__ tb_pointer_t p = tb_va_arg(vl, tb_size_t);
-				}
-			}
-			
-			// exit args
-			tb_va_end(vl);
-
-			// trace
-			it_trace("[%lx]: %s", (tb_size_t)pthread_self(), g_NSMutableString_UTF8String(trace, @selector(UTF8String)));
-
-			// exit
-			g_NSMutableString_release(trace, @selector(release));
-
-			// exit pool
-			objc_autoreleasePoolPop(pool);
-		}
-	}
-	else
-	{
-		// the method name
-		tb_char_t const* mname = sel_getName(method_getName(method));
-		it_trace("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
-	}
-}
 #elif defined(TB_ARCH_x86)
-static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, ...)
-{
-	it_assert_and_check_return(node && method);
-
-	// the class name
-	tb_char_t const* cname = tb_pstring_cstr(&node->name);
-	it_assert_and_check_return(cname);
-
-	// tracing arguments?
-	tb_bool_t args = TB_TRUE;
-	if (node->ahead
-		&& !tb_pstring_cstricmp(&node->ahead->name, "args")
-		&& !tb_pstring_cstricmp(&node->ahead->data, "0"))
-	{
-		args = TB_FALSE;
-	}
-
-	if (args)
-	{
-		// init pool
-		tb_pointer_t pool = objc_autoreleasePoolPush();
-		if (pool)
-		{
-			// the method name
-			tb_char_t const* mname = sel_getName(method_getName(method));
-
-			// init trace
-			NSMutableString* trace = [[NSMutableString alloc] init];
-			//NSMutableString* trace = g_NSMutableString_init(g_NSMutableString_alloc(g_NSMutableString, @selector(alloc)), @selector(init));
-			it_assert_and_check_return(trace);
-			g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @"[%s %s]", cname, mname? mname : "");
-
-			// init args
-			tb_va_list_t vl;
-			tb_va_start(vl, method);
-			__tb_volatile__ tb_size_t edi = tb_va_arg(vl, tb_size_t);
-			__tb_volatile__ tb_size_t esi = tb_va_arg(vl, tb_size_t);
-			__tb_volatile__ tb_size_t ebp = tb_va_arg(vl, tb_size_t);
-			__tb_volatile__ tb_size_t esp = tb_va_arg(vl, tb_size_t);
-			__tb_volatile__ tb_size_t ebx = tb_va_arg(vl, tb_size_t);
-			__tb_volatile__ tb_size_t edx = tb_va_arg(vl, tb_size_t);
-			__tb_volatile__ tb_size_t ecx = tb_va_arg(vl, tb_size_t);
-			__tb_volatile__ tb_size_t eax = tb_va_arg(vl, tb_size_t);
-			__tb_volatile__ tb_size_t flags = tb_va_arg(vl, tb_size_t);
-			__tb_volatile__ tb_size_t ret = tb_va_arg(vl, tb_size_t);
-			__tb_volatile__ tb_size_t sef = tb_va_arg(vl, tb_size_t);
-			__tb_volatile__ tb_size_t sel = tb_va_arg(vl, tb_size_t);
-		
-			// the arguments
-			tb_size_t argi = 0;
-			tb_size_t argn = method_getNumberOfArguments(method);
-			tb_char_t type[512 + 1];
-			for (argi = 2; argi < argn; argi++)
-			{
-				memset(type, 0, 513);
-				method_getArgumentType(method, argi, type, 512);
-			//	it_trace("type: %s", type);
-				if (!strcmp(type, "@"))
+				if (argi == 2)
 				{
-					tb_va_arg(vl, tb_pointer_t);
-					//g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %@", tb_va_arg(vl, tb_pointer_t));
+					__tb_volatile__ tb_size_t edi = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t esi = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t ebp = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t esp = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t ebx = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t edx = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t ecx = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t eax = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t flags = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t ret = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t sef = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t sel = tb_va_arg(vl, tb_size_t);
 				}
-				else if (!strcasecmp(type, "f"))
-				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %f", tb_va_arg(vl, tb_float_t));	
-				}
-				else if (!strcasecmp(type, "i"))
-				{				
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %ld", tb_va_arg(vl, tb_long_t));	
-				}
-				else if (!strcasecmp(type, "c"))
-				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %lu", tb_va_arg(vl, tb_size_t));
-				}
-				else if (!strcasecmp(type, "r*"))
-				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %s", tb_va_arg(vl, tb_char_t const*));
-				}
-				else 
-				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": <type(%s)>", type);
-					__tb_volatile__ tb_size_t p = tb_va_arg(vl, tb_size_t);
-				}
-			}
-			
-			// exit args
-			tb_va_end(vl);
-
-			// trace
-			it_trace("[%lx]: %s", (tb_size_t)pthread_self(), g_NSMutableString_UTF8String(trace, @selector(UTF8String)));
-
-			// exit
-			g_NSMutableString_release(trace, @selector(release));
-
-			// exit pool
-			objc_autoreleasePoolPop(pool);
-		}
-	}
-	else
-	{
-		// the method name
-		tb_char_t const* mname = sel_getName(method_getName(method));
-		it_trace("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
-	}
-}
-#elif defined(TB_ARCH_x64)
-static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, ...)
-{
-	it_assert_and_check_return(node && method);
-
-	// the class name
-	tb_char_t const* cname = tb_pstring_cstr(&node->name);
-	it_assert_and_check_return(cname);
-
-	// tracing arguments?
-	tb_bool_t args = TB_TRUE;
-	if (node->ahead
-		&& !tb_pstring_cstricmp(&node->ahead->name, "args")
-		&& !tb_pstring_cstricmp(&node->ahead->data, "0"))
-	{
-		args = TB_FALSE;
-	}
-		tb_char_t const* mname = sel_getName(method_getName(method));
-		it_trace("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
-
-	if (args)
-	{
-		// init pool
-		tb_pointer_t pool = objc_autoreleasePoolPush();
-		if (pool)
-		{
-			// the method name
-			tb_char_t const* mname = sel_getName(method_getName(method));
-
-			// init trace
-			NSMutableString* trace = [[NSMutableString alloc] init];
-			//NSMutableString* trace = g_NSMutableString_init(g_NSMutableString_alloc(g_NSMutableString, @selector(alloc)), @selector(init));
-			it_assert_and_check_return(trace);
-			g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @"[%s %s]", cname, mname? mname : "");
-
-			// init args
-			tb_va_list_t vl;
-			tb_va_start(vl, method);
-		
-			// the arguments
-			tb_size_t argi = 0;
-			tb_size_t argn = method_getNumberOfArguments(method);
-			tb_char_t type[512 + 1];
-			for (argi = 2; argi < argn; argi++)
-			{
-				memset(type, 0, 513);
-				method_getArgumentType(method, argi, type, 512);
-				it_trace("type: %s", type);
+#elif defined(TB_ARCH_x64)				
 				if (argi == 6)
 				{
 					__tb_volatile__ tb_size_t r15 = tb_va_arg(vl, tb_size_t);
@@ -365,31 +176,64 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 					__tb_volatile__ tb_size_t flags = tb_va_arg(vl, tb_size_t);
 					__tb_volatile__ tb_size_t ret = tb_va_arg(vl, tb_size_t);
 				}
+#endif
 				if (!strcmp(type, "@"))
 				{
-					tb_va_arg(vl, tb_pointer_t);
-				//	g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %@", tb_va_arg(vl, tb_pointer_t));
+#if 0
+					tb_pointer_t 		o = tb_va_arg(vl, tb_pointer_t);
+					it_trace("11111111: %p", o);
+					tb_pointer_t 		d = o && [o respondsToSelector:@selector(description)]? [o description] : TB_NULL;
+					it_trace("22222222: %p", d);
+					tb_char_t const* 	s = d? [d UTF8String] : TB_NULL;
+					it_trace("33333333: %p", s);
+					size = tb_snprintf(data, maxn, ": %s", s);
+					it_trace("44444444: %ld", size);
+#else
+					id 					o = tb_va_arg(vl, id);
+					it_trace("11111111: %p", o);
+					tb_pointer_t 		d = o? CFCopyDescription((CFTypeRef)o) : TB_NULL;
+					it_trace("22222222: %p", d);
+					if (d && CFStringGetCString(d, data + 2, maxn - 2, kCFStringEncodingUTF8))
+					{
+						data[0] = ':';
+						data[1] = ' ';
+						size = tb_strlen(data);
+						it_trace("44444444: %ld", size);
+					}				
+#endif
+				}
+				else if (!strcmp(type, ":"))
+				{
+					SEL 				sel = tb_va_arg(vl, SEL);
+					tb_char_t const*	sel_name = sel? sel_getName(sel) : TB_NULL;
+					size = tb_snprintf(data, maxn, ": @selector(%s)", sel_name);
 				}
 				else if (!strcasecmp(type, "f"))
 				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %f", tb_va_arg(vl, tb_float_t));	
+					size = tb_snprintf(data, maxn, ": %f", tb_va_arg(vl, tb_float_t));
 				}
 				else if (!strcasecmp(type, "i"))
 				{				
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %ld", tb_va_arg(vl, tb_long_t));	
+					size = tb_snprintf(data, maxn, ": %ld", tb_va_arg(vl, tb_long_t));
 				}
 				else if (!strcasecmp(type, "c"))
 				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %lu", tb_va_arg(vl, tb_size_t));
+					size = tb_snprintf(data, maxn, ": %lu", tb_va_arg(vl, tb_size_t));
 				}
 				else if (!strcasecmp(type, "r*"))
 				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %s", tb_va_arg(vl, tb_char_t const*));
+					size = tb_snprintf(data, maxn, ": %s", tb_va_arg(vl, tb_char_t const*));
 				}
 				else 
 				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": <type(%s)>", type);
+					size = tb_snprintf(data, maxn, ": <type(%s)>", type);
 					__tb_volatile__ tb_size_t p = tb_va_arg(vl, tb_size_t);
+				}
+
+				if (size > 0)
+				{
+					data += size;
+					maxn -= size;
 				}
 			}
 			
@@ -397,13 +241,10 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 			tb_va_end(vl);
 
 			// trace
-			it_trace("[%lx]: %s", (tb_size_t)pthread_self(), g_NSMutableString_UTF8String(trace, @selector(UTF8String)));
-
-			// exit
-			g_NSMutableString_release(trace, @selector(release));
+			it_trace("[%lx]: [%s %s]%s", (tb_size_t)pthread_self(), cname, mname? mname : "", info);
 
 			// exit pool
-			objc_autoreleasePoolPop(pool);
+			//objc_autoreleasePoolPop(pool);
 			
 		}
 	}
@@ -414,8 +255,6 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 		it_trace("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
 	}
 }
-#endif
-
 static __tb_inline__ tb_size_t it_chook_method_size_for_class(tb_char_t const* class_name)
 {
 	it_assert_and_check_return_val(class_name, 0);
@@ -451,7 +290,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 		if (method)
 		{
 			// the selector
-			SEL sel = method_getName(method);
+//			SEL sel = method_getName(method);
 
 			// the imp
 			IMP imp = method_getImplementation(method);
@@ -659,32 +498,6 @@ static __tb_inline__ tb_bool_t it_cfg_init()
 	// ok
 	return g_cfg? TB_TRUE : TB_FALSE;
 }
-static __tb_inline__ tb_bool_t it_objc_init()
-{
-	// trace
-	it_trace("init: objc: ..");
-
-	// implementation
-	g_NSMutableString 				= objc_getClass("NSMutableString");
-	g_NSMutableString_alloc 		= class_getMethodImplementation(g_NSMutableString, @selector(alloc));
-	g_NSMutableString_init 			= class_getMethodImplementation(g_NSMutableString, @selector(init));
-	g_NSMutableString_appendFormat 	= class_getMethodImplementation(g_NSMutableString, @selector(appendFormat:));
-	g_NSMutableString_UTF8String 	= class_getMethodImplementation(g_NSMutableString, @selector(UTF8String));
-	g_NSMutableString_release 		= class_getMethodImplementation(g_NSMutableString, @selector(release));
-
-	// check
-	it_assert_and_check_return_val(g_NSMutableString_alloc, TB_FALSE);
-	it_assert_and_check_return_val(g_NSMutableString_init, TB_FALSE);
-	it_assert_and_check_return_val(g_NSMutableString_appendFormat, TB_FALSE);
-	it_assert_and_check_return_val(g_NSMutableString_UTF8String, TB_FALSE);
-	it_assert_and_check_return_val(g_NSMutableString_release, TB_FALSE);
-
-	// trace
-	it_trace("init: objc: ok");
-
-	// ok
-	return TB_TRUE;
-}
 static __tb_inline__ tb_bool_t it_chook_init()
 {
 	// check
@@ -728,9 +541,6 @@ static tb_void_t __attribute__((constructor)) it_init()
 {
 	// trace
 	it_trace("init: ..");
-
-	// init objc
-	if (!it_objc_init()) return ;
 
 	// init cfg
 	if (!it_cfg_init()) return ;
