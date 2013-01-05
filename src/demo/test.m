@@ -10,6 +10,8 @@
 /* //////////////////////////////////////////////////////////////////////////////////////
  * main
  */
+tb_pointer_t objc_autoreleasePoolPush();
+tb_void_t objc_autoreleasePoolPop(tb_pointer_t );
 tb_int_t main(tb_int_t argc, tb_char_t** argv)
 {
 	id 	g_NSMutableString 				= objc_getClass("NSMutableString");
@@ -26,13 +28,6 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 	tb_print("g_NSMutableString_UTF8String: %p", g_NSMutableString_UTF8String);
 	tb_print("g_NSMutableString_release: %p", g_NSMutableString_release);
 
-	getchar();
-
-//	[[NSString alloc] initWithUTF8String:"hello world!"];
-	[[NSString alloc] initWithFormat:@"hello world!"];
-
-	exit(0);
-	getchar();
 	tb_pointer_t pool = objc_autoreleasePoolPush();
 	if (pool)
 	{

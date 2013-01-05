@@ -76,7 +76,11 @@ static IMP 					g_NSMutableString_release = TB_NULL;
  */
 
 // clear cache for gcc
-tb_void_t __clear_cache(tb_char_t* beg, tb_char_t* end);
+tb_void_t 		__clear_cache(tb_char_t* beg, tb_char_t* end);
+
+// pool
+tb_pointer_t 	objc_autoreleasePoolPush();
+tb_void_t 		objc_autoreleasePoolPop(tb_pointer_t pool);
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * implementation
@@ -102,7 +106,8 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 	if (args)
 	{
 		// init pool
-		@autoreleasepool
+		tb_pointer_t pool = objc_autoreleasePoolPush();
+		if (pool)
 		{
 			// the method name
 			tb_char_t const* mname = sel_getName(method_getName(method));
@@ -171,17 +176,20 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 			tb_va_end(vl);
 
 			// trace
-			it_trace("[%x]: %s", (tb_size_t)pthread_self(), g_NSMutableString_UTF8String(trace, @selector(UTF8String)));
+			it_trace("[%lx]: %s", (tb_size_t)pthread_self(), g_NSMutableString_UTF8String(trace, @selector(UTF8String)));
 
 			// exit
 			g_NSMutableString_release(trace, @selector(release));
+
+			// exit pool
+			objc_autoreleasePoolPop(pool);
 		}
 	}
 	else
 	{
 		// the method name
 		tb_char_t const* mname = sel_getName(method_getName(method));
-		it_trace("[%x]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
+		it_trace("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
 	}
 }
 #elif defined(TB_ARCH_x86)
@@ -220,7 +228,15 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 			// init args
 			tb_va_list_t vl;
 			tb_va_start(vl, method);
+			__tb_volatile__ tb_size_t edi = tb_va_arg(vl, tb_size_t);
+			__tb_volatile__ tb_size_t esi = tb_va_arg(vl, tb_size_t);
+			__tb_volatile__ tb_size_t ebp = tb_va_arg(vl, tb_size_t);
+			__tb_volatile__ tb_size_t esp = tb_va_arg(vl, tb_size_t);
+			__tb_volatile__ tb_size_t ebx = tb_va_arg(vl, tb_size_t);
+			__tb_volatile__ tb_size_t edx = tb_va_arg(vl, tb_size_t);
+			__tb_volatile__ tb_size_t ecx = tb_va_arg(vl, tb_size_t);
 			__tb_volatile__ tb_size_t eax = tb_va_arg(vl, tb_size_t);
+			__tb_volatile__ tb_size_t flags = tb_va_arg(vl, tb_size_t);
 			__tb_volatile__ tb_size_t ret = tb_va_arg(vl, tb_size_t);
 			__tb_volatile__ tb_size_t sef = tb_va_arg(vl, tb_size_t);
 			__tb_volatile__ tb_size_t sel = tb_va_arg(vl, tb_size_t);
@@ -233,10 +249,11 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 			{
 				memset(type, 0, 513);
 				method_getArgumentType(method, argi, type, 512);
-				//it_trace("type: %s", type);
+			//	it_trace("type: %s", type);
 				if (!strcmp(type, "@"))
 				{
-					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %@", tb_va_arg(vl, tb_pointer_t));
+					tb_va_arg(vl, tb_pointer_t);
+					//g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %@", tb_va_arg(vl, tb_pointer_t));
 				}
 				else if (!strcasecmp(type, "f"))
 				{
@@ -265,7 +282,7 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 			tb_va_end(vl);
 
 			// trace
-			it_trace("[%x]: %s", (tb_size_t)pthread_self(), g_NSMutableString_UTF8String(trace, @selector(UTF8String)));
+			it_trace("[%lx]: %s", (tb_size_t)pthread_self(), g_NSMutableString_UTF8String(trace, @selector(UTF8String)));
 
 			// exit
 			g_NSMutableString_release(trace, @selector(release));
@@ -278,13 +295,124 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 	{
 		// the method name
 		tb_char_t const* mname = sel_getName(method_getName(method));
-		it_trace("[%x]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
+		it_trace("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
 	}
 }
 #elif defined(TB_ARCH_x64)
 static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, ...)
 {
-	it_trace("sssssssssss");
+	it_assert_and_check_return(node && method);
+
+	// the class name
+	tb_char_t const* cname = tb_pstring_cstr(&node->name);
+	it_assert_and_check_return(cname);
+
+	// tracing arguments?
+	tb_bool_t args = TB_TRUE;
+	if (node->ahead
+		&& !tb_pstring_cstricmp(&node->ahead->name, "args")
+		&& !tb_pstring_cstricmp(&node->ahead->data, "0"))
+	{
+		args = TB_FALSE;
+	}
+		tb_char_t const* mname = sel_getName(method_getName(method));
+		it_trace("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
+
+	if (args)
+	{
+		// init pool
+		tb_pointer_t pool = objc_autoreleasePoolPush();
+		if (pool)
+		{
+			// the method name
+			tb_char_t const* mname = sel_getName(method_getName(method));
+
+			// init trace
+			NSMutableString* trace = [[NSMutableString alloc] init];
+			//NSMutableString* trace = g_NSMutableString_init(g_NSMutableString_alloc(g_NSMutableString, @selector(alloc)), @selector(init));
+			it_assert_and_check_return(trace);
+			g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @"[%s %s]", cname, mname? mname : "");
+
+			// init args
+			tb_va_list_t vl;
+			tb_va_start(vl, method);
+		
+			// the arguments
+			tb_size_t argi = 0;
+			tb_size_t argn = method_getNumberOfArguments(method);
+			tb_char_t type[512 + 1];
+			for (argi = 2; argi < argn; argi++)
+			{
+				memset(type, 0, 513);
+				method_getArgumentType(method, argi, type, 512);
+				it_trace("type: %s", type);
+				if (argi == 6)
+				{
+					__tb_volatile__ tb_size_t r15 = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t r14 = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t r13 = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t r12 = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t r11 = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t r10 = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t r9 = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t r8 = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t rsi = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t rdi = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t rdx = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t rcx = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t rbx = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t rax = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t flags = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t ret = tb_va_arg(vl, tb_size_t);
+				}
+				if (!strcmp(type, "@"))
+				{
+					tb_va_arg(vl, tb_pointer_t);
+				//	g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %@", tb_va_arg(vl, tb_pointer_t));
+				}
+				else if (!strcasecmp(type, "f"))
+				{
+					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %f", tb_va_arg(vl, tb_float_t));	
+				}
+				else if (!strcasecmp(type, "i"))
+				{				
+					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %ld", tb_va_arg(vl, tb_long_t));	
+				}
+				else if (!strcasecmp(type, "c"))
+				{
+					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %lu", tb_va_arg(vl, tb_size_t));
+				}
+				else if (!strcasecmp(type, "r*"))
+				{
+					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": %s", tb_va_arg(vl, tb_char_t const*));
+				}
+				else 
+				{
+					g_NSMutableString_appendFormat(trace, @selector(appendFormat:), @": <type(%s)>", type);
+					__tb_volatile__ tb_size_t p = tb_va_arg(vl, tb_size_t);
+				}
+			}
+			
+			// exit args
+			tb_va_end(vl);
+
+			// trace
+			it_trace("[%lx]: %s", (tb_size_t)pthread_self(), g_NSMutableString_UTF8String(trace, @selector(UTF8String)));
+
+			// exit
+			g_NSMutableString_release(trace, @selector(release));
+
+			// exit pool
+			objc_autoreleasePoolPop(pool);
+			
+		}
+	}
+	else
+	{
+		// the method name
+		tb_char_t const* mname = sel_getName(method_getName(method));
+		it_trace("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
+	}
 }
 #endif
 
@@ -353,38 +481,86 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				mmapfunc = p;
 #elif defined(TB_ARCH_x86)
 				tb_byte_t* p = (tb_byte_t*)mmapfunc;
-				it_assert_and_check_break(p + 28 <= mmaptail);
+				it_assert_and_check_break(p + 32 <= mmaptail);
 
-				x86$push$eax(p);
+				x86$pushf(p);
+				x86$pusha(p);
 				x86$push$im(p, (tb_uint32_t)method);
 				x86$push$im(p, (tb_uint32_t)node);
 				x86$mov$eax$im(p, (tb_uint32_t)&it_chook_method_puts);
 				x86$call$eax(p);
-				x86$add$esp$im(p, 0x8);
 				x86$pop$eax(p);
+				x86$pop$eax(p);
+				x86$popa(p);
+				x86$popf(p);
 
 				x86$push$im(p, (tb_uint32_t)imp);				
 				x86$ret(p);
+
+//				while (((tb_uint32_t)p & 0x3)) x86$nop(p);				
+				x86$nop(p);
+				x86$nop(p);
+				x86$nop(p);
 
 				it_assert_and_check_break(!((tb_uint32_t)p & 0x3));
 				method_setImplementation(method, (IMP)mmapfunc);
 				mmapfunc = p;
 #elif defined(TB_ARCH_x64)
 				tb_byte_t* p = (tb_byte_t*)mmapfunc;
-				it_assert_and_check_break(p + 28 <= mmaptail);
+				it_assert_and_check_break(p + 96 <= mmaptail);
 
+				// 78-bytes
+				x64$pushf(p);
 				x64$push$rax(p);
-				x64$push$im(p, (tb_uint64_t)method);
-				x64$push$im(p, (tb_uint64_t)node);
-				x64$mov$rax$im(p, (tb_uint64_t)&it_chook_method_puts);
-				x64$call$rax(p);
-				x64$add$rsp$im(p, 0x8);
+				x64$push$rbx(p);
+				x64$push$rcx(p);
+				x64$push$rdx(p);
+				x64$push$rdi(p);
+				x64$push$rsi(p);
+				x64$push$r8(p);
+				x64$push$r9(p);
+				x64$push$r10(p);
+				x64$push$r11(p);
+				x64$push$r12(p);
+				x64$push$r13(p);
+				x64$push$r14(p);
+				x64$push$r15(p);
+				x64$mov$rdi$im(p, (tb_uint64_t)node);
+				x64$mov$rsi$im(p, (tb_uint64_t)method);
+				x64$mov$rbx$im(p, (tb_uint64_t)&it_chook_method_puts);
+				x64$call$rbx(p);
+				x64$pop$r15(p);
+				x64$pop$r14(p);
+				x64$pop$r13(p);
+				x64$pop$r12(p);
+				x64$pop$r11(p);
+				x64$pop$r10(p);
+				x64$pop$r9(p);
+				x64$pop$r8(p);
+				x64$pop$rsi(p);
+				x64$pop$rdi(p);
+				x64$pop$rdx(p);
+				x64$pop$rcx(p);
+				x64$pop$rbx(p);
 				x64$pop$rax(p);
+				x64$popf(p);
 
-				x64$push$im(p, (tb_uint64_t)imp);				
+				// 14-bytes
+//				x64$sub$rsp$im(p, 0x8);
+//				x64$mov$rsp$im(p, (tb_uint32_t)imp);
+				x64$push$im(p, (tb_uint32_t)imp);
+				x64$mov$rsp4$im(p, (tb_uint32_t)((tb_uint64_t)imp >> 32));
 				x64$ret(p);
 
-				it_assert_and_check_break(!((tb_uint64_t)p & 0x3));
+//				while (((tb_uint32_t)p & 0x7)) x64$nop(p);
+				x64$nop(p);
+				x64$nop(p);
+				x64$nop(p);
+				x64$nop(p);
+//				x64$nop(p);
+//				x64$nop(p);
+
+				it_assert_and_check_break(!((tb_uint32_t)p & 0x7));
 				method_setImplementation(method, (IMP)mmapfunc);
 				mmapfunc = p;	
 #endif
@@ -524,10 +700,10 @@ static __tb_inline__ tb_bool_t it_chook_init()
 	tb_size_t 		mmapmaxn = method_size * 11;
 	tb_size_t 		mmapsize = mmapmaxn * sizeof(tb_uint32_t);
 #elif defined(TB_ARCH_x86)
-	tb_size_t 		mmapmaxn = method_size * 28;
+	tb_size_t 		mmapmaxn = method_size * 32;
 	tb_size_t 		mmapsize = mmapmaxn;
 #elif defined(TB_ARCH_x64)
-	tb_size_t 		mmapmaxn = method_size * 28;
+	tb_size_t 		mmapmaxn = method_size * 96;
 	tb_size_t 		mmapsize = mmapmaxn;
 #endif
 

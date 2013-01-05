@@ -3,7 +3,7 @@
 <itrace>
 	<!-- tracing arguments is enabled default-->
 	<class>
-	<!--	<NSView/> -->
+		<NSView/>
 		<NSViewController/>
 	<!--	<NSString args="0"/> -->
 	</class>
