@@ -179,28 +179,22 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 #endif
 				if (!strcmp(type, "@"))
 				{
-#if 0
 					tb_pointer_t 		o = tb_va_arg(vl, tb_pointer_t);
-					it_trace("11111111: %p", o);
-					tb_pointer_t 		d = o && [o respondsToSelector:@selector(description)]? [o description] : TB_NULL;
-					it_trace("22222222: %p", d);
-					tb_char_t const* 	s = d? [d UTF8String] : TB_NULL;
-					it_trace("33333333: %p", s);
-					size = tb_snprintf(data, maxn, ": %s", s);
-					it_trace("44444444: %ld", size);
-#else
-					id 					o = tb_va_arg(vl, id);
-					it_trace("11111111: %p", o);
-					tb_pointer_t 		d = o? CFCopyDescription((CFTypeRef)o) : TB_NULL;
-					it_trace("22222222: %p", d);
-					if (d && CFStringGetCString(d, data + 2, maxn - 2, kCFStringEncodingUTF8))
 					{
-						data[0] = ':';
-						data[1] = ' ';
-						size = tb_strlen(data);
-						it_trace("44444444: %ld", size);
-					}				
+#if 0
+						tb_pointer_t 		d = o && [o respondsToSelector:@selector(description)]? [o description] : TB_NULL;
+						tb_char_t const* 	s = d? [d UTF8String] : TB_NULL;
+						size = tb_snprintf(data, maxn, ": %s", s);
+#else
+						tb_pointer_t 		d = o? CFCopyDescription((CFTypeRef)o) : TB_NULL;
+						if (d && CFStringGetCString(d, data + 2, maxn - 2, kCFStringEncodingUTF8))
+						{
+							data[0] = ':';
+							data[1] = ' ';
+							size = tb_strlen(data);
+						}
 #endif
+					}
 				}
 				else if (!strcmp(type, ":"))
 				{
@@ -210,19 +204,19 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 				}
 				else if (!strcasecmp(type, "f"))
 				{
-					size = tb_snprintf(data, maxn, ": %f", tb_va_arg(vl, tb_float_t));
+					size = tb_snprintf(data, maxn, ": %lf", (tb_double_t)tb_va_arg(vl, tb_double_t));
 				}
 				else if (!strcasecmp(type, "i"))
 				{				
-					size = tb_snprintf(data, maxn, ": %ld", tb_va_arg(vl, tb_long_t));
+					size = tb_snprintf(data, maxn, ": %ld", (tb_long_t)tb_va_arg(vl, tb_long_t));
 				}
 				else if (!strcasecmp(type, "c"))
 				{
-					size = tb_snprintf(data, maxn, ": %lu", tb_va_arg(vl, tb_size_t));
+					size = tb_snprintf(data, maxn, ": %lu", (tb_size_t)tb_va_arg(vl, tb_size_t));
 				}
 				else if (!strcasecmp(type, "r*"))
 				{
-					size = tb_snprintf(data, maxn, ": %s", tb_va_arg(vl, tb_char_t const*));
+					size = tb_snprintf(data, maxn, ": %s", (tb_char_t const*)tb_va_arg(vl, tb_char_t const*));
 				}
 				else 
 				{
@@ -245,7 +239,6 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 
 			// exit pool
 			//objc_autoreleasePoolPop(pool);
-			
 		}
 	}
 	else
