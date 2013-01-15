@@ -9,13 +9,13 @@ PRO_NAME = itrace
 DEBUG = y
 
 # platform
-PLAT = mac
+PLAT = ios
 
 # architecture
-ARCH = x86
+ARCH = armv7
 
 # toolchain
-SDK = 10.7
+SDK = 6.0
 NDK = /home/ruki/programs/android-ndk-r8
 BIN =
 HOST = mac

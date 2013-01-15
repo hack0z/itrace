@@ -197,7 +197,7 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 		args = TB_FALSE;
 	}
 
-#if 1
+#if 0
 	{
 		// the method name
 		tb_char_t const* mname = sel_getName(method_getName(method));
@@ -231,7 +231,7 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 			// init return type
 			tb_char_t type[512 + 1] = {0};
 			method_getReturnType(method, type, 512);
-			it_trace("return: %s", type);
+		//	it_trace("return: %s", type);
 
 			// is struct? skip the return struct pointer
 			if (type[0] == '{') 
@@ -250,7 +250,7 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 				// the argument type
 				memset(type, 0, 513);
 				method_getArgumentType(method, argi, type, 512);
-				it_trace("type: %s, argb: %lu", type, argb);
+			//	it_trace("type: %s, argb: %lu", type, argb);
 
 				// seek to args
 				it_seek_to_args();
@@ -259,14 +259,9 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 				if (!strcmp(type, "@"))
 				{
 					tb_pointer_t 		o = tb_va_arg(vl, tb_pointer_t);
-					tb_pointer_t 		d = o? CFCopyDescription((CFTypeRef)o) : TB_NULL;
-					if (d && CFStringGetCString(d, data + 2, maxn - 2, kCFStringEncodingUTF8))
-					{
-						data[0] = ':';
-						data[1] = ' ';
-						size = tb_strlen(data);
-					}
-
+					tb_pointer_t 		d = o && [o respondsToSelector:@selector(description)]? [o description] : TB_NULL;
+					tb_char_t const* 	s = d? [d UTF8String] : TB_NULL;
+					size = tb_snprintf(data, maxn, ": %s", s);
 					argb += sizeof(tb_pointer_t);
 				}
 				else if (!strcmp(type, ":"))
@@ -276,7 +271,7 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 					size = tb_snprintf(data, maxn, ": @selector(%s)", sel_name);
 					argb += sizeof(SEL);
 				}
-				else if (!strcasecmp(type, "f"))
+				else if (!strcmp(type, "f"))
 				{
 					it_float_t f = (it_float_t)tb_va_arg(vl, it_float_t);
 					argb += sizeof(it_float_t);
@@ -287,7 +282,7 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 					argb += sizeof(it_float_t);
 				#endif
 				}
-				else if (!strcasecmp(type, "d"))
+				else if (!strcmp(type, "d"))
 				{
 					tb_double_t d = (tb_double_t)tb_va_arg(vl, tb_double_t);
 					argb += sizeof(tb_double_t);
@@ -298,17 +293,22 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 					argb += sizeof(tb_double_t);
 				#endif
 				}
-				else if (!strcasecmp(type, "i"))
+				else if (!strcmp(type, "i"))
 				{				
 					size = tb_snprintf(data, maxn, ": %ld", (tb_long_t)tb_va_arg(vl, tb_long_t));
 					argb += sizeof(tb_long_t);
 				}
-				else if (!strcasecmp(type, "c"))
+				else if (!strcmp(type, "I"))
+				{				
+					size = tb_snprintf(data, maxn, ": %lu", (tb_long_t)tb_va_arg(vl, tb_size_t));
+					argb += sizeof(tb_size_t);
+				}
+				else if (!strcmp(type, "c"))
 				{
 					size = tb_snprintf(data, maxn, ": %lu", (tb_size_t)tb_va_arg(vl, tb_size_t));
 					argb += sizeof(tb_size_t);
 				}
-				else if (!strcasecmp(type, "r*"))
+				else if (!strcmp(type, "r*"))
 				{
 					size = tb_snprintf(data, maxn, ": %s", (tb_char_t const*)tb_va_arg(vl, tb_char_t const*));
 					argb += sizeof(tb_char_t const*);
@@ -352,7 +352,7 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 						{
 							it_float_t f = (it_float_t)tb_va_arg(vl, it_float_t);
 							if (q < e) q += tb_snprintf(q, e - q, " %f", f.f);
-							it_trace("%f", f.f);
+						//	it_trace("%f", f.f);
 
 							// x64: use xmm
 						#ifndef TB_ARCH_x64
@@ -363,6 +363,7 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 						{
 							tb_double_t d = (tb_double_t)tb_va_arg(vl, tb_double_t);
 							if (q < e) q += tb_snprintf(q, e - q, " %lf", d);
+						//	it_trace("%lf", d);
 
 							// x64: use xmm
 						#ifndef TB_ARCH_x64
@@ -374,6 +375,12 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 							tb_long_t i = (tb_long_t)tb_va_arg(vl, tb_long_t);
 							argb += sizeof(tb_long_t);
 							if (q < e) q += tb_snprintf(q, e - q, " %ld", i);
+						}
+						else if (t && *p == 'I')
+						{
+							tb_size_t i = (tb_size_t)tb_va_arg(vl, tb_size_t);
+							argb += sizeof(tb_size_t);
+							if (q < e) q += tb_snprintf(q, e - q, " %lu", i);
 						}
 						else if (q < e) *q++ = *p;
 					}

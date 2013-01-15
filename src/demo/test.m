@@ -29,6 +29,8 @@ tb_void_t 		objc_autoreleasePoolPop(tb_pointer_t pool);
 
 - (CGPoint)test2:(CGPoint)r with:(NSString*)s;
 
+- (NSRange)test3:(NSRange)r with:(NSString*)s;
+
 @end
 
 @implementation Test
@@ -38,8 +40,12 @@ tb_void_t 		objc_autoreleasePoolPop(tb_pointer_t pool);
 	NSLog(@"%@", s);
 	return r;
 }
-
 - (CGPoint)test2:(CGPoint)r with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return r;
+}
+- (NSRange)test3:(NSRange)r with:(NSString*)s
 {
 	NSLog(@"%@", s);
 	return r;
@@ -58,6 +64,7 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 		getchar();
 		if (t) [t test:CGRectMake(1.0f, 2.0f, 100.0f, 200.0f) with:@"hello"];
 		if (t) [t test2:CGPointMake(100.0f, 200.0f) with:@"hello"];
+		if (t) [t test3:NSMakeRange(100, 200) with:@"hello"];
 		getchar();
 		objc_autoreleasePoolPop(pool);
 	}
