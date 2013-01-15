@@ -14,8 +14,10 @@
 #include <objc/message.h>
 #include <Foundation.h>
 #include <CoreFoundation.h>
-#include <CoreGraphics.h>
 #include <asl.h>
+#ifdef TB_ARCH_ARM
+# 	include <CoreGraphics.h>
+#endif
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * macros
@@ -62,6 +64,98 @@
 #define IT_ROOT 			"/tmp/"
 #define IT_PATH_CFG 		IT_ROOT "itrace.xml"
 
+#if defined(TB_ARCH_ARM)
+# 	define it_seek_start 	(2 * sizeof(tb_pointer_t))
+# 	define it_seek_to_args() \
+ 	do \
+	{ \
+		if (argb >= start && !seek) \
+		{ \
+			argb += 44; \
+			seek = TB_TRUE; \
+			__tb_volatile__ tb_size_t r0 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r1 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r2 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r3 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r4 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r5 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r6 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r7 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r8 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r9 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t lr = tb_va_arg(vl, tb_size_t); \
+		} \
+ \
+	} while (0); 
+#elif defined(TB_ARCH_x86)
+# 	define it_seek_start 	(0)
+# 	define it_seek_to_args() \
+ 	do \
+	{ \
+		if (argb >= start && !seek) \
+		{ \
+			argb += 48; \
+			seek = TB_TRUE; \
+			__tb_volatile__ tb_size_t edi = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t esi = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t ebp = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t esp = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t ebx = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t edx = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t ecx = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t eax = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t flags = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t ret = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t sef = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t sel = tb_va_arg(vl, tb_size_t); \
+		} \
+ \
+	} while (0); 
+#elif defined(TB_ARCH_x64)		
+# 	define it_seek_start 	(4 * sizeof(tb_pointer_t))
+# 	define it_seek_to_args() \
+ 	do \
+	{ \
+		if (argb >= start && !seek) \
+		{ \
+			argb += 128; \
+			seek = TB_TRUE; \	
+			__tb_volatile__ tb_size_t r15 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r14 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r13 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r12 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r11 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r10 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r9 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t r8 = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t rsi = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t rdi = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t rdx = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t rcx = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t rbx = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t rax = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t flags = tb_va_arg(vl, tb_size_t); \
+			__tb_volatile__ tb_size_t ret = tb_va_arg(vl, tb_size_t); \
+		} \
+ \
+	} while (0); 
+#endif
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+// the float type
+typedef struct __it_float_t
+{
+#if 0//defined(TB_ARCH_x64)
+	tb_double_t 	f;
+#else
+	tb_float_t 		f;
+#endif
+
+}it_float_t;
+
 /* //////////////////////////////////////////////////////////////////////////////////////
  * globals
  */
@@ -99,11 +193,15 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 	{
 		args = TB_FALSE;
 	}
+
+#if 1
 	{
 		// the method name
 		tb_char_t const* mname = sel_getName(method_getName(method));
 		it_trace("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
 	}
+#endif
+
 	if (args)
 	{
 		// init info
@@ -122,161 +220,153 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 			// init args
 			tb_va_list_t vl;
 			tb_va_start(vl, method);
-		
+			
+			// init the seek start bytes
+			tb_size_t start = it_seek_start;
+
+			// init return type
+			tb_char_t type[512 + 1] = {0};
+			method_getReturnType(method, type, 512);
+			it_trace("return: %s", type);
+
+			// is struct? skip the return struct pointer
+			if (type[0] == '{') 
+			{
+				__tb_volatile__ tb_pointer_t rett = tb_va_arg(vl, tb_pointer_t); 
+				if (start >= sizeof(tb_pointer_t)) start -= sizeof(tb_pointer_t);
+			}
+
 			// the arguments
 			tb_size_t argi = 0;
 			tb_size_t argn = method_getNumberOfArguments(method);
-			tb_char_t type[512 + 1];
+			tb_size_t argb = 0;
+			tb_bool_t seek = TB_FALSE;
 			for (argi = 2; argi < argn && maxn > 0; argi++)
 			{
+				// the argument type
 				memset(type, 0, 513);
 				method_getArgumentType(method, argi, type, 512);
-				it_trace("type: %s", type);
-#if defined(TB_ARCH_ARM)
-				if (argi == 4)
-				{
-					__tb_volatile__ tb_size_t r0 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r1 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r2 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r3 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r4 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r5 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r6 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r7 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r8 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r9 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t lr = tb_va_arg(vl, tb_size_t);
-					it_trace("%x %x %x %x", r0, r1, r2, r3);
-					it_trace("%x %x %x %x", r4, r5, r6, r7);
-					it_trace("%x %x %x", r8, r9, lr);
-				}
-#elif defined(TB_ARCH_x86)
-				if (argi == 2)
-				{
-					__tb_volatile__ tb_size_t edi = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t esi = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t ebp = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t esp = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t ebx = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t edx = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t ecx = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t eax = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t flags = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t ret = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t sef = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t sel = tb_va_arg(vl, tb_size_t);
-					it_trace("%x %x %x %x", edi, esi, ebp, esp);
-					it_trace("%x %x %x %x", ebx, edx, ecx, eax);
-					it_trace("%x %x %x %x", flags, ret, sef, sel);
-				}
-#elif defined(TB_ARCH_x64)				
-				if (argi == 6)
-				{
-					__tb_volatile__ tb_size_t r15 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r14 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r13 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r12 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r11 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r10 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r9 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t r8 = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t rsi = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t rdi = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t rdx = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t rcx = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t rbx = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t rax = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t flags = tb_va_arg(vl, tb_size_t);
-					__tb_volatile__ tb_size_t ret = tb_va_arg(vl, tb_size_t);
-				}
-#endif
+				it_trace("type: %s, argb: %lu", type, argb);
+
+				// seek to args
+				it_seek_to_args();
+
+				// hone args
 				if (!strcmp(type, "@"))
 				{
 					tb_pointer_t 		o = tb_va_arg(vl, tb_pointer_t);
+					tb_pointer_t 		d = o? CFCopyDescription((CFTypeRef)o) : TB_NULL;
+					if (d && CFStringGetCString(d, data + 2, maxn - 2, kCFStringEncodingUTF8))
 					{
-#if 0
-						tb_pointer_t 		d = o && [o respondsToSelector:@selector(description)]? [o description] : TB_NULL;
-						tb_char_t const* 	s = d? [d UTF8String] : TB_NULL;
-						size = tb_snprintf(data, maxn, ": %s", s);
-#else
-						tb_pointer_t 		d = o? CFCopyDescription((CFTypeRef)o) : TB_NULL;
-						if (d && CFStringGetCString(d, data + 2, maxn - 2, kCFStringEncodingUTF8))
-						{
-							data[0] = ':';
-							data[1] = ' ';
-							size = tb_strlen(data);
-						}
-#endif
+						data[0] = ':';
+						data[1] = ' ';
+						size = tb_strlen(data);
 					}
+
+					argb += sizeof(tb_pointer_t);
 				}
 				else if (!strcmp(type, ":"))
 				{
 					SEL 				sel = tb_va_arg(vl, SEL);
 					tb_char_t const*	sel_name = sel? sel_getName(sel) : TB_NULL;
 					size = tb_snprintf(data, maxn, ": @selector(%s)", sel_name);
+					argb += sizeof(SEL);
 				}
 				else if (!strcasecmp(type, "f"))
 				{
-#ifdef TB_ARCH_ARM
-					size = tb_snprintf(data, maxn, ": %f", (tb_double_t)tb_va_arg(vl, tb_float_t));
-#else
-					size = tb_snprintf(data, maxn, ": %lf", (tb_double_t)tb_va_arg(vl, tb_double_t));
-#endif
+					it_float_t f = (it_float_t)tb_va_arg(vl, it_float_t);
+					argb += sizeof(it_float_t);
+					size = tb_snprintf(data, maxn, ": %f", f.f);
+				}
+				else if (!strcasecmp(type, "d"))
+				{
+					tb_double_t d = (tb_double_t)tb_va_arg(vl, tb_double_t);
+					argb += sizeof(tb_double_t);
+					size = tb_snprintf(data, maxn, ": %lf", d);
 				}
 				else if (!strcasecmp(type, "i"))
 				{				
 					size = tb_snprintf(data, maxn, ": %ld", (tb_long_t)tb_va_arg(vl, tb_long_t));
+					argb += sizeof(tb_long_t);
 				}
 				else if (!strcasecmp(type, "c"))
 				{
 					size = tb_snprintf(data, maxn, ": %lu", (tb_size_t)tb_va_arg(vl, tb_size_t));
+					argb += sizeof(tb_size_t);
 				}
 				else if (!strcasecmp(type, "r*"))
 				{
 					size = tb_snprintf(data, maxn, ": %s", (tb_char_t const*)tb_va_arg(vl, tb_char_t const*));
+					argb += sizeof(tb_char_t const*);
 				}
-#ifdef TB_ARCH_ARM
-				else if (!strcasecmp(type, "{CGPoint=ff}"))
+				else if (type[0] == '{') // struct: .e.g {CGRect={CGPoint=ff}{CGSize=ff}}
 				{
-					CGPoint p = tb_va_arg(vl, CGPoint);
-					size = tb_snprintf(data, maxn, ": <CGPoint: %f, %f>", p.x, p.y);
-					it_trace(": <CGPoint: %f, %f>", p.x, p.y);
+					// prefix: ": "
+					data[0] = ':';
+					data[1] = ' ';
+
+					tb_size_t 			t = 0;
+					tb_long_t 			n = 0;
+					tb_char_t const* 	p = type;
+					tb_char_t* 			q = data + 2;
+					tb_char_t const* 	e = data + maxn;
+					for (; *p; p++)
+					{
+						// seek to args
+						it_seek_to_args();
+
+						// enter
+						if (*p == '{') 
+						{
+							t = 0;
+							n++;
+							if (q < e) *q++ = *p;
+						}
+						// leave
+						else if (*p == '}') 
+						{
+							t = 0;
+							n--;
+							if (q < e) *q++ = *p;
+						}
+						else if (*p == '=') 
+						{
+							t = 1;
+							if (q < e) *q++ = *p;
+						}
+						else if (t && *p == 'f')
+						{
+							it_float_t f = (it_float_t)tb_va_arg(vl, it_float_t);
+							argb += sizeof(it_float_t);
+							if (q < e) q += tb_snprintf(q, e - q, " %f", f.f);
+						}
+						else if (t && *p == 'd')
+						{
+							tb_double_t d = (tb_double_t)tb_va_arg(vl, tb_double_t);
+							argb += sizeof(tb_double_t);
+							if (q < e) q += tb_snprintf(q, e - q, " %lf", d);
+						}
+						else if (t && *p == 'i')
+						{
+							tb_long_t i = (tb_long_t)tb_va_arg(vl, tb_long_t);
+							argb += sizeof(tb_long_t);
+							if (q < e) q += tb_snprintf(q, e - q, " %ld", i);
+						}
+						else if (q < e) *q++ = *p;
+					}
+
+					// end?
+					it_assert(!n);
+
+					// size
+					size = q - data;
 				}
-				else if (!strcasecmp(type, "{CGSize=ff}"))
-				{
-					CGSize s = tb_va_arg(vl, CGSize);
-					size = tb_snprintf(data, maxn, ": <CGSize: %f, %f>", s.width, s.height);
-				}
-				else if (!strcasecmp(type, "{CGRect={CGPoint=ff}{CGSize=ff}}"))
-				{
-					CGRect r = tb_va_arg(vl, CGRect);
-					size = tb_snprintf(data, maxn, ": <CGRect: %f, %f, %f %f>", r.origin.x, r.origin.y, r.size.width, r.size.height);
-				}
-#else
-				else if (!strcasecmp(type, "{_NSPoint=ff}"))
-				{
-					NSPoint p = tb_va_arg(vl, NSPoint);
-					size = tb_snprintf(data, maxn, ": <_NSPoint: %f, %f>", p.x, p.y);
-				}
-				else if (!strcasecmp(type, "{_NSSize=ff}"))
-				{
-					NSSize s = tb_va_arg(vl, NSSize);
-					size = tb_snprintf(data, maxn, ": <_NSSize: %f, %f>", s.width, s.height);
-					it_trace(": <_NSSize: %f, %f>", s.width, s.height);
-				}
-				else if (!strcasecmp(type, "{_NSRect={_NSPoint=ff}{_NSSize=ff}}"))
-				{
-					NSRect r = tb_va_arg(vl, NSRect);
-					size = tb_snprintf(data, maxn, ": <_NSRect: %f, %f, %f, %f>", r.origin.x, r.origin.y, r.size.width, r.size.height);
-					it_trace(": <_NSRect: %f, %f, %f, %f>", r.origin.x, r.origin.y, r.size.width, r.size.height);
-				}
-#endif
 				else 
 				{
 					size = tb_snprintf(data, maxn, ": <type(%s)>", type);
-					__tb_volatile__ tb_size_t p = tb_va_arg(vl, tb_size_t);
+					__tb_volatile__ tb_size_t p = tb_va_arg(vl, tb_size_t);	
+					argb += sizeof(tb_size_t);
 				}
-
 				if (size > 0)
 				{
 					data += size;
@@ -571,7 +661,7 @@ static __tb_inline__ tb_bool_t it_chook_init()
 	it_trace("mmapmaxn: %u, mmapbase: %p", mmapmaxn, mmapbase);
 
 	// hook
-	tb_pointer_t 	mmaptail = it_chook_method_done(mmapbase, mmapbase + mmapmaxn);
+	tb_pointer_t 	mmaptail = it_chook_method_done(mmapbase, mmapbase + mmapsize);
 
 	// clear cache
 	if (mmapbase != mmaptail) __clear_cache(mmapbase, mmaptail);
