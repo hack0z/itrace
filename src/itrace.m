@@ -148,13 +148,16 @@
 // the float type
 typedef struct __it_float_t
 {
-#if 0//defined(TB_ARCH_x64)
-	tb_double_t 	f;
-#else
 	tb_float_t 		f;
-#endif
 
 }it_float_t;
+
+// the double type
+typedef struct __it_double_t
+{
+	tb_double_t 	d;
+
+}it_double_t;
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * globals
@@ -199,6 +202,7 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 		// the method name
 		tb_char_t const* mname = sel_getName(method_getName(method));
 		it_trace("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
+		tb_msleep(10);
 	}
 #endif
 
@@ -277,12 +281,22 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 					it_float_t f = (it_float_t)tb_va_arg(vl, it_float_t);
 					argb += sizeof(it_float_t);
 					size = tb_snprintf(data, maxn, ": %f", f.f);
+
+					// x64: use xmm
+				#ifndef TB_ARCH_x64
+					argb += sizeof(it_float_t);
+				#endif
 				}
 				else if (!strcasecmp(type, "d"))
 				{
 					tb_double_t d = (tb_double_t)tb_va_arg(vl, tb_double_t);
 					argb += sizeof(tb_double_t);
 					size = tb_snprintf(data, maxn, ": %lf", d);
+
+					// x64: use xmm
+				#ifndef TB_ARCH_x64
+					argb += sizeof(tb_double_t);
+				#endif
 				}
 				else if (!strcasecmp(type, "i"))
 				{				
@@ -337,14 +351,23 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 						else if (t && *p == 'f')
 						{
 							it_float_t f = (it_float_t)tb_va_arg(vl, it_float_t);
-							argb += sizeof(it_float_t);
 							if (q < e) q += tb_snprintf(q, e - q, " %f", f.f);
+							it_trace("%f", f.f);
+
+							// x64: use xmm
+						#ifndef TB_ARCH_x64
+							argb += sizeof(it_float_t);
+						#endif
 						}
 						else if (t && *p == 'd')
 						{
 							tb_double_t d = (tb_double_t)tb_va_arg(vl, tb_double_t);
-							argb += sizeof(tb_double_t);
 							if (q < e) q += tb_snprintf(q, e - q, " %lf", d);
+
+							// x64: use xmm
+						#ifndef TB_ARCH_x64
+							argb += sizeof(tb_double_t);
+						#endif
 						}
 						else if (t && *p == 'i')
 						{

@@ -12,7 +12,7 @@ DEBUG = y
 PLAT = mac
 
 # architecture
-ARCH = x64
+ARCH = x86
 
 # toolchain
 SDK = 10.7
