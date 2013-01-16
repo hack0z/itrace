@@ -187,6 +187,27 @@ typedef struct __it_double_t
 
 }it_double_t;
 
+// the chook method trace type
+typedef struct __it_chook_method_trace_t
+{
+	// the argument list
+	tb_va_list_t 	args;
+
+	// the argument byte size
+	tb_size_t 		argb;
+
+	// the is skip?
+
+	// the info 
+	tb_char_t 		info[4096];
+	tb_size_t 		size;
+	tb_size_t 		maxn;
+
+	// the method
+	Method 			meth;
+
+}it_chook_method_trace_t;
+
 /* //////////////////////////////////////////////////////////////////////////////////////
  * globals
  */
@@ -201,14 +222,42 @@ static tb_xml_node_t* 		g_cfg = TB_NULL;
 // clear cache for gcc
 tb_void_t 		__clear_cache(tb_char_t* beg, tb_char_t* end);
 
-// pool
-tb_pointer_t 	objc_autoreleasePoolPush();
-tb_void_t 		objc_autoreleasePoolPop(tb_pointer_t pool);
-
 /* //////////////////////////////////////////////////////////////////////////////////////
  * implementation
  */
-static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, ...)
+
+static __tb_inline__ tb_void_t it_chook_method_trace_argument_type(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+}
+static __tb_inline__ tb_void_t it_chook_method_trace_argument(it_chook_method_trace_t* trace, tb_size_t argi)
+{	
+	// init the argument type
+	tb_char_t type[512 + 1] = {0};
+	method_getArgumentType(method, argi, type, 512);
+//	it_trace("argument: %s", type);
+
+	// init trace
+	trace->argb = 0;
+
+	// trace argument type
+	it_chook_method_trace_argument_type(trace, type);
+}
+#if 0
+static __tb_inline__ tb_void_t it_chook_method_trace_skip_return(it_chook_method_trace_t* trace)
+{
+	// init the return type
+	tb_char_t type[512 + 1] = {0};
+	method_getReturnType(method, type, 512);
+//	it_trace("return: %s", type);
+
+	// init trace
+	trace->argb = 0;
+
+	// trace return size
+	it_chook_method_trace_return_size(trace, type);
+}
+#endif
+static tb_void_t it_chook_method_trace(tb_xml_node_t const* node, Method method, ...)
 {
 	it_assert_and_check_return(node && method);
 
@@ -236,247 +285,29 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 
 	if (args)
 	{
-		// init info
-		tb_char_t 	info[4096] = {0};
-		tb_char_t* 	data = info;
-		tb_long_t 	maxn = 4095;
-		tb_long_t 	size = 0;
+		// init trace 
+		it_chook_method_trace_t trace = {0};
+		trace.maxn = 4096;
+		trace.meth = method;
+
+		// init args
+		tb_va_start(trace.args, method);
+
+		// skip the return argument for structure
+//		it_chook_method_trace_skip_return(&trace);
+
+		// trace the arguments
+		tb_size_t argi = 0;
+		tb_size_t argn = method_getNumberOfArguments(method);
+		for (argi = 2; argi < argn; argi++) 
+			it_chook_method_trace_argument(&trace, argi);
 		
-		// init pool
-		//tb_pointer_t pool = objc_autoreleasePoolPush();
-		//if (pool)
-		{
-			// the method name
-			tb_char_t const* mname = sel_getName(method_getName(method));
+		// exit args
+		tb_va_end(trace.args);
 
-			// init args
-			tb_va_list_t vl;
-			tb_va_start(vl, method);
-			
-			// init the seek start bytes
-			tb_size_t start = it_seek_start;
-
-			// init return type
-			tb_char_t type[512 + 1] = {0};
-			method_getReturnType(method, type, 512);
-			it_trace("return: %s", type);
-
-			// is struct? skip the return struct pointer
-			if (type[0] == '{') 
-			{
-			//	__tb_volatile__ tb_pointer_t rett = tb_va_arg(vl, tb_pointer_t); 
-				if (start >= sizeof(tb_pointer_t)) start -= sizeof(tb_pointer_t);
-			}
-
-			// the arguments
-			tb_size_t argi = 0;
-			tb_size_t argn = method_getNumberOfArguments(method);
-			tb_size_t argb = 0;
-			tb_bool_t seek = TB_FALSE;
-			for (argi = 2; argi < argn && maxn > 0; argi++)
-			{
-				// the argument type
-				memset(type, 0, 513);
-				method_getArgumentType(method, argi, type, 512);
-			//	it_trace("type: %s, argb: %lu", type, argb);
-
-				// seek to args
-				it_seek_to_args();
-
-				// hone args
-				if (!strcmp(type, "@"))
-				{
-					tb_pointer_t 		o = tb_va_arg(vl, tb_pointer_t);
-					tb_pointer_t 		d = o && [o respondsToSelector:@selector(description)]? [o description] : TB_NULL;
-					tb_char_t const* 	s = d? [d UTF8String] : TB_NULL;
-					size = tb_snprintf(data, maxn, ": %s", s);
-					argb += sizeof(tb_pointer_t);
-				}
-				else if (!strcmp(type, ":"))
-				{
-					SEL 				sel = tb_va_arg(vl, SEL);
-					tb_char_t const*	sel_name = sel? sel_getName(sel) : TB_NULL;
-					size = tb_snprintf(data, maxn, ": @selector(%s)", sel_name);
-					argb += sizeof(SEL);
-				}
-				else if (!strcmp(type, "f"))
-				{
-					it_float_t f = (it_float_t)tb_va_arg(vl, it_float_t);
-					argb += sizeof(it_float_t);
-					size = tb_snprintf(data, maxn, ": %f", f.f);
-
-					// x64: use xmm
-				#ifndef TB_ARCH_x64
-					argb += sizeof(it_float_t);
-				#endif
-				}
-				else if (!strcmp(type, "d"))
-				{
-					tb_double_t d = (tb_double_t)tb_va_arg(vl, tb_double_t);
-					argb += sizeof(tb_double_t);
-					size = tb_snprintf(data, maxn, ": %lf", d);
-
-					// x64: use xmm
-				#ifndef TB_ARCH_x64
-					argb += sizeof(tb_double_t);
-				#endif
-				}
-				else if (!strcmp(type, "i"))
-				{				
-					size = tb_snprintf(data, maxn, ": %ld", (tb_long_t)tb_va_arg(vl, tb_long_t));
-					argb += sizeof(tb_long_t);
-				}
-				else if (!strcmp(type, "I"))
-				{				
-					size = tb_snprintf(data, maxn, ": %lu", (tb_long_t)tb_va_arg(vl, tb_size_t));
-					argb += sizeof(tb_size_t);
-				}
-				else if (!strcmp(type, "c"))
-				{
-					size = tb_snprintf(data, maxn, ": %lu", (tb_size_t)tb_va_arg(vl, tb_size_t));
-					argb += sizeof(tb_size_t);
-				}
-				else if (!strcmp(type, "r*"))
-				{
-					size = tb_snprintf(data, maxn, ": %s", (tb_char_t const*)tb_va_arg(vl, tb_char_t const*));
-					argb += sizeof(tb_char_t const*);
-				}
-				else if (type[0] == '{') // struct: .e.g {CGRect={CGPoint=ff}{CGSize=ff}}
-				{
-					// prefix: ": "
-					data[0] = ':';
-					data[1] = ' ';
-
-					tb_size_t 			t = 0;
-					tb_long_t 			n = 0;
-					tb_char_t const* 	p = type;
-					tb_char_t* 			q = data + 2;
-					tb_char_t const* 	e = data + maxn;
-					for (; *p; p++)
-					{
-						// seek to args
-						it_seek_to_args();
-
-						// enter
-						if (*p == '{') 
-						{
-							t = 0;
-							n++;
-							if (q < e) *q++ = *p;
-						}
-						// leave
-						else if (*p == '}') 
-						{
-							t = 0;
-							n--;
-							if (q < e) *q++ = *p;
-						}
-						else if (*p == '=') 
-						{
-							t = 1;
-							if (q < e) *q++ = *p;
-						}
-						else if (t && *p == 'f')
-						{
-							it_float_t f = (it_float_t)tb_va_arg(vl, it_float_t);
-							if (q < e) q += tb_snprintf(q, e - q, " %f", f.f);
-						//	it_trace("%f", f.f);
-
-							// x64: use xmm
-						#ifndef TB_ARCH_x64
-							argb += sizeof(it_float_t);
-						#endif
-						}
-						else if (t && *p == 'd')
-						{
-							tb_double_t d = (tb_double_t)tb_va_arg(vl, tb_double_t);
-							if (q < e) q += tb_snprintf(q, e - q, " %lf", d);
-						//	it_trace("%lf", d);
-
-							// x64: use xmm
-						#ifndef TB_ARCH_x64
-							argb += sizeof(tb_double_t);
-						#endif
-						}
-						else if (t && *p == 'c')
-						{
-							it_int8_t i = (it_int8_t)tb_va_arg(vl, it_int8_t);
-							argb += sizeof(it_int8_t);
-							if (q < e) q += tb_snprintf(q, e - q, " %d", i.i);
-						}
-						else if (t && *p == 'C')
-						{
-							it_uint8_t i = (it_uint8_t)tb_va_arg(vl, it_uint8_t);
-							argb += sizeof(it_uint8_t);
-							if (q < e) q += tb_snprintf(q, e - q, " %u", i.i);
-						}
-						else if (t && *p == 's')
-						{
-							it_int16_t i = (it_int16_t)tb_va_arg(vl, it_int16_t);
-							argb += sizeof(it_int16_t);
-							if (q < e) q += tb_snprintf(q, e - q, " %d", i.i);
-						}
-						else if (t && *p == 'S')
-						{
-							it_uint16_t i = (it_uint16_t)tb_va_arg(vl, it_uint16_t);
-							argb += sizeof(it_uint16_t);
-							if (q < e) q += tb_snprintf(q, e - q, " %u", i.i);
-						}
-						else if (t && *p == 'i')
-						{
-							tb_int32_t i = (tb_int32_t)tb_va_arg(vl, tb_int32_t);
-							argb += sizeof(tb_int32_t);
-							if (q < e) q += tb_snprintf(q, e - q, " %d", i);
-						}
-						else if (t && *p == 'I')
-						{
-							tb_uint32_t i = (tb_uint32_t)tb_va_arg(vl, tb_uint32_t);
-							argb += sizeof(tb_uint32_t);
-							if (q < e) q += tb_snprintf(q, e - q, " %u", i);
-						}
-						else if (t && *p == 'q')
-						{
-							tb_int64_t i = (tb_int64_t)tb_va_arg(vl, tb_int64_t);
-							argb += sizeof(tb_int64_t);
-							if (q < e) q += tb_snprintf(q, e - q, " %d", i);
-						}
-						else if (t && *p == 'Q')
-						{
-							tb_uint64_t i = (tb_uint64_t)tb_va_arg(vl, tb_uint64_t);
-							argb += sizeof(tb_uint64_t);
-							if (q < e) q += tb_snprintf(q, e - q, " %u", i);
-						}
-						else if (q < e) *q++ = *p;
-					}
-
-					// end?
-					it_assert(!n);
-
-					// size
-					size = q - data;
-				}
-				else 
-				{
-					size = tb_snprintf(data, maxn, ": <type(%s)>", type);
-					__tb_volatile__ tb_size_t p = tb_va_arg(vl, tb_size_t);	
-					argb += sizeof(tb_size_t);
-				}
-				if (size > 0)
-				{
-					data += size;
-					maxn -= size;
-				}
-			}
-			
-			// exit args
-			tb_va_end(vl);
-
-			// trace
-			it_trace("[%lx]: [%s %s]%s", (tb_size_t)pthread_self(), cname, mname? mname : "", info);
-
-			// exit pool
-			//objc_autoreleasePoolPop(pool);
-		}
+		// trace
+		tb_char_t const* mname = sel_getName(method_getName(method));
+		it_trace("[%lx]: [%s %s]%s", (tb_size_t)pthread_self(), cname, mname? mname : "", trace.info);
 	}
 	else
 	{
@@ -540,8 +371,8 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				*p++ = A$movt_rd_im(A$r0, ((tb_uint32_t)node) >> 16);
 				*p++ = A$movw_rd_im(A$r1, ((tb_uint32_t)method) & 0xffff);
 				*p++ = A$movt_rd_im(A$r1, ((tb_uint32_t)method) >> 16);
-				*p++ = A$movw_rd_im(A$r9, ((tb_uint32_t)&it_chook_method_puts) & 0xffff);
-				*p++ = A$movt_rd_im(A$r9, ((tb_uint32_t)&it_chook_method_puts) >> 16);
+				*p++ = A$movw_rd_im(A$r9, ((tb_uint32_t)&it_chook_method_trace) & 0xffff);
+				*p++ = A$movt_rd_im(A$r9, ((tb_uint32_t)&it_chook_method_trace) >> 16);
 				*p++ = A$blx(A$r9);
 				*p++ = A$pop$r0_r9_lr$;
 				*p++ = A$ldr_rd_$rn_im$(A$pc, A$pc, 4 - 8);
@@ -556,7 +387,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				x86$pusha(p);
 				x86$push$im(p, (tb_uint32_t)method);
 				x86$push$im(p, (tb_uint32_t)node);
-				x86$mov$eax$im(p, (tb_uint32_t)&it_chook_method_puts);
+				x86$mov$eax$im(p, (tb_uint32_t)&it_chook_method_trace);
 				x86$call$eax(p);
 				x86$pop$eax(p);
 				x86$pop$eax(p);
@@ -596,7 +427,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				x64$push$r15(p);
 				x64$mov$rdi$im(p, (tb_uint64_t)node);
 				x64$mov$rsi$im(p, (tb_uint64_t)method);
-				x64$mov$rbx$im(p, (tb_uint64_t)&it_chook_method_puts);
+				x64$mov$rbx$im(p, (tb_uint64_t)&it_chook_method_trace);
 				x64$call$rbx(p);
 				x64$pop$r15(p);
 				x64$pop$r14(p);
