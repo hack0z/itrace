@@ -14,7 +14,8 @@
 #include <objc/message.h>
 #include <Foundation.h>
 #include <CoreFoundation.h>
-#include "asl.h"
+#include <CoreGraphics.h>
+#include <asl.h>
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * macros
@@ -64,6 +65,8 @@
 /* //////////////////////////////////////////////////////////////////////////////////////
  * globals
  */
+
+// the config
 static tb_xml_node_t* 		g_cfg = TB_NULL;
 
 /* //////////////////////////////////////////////////////////////////////////////////////
@@ -96,7 +99,11 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 	{
 		args = TB_FALSE;
 	}
-
+	{
+		// the method name
+		tb_char_t const* mname = sel_getName(method_getName(method));
+		it_trace("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
+	}
 	if (args)
 	{
 		// init info
@@ -139,6 +146,9 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 					__tb_volatile__ tb_size_t r8 = tb_va_arg(vl, tb_size_t);
 					__tb_volatile__ tb_size_t r9 = tb_va_arg(vl, tb_size_t);
 					__tb_volatile__ tb_size_t lr = tb_va_arg(vl, tb_size_t);
+					it_trace("%x %x %x %x", r0, r1, r2, r3);
+					it_trace("%x %x %x %x", r4, r5, r6, r7);
+					it_trace("%x %x %x", r8, r9, lr);
 				}
 #elif defined(TB_ARCH_x86)
 				if (argi == 2)
@@ -155,6 +165,9 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 					__tb_volatile__ tb_size_t ret = tb_va_arg(vl, tb_size_t);
 					__tb_volatile__ tb_size_t sef = tb_va_arg(vl, tb_size_t);
 					__tb_volatile__ tb_size_t sel = tb_va_arg(vl, tb_size_t);
+					it_trace("%x %x %x %x", edi, esi, ebp, esp);
+					it_trace("%x %x %x %x", ebx, edx, ecx, eax);
+					it_trace("%x %x %x %x", flags, ret, sef, sel);
 				}
 #elif defined(TB_ARCH_x64)				
 				if (argi == 6)
@@ -204,7 +217,11 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 				}
 				else if (!strcasecmp(type, "f"))
 				{
+#ifdef TB_ARCH_ARM
+					size = tb_snprintf(data, maxn, ": %f", (tb_double_t)tb_va_arg(vl, tb_float_t));
+#else
 					size = tb_snprintf(data, maxn, ": %lf", (tb_double_t)tb_va_arg(vl, tb_double_t));
+#endif
 				}
 				else if (!strcasecmp(type, "i"))
 				{				
@@ -218,6 +235,42 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 				{
 					size = tb_snprintf(data, maxn, ": %s", (tb_char_t const*)tb_va_arg(vl, tb_char_t const*));
 				}
+#ifdef TB_ARCH_ARM
+				else if (!strcasecmp(type, "{CGPoint=ff}"))
+				{
+					CGPoint p = tb_va_arg(vl, CGPoint);
+					size = tb_snprintf(data, maxn, ": <CGPoint: %f, %f>", p.x, p.y);
+					it_trace(": <CGPoint: %f, %f>", p.x, p.y);
+				}
+				else if (!strcasecmp(type, "{CGSize=ff}"))
+				{
+					CGSize s = tb_va_arg(vl, CGSize);
+					size = tb_snprintf(data, maxn, ": <CGSize: %f, %f>", s.width, s.height);
+				}
+				else if (!strcasecmp(type, "{CGRect={CGPoint=ff}{CGSize=ff}}"))
+				{
+					CGRect r = tb_va_arg(vl, CGRect);
+					size = tb_snprintf(data, maxn, ": <CGRect: %f, %f, %f %f>", r.origin.x, r.origin.y, r.size.width, r.size.height);
+				}
+#else
+				else if (!strcasecmp(type, "{_NSPoint=ff}"))
+				{
+					NSPoint p = tb_va_arg(vl, NSPoint);
+					size = tb_snprintf(data, maxn, ": <_NSPoint: %f, %f>", p.x, p.y);
+				}
+				else if (!strcasecmp(type, "{_NSSize=ff}"))
+				{
+					NSSize s = tb_va_arg(vl, NSSize);
+					size = tb_snprintf(data, maxn, ": <_NSSize: %f, %f>", s.width, s.height);
+					it_trace(": <_NSSize: %f, %f>", s.width, s.height);
+				}
+				else if (!strcasecmp(type, "{_NSRect={_NSPoint=ff}{_NSSize=ff}}"))
+				{
+					NSRect r = tb_va_arg(vl, NSRect);
+					size = tb_snprintf(data, maxn, ": <_NSRect: %f, %f, %f, %f>", r.origin.x, r.origin.y, r.size.width, r.size.height);
+					it_trace(": <_NSRect: %f, %f, %f, %f>", r.origin.x, r.origin.y, r.size.width, r.size.height);
+				}
+#endif
 				else 
 				{
 					size = tb_snprintf(data, maxn, ": <type(%s)>", type);

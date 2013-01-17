@@ -28,7 +28,8 @@ itrace_SHFLAGS					+= -F$(SDKROOT)/System/Library/PrivateFrameworks -framework F
 
 # includes
 INC_DIR 						+= $(FWKROOT)/Foundation.framework/Headers/ \
-								   $(FWKROOT)/CoreFoundation.framework/Headers/
+								   $(FWKROOT)/CoreFoundation.framework/Headers/ \
+								   $(FWKROOT)/CoreGraphics.framework/Headers/
 
 # demo
 SUB_PROS 						= demo
