@@ -145,6 +145,34 @@
  * types
  */
 
+// the int8 type
+typedef struct __it_int8_t
+{
+	tb_int8_t 		i;
+
+}it_int8_t;
+
+// the uint8 type
+typedef struct __it_uint8_t
+{
+	tb_uint8_t 		i;
+
+}it_uint8_t;
+
+// the int16 type
+typedef struct __it_int16_t
+{
+	tb_int16_t 		i;
+
+}it_int16_t;
+
+// the uint16 type
+typedef struct __it_uint16_t
+{
+	tb_uint16_t 	i;
+
+}it_uint16_t;
+
 // the float type
 typedef struct __it_float_t
 {
@@ -231,12 +259,12 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 			// init return type
 			tb_char_t type[512 + 1] = {0};
 			method_getReturnType(method, type, 512);
-		//	it_trace("return: %s", type);
+			it_trace("return: %s", type);
 
 			// is struct? skip the return struct pointer
 			if (type[0] == '{') 
 			{
-				__tb_volatile__ tb_pointer_t rett = tb_va_arg(vl, tb_pointer_t); 
+			//	__tb_volatile__ tb_pointer_t rett = tb_va_arg(vl, tb_pointer_t); 
 				if (start >= sizeof(tb_pointer_t)) start -= sizeof(tb_pointer_t);
 			}
 
@@ -370,17 +398,53 @@ static tb_void_t it_chook_method_puts(tb_xml_node_t const* node, Method method, 
 							argb += sizeof(tb_double_t);
 						#endif
 						}
+						else if (t && *p == 'c')
+						{
+							it_int8_t i = (it_int8_t)tb_va_arg(vl, it_int8_t);
+							argb += sizeof(it_int8_t);
+							if (q < e) q += tb_snprintf(q, e - q, " %d", i.i);
+						}
+						else if (t && *p == 'C')
+						{
+							it_uint8_t i = (it_uint8_t)tb_va_arg(vl, it_uint8_t);
+							argb += sizeof(it_uint8_t);
+							if (q < e) q += tb_snprintf(q, e - q, " %u", i.i);
+						}
+						else if (t && *p == 's')
+						{
+							it_int16_t i = (it_int16_t)tb_va_arg(vl, it_int16_t);
+							argb += sizeof(it_int16_t);
+							if (q < e) q += tb_snprintf(q, e - q, " %d", i.i);
+						}
+						else if (t && *p == 'S')
+						{
+							it_uint16_t i = (it_uint16_t)tb_va_arg(vl, it_uint16_t);
+							argb += sizeof(it_uint16_t);
+							if (q < e) q += tb_snprintf(q, e - q, " %u", i.i);
+						}
 						else if (t && *p == 'i')
 						{
-							tb_long_t i = (tb_long_t)tb_va_arg(vl, tb_long_t);
-							argb += sizeof(tb_long_t);
-							if (q < e) q += tb_snprintf(q, e - q, " %ld", i);
+							tb_int32_t i = (tb_int32_t)tb_va_arg(vl, tb_int32_t);
+							argb += sizeof(tb_int32_t);
+							if (q < e) q += tb_snprintf(q, e - q, " %d", i);
 						}
 						else if (t && *p == 'I')
 						{
-							tb_size_t i = (tb_size_t)tb_va_arg(vl, tb_size_t);
-							argb += sizeof(tb_size_t);
-							if (q < e) q += tb_snprintf(q, e - q, " %lu", i);
+							tb_uint32_t i = (tb_uint32_t)tb_va_arg(vl, tb_uint32_t);
+							argb += sizeof(tb_uint32_t);
+							if (q < e) q += tb_snprintf(q, e - q, " %u", i);
+						}
+						else if (t && *p == 'q')
+						{
+							tb_int64_t i = (tb_int64_t)tb_va_arg(vl, tb_int64_t);
+							argb += sizeof(tb_int64_t);
+							if (q < e) q += tb_snprintf(q, e - q, " %d", i);
+						}
+						else if (t && *p == 'Q')
+						{
+							tb_uint64_t i = (tb_uint64_t)tb_va_arg(vl, tb_uint64_t);
+							argb += sizeof(tb_uint64_t);
+							if (q < e) q += tb_snprintf(q, e - q, " %u", i);
 						}
 						else if (q < e) *q++ = *p;
 					}
