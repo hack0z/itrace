@@ -88,49 +88,179 @@ tb_void_t 		objc_autoreleasePoolPop(tb_pointer_t pool);
 
 @interface Test : NSObject
 
-- (it_int8_t)test_int8:(it_int8_t)i with:(NSString*)s;
-- (it_int16_t)test_int16:(it_int16_t)i with:(NSString*)s;
-- (it_int32_t)test_int32:(it_int32_t)i with:(NSString*)s;
-- (it_int64_t)test_int64:(it_int64_t)i with:(NSString*)s;
-- (it_float_t)test_float:(it_float_t)i with:(NSString*)s;
-- (it_double_t)test_double:(it_double_t)i with:(NSString*)s;
-- (it_all_t)test_all:(it_all_t)i with:(NSString*)s;
+- (tb_int8_t)value_int8:(tb_int8_t)i with:(NSString*)s;
+- (tb_int16_t)value_int16:(tb_int16_t)i with:(NSString*)s;
+- (tb_int32_t)value_int32:(tb_int32_t)i with:(NSString*)s;
+- (tb_int64_t)value_int64:(tb_int64_t)i with:(NSString*)s;
+- (tb_float_t)value_float:(tb_float_t)i with:(NSString*)s;
+- (tb_double_t)value_double:(tb_double_t)i with:(NSString*)s;
+
+- (tb_int8_t*)value_pint8:(tb_int8_t*)i with:(NSString*)s;
+- (tb_int16_t*)value_pint16:(tb_int16_t*)i with:(NSString*)s;
+- (tb_int32_t*)value_pint32:(tb_int32_t*)i with:(NSString*)s;
+- (tb_int64_t*)value_pint64:(tb_int64_t*)i with:(NSString*)s;
+- (tb_float_t*)value_pfloat:(tb_float_t*)i with:(NSString*)s;
+- (tb_double_t*)value_pdouble:(tb_double_t*)i with:(NSString*)s;
+- (tb_byte_t*)value_pbyte:(tb_byte_t*)i with:(NSString*)s;
+- (tb_char_t const*)value_cstring:(tb_char_t const*)i with:(NSString*)s;
+
+- (tb_int8_t**)value_ppint8:(tb_int8_t**)i with:(NSString*)s;
+- (tb_int16_t**)value_ppint16:(tb_int16_t**)i with:(NSString*)s;
+- (tb_int32_t**)value_ppint32:(tb_int32_t**)i with:(NSString*)s;
+- (tb_int64_t**)value_ppint64:(tb_int64_t**)i with:(NSString*)s;
+- (tb_float_t**)value_ppfloat:(tb_float_t**)i with:(NSString*)s;
+- (tb_double_t**)value_ppdouble:(tb_double_t**)i with:(NSString*)s;
+- (tb_char_t const**)value_pcstring:(tb_char_t const**)i with:(NSString*)s;
+
+- (it_int8_t)struct_int8:(it_int8_t)i with:(NSString*)s;
+- (it_int16_t)struct_int16:(it_int16_t)i with:(NSString*)s;
+- (it_int32_t)struct_int32:(it_int32_t)i with:(NSString*)s;
+- (it_int64_t)struct_int64:(it_int64_t)i with:(NSString*)s;
+- (it_float_t)struct_float:(it_float_t)i with:(NSString*)s;
+- (it_double_t)struct_double:(it_double_t)i with:(NSString*)s;
+- (it_all_t)struct_all:(it_all_t)i with:(NSString*)s;
 
 @end
 
 @implementation Test
 
-- (it_int8_t)test_int8:(it_int8_t)i with:(NSString*)s
+
+- (tb_int8_t)value_int8:(tb_int8_t)i with:(NSString*)s
 {
 	NSLog(@"%@", s);
 	return i;
 }
-- (it_int16_t)test_int16:(it_int16_t)i with:(NSString*)s
+- (tb_int16_t)value_int16:(tb_int16_t)i with:(NSString*)s
 {
 	NSLog(@"%@", s);
 	return i;
 }
-- (it_int32_t)test_int32:(it_int32_t)i with:(NSString*)s
+- (tb_int32_t)value_int32:(tb_int32_t)i with:(NSString*)s
 {
 	NSLog(@"%@", s);
 	return i;
 }
-- (it_int64_t)test_int64:(it_int64_t)i with:(NSString*)s
+- (tb_int64_t)value_int64:(tb_int64_t)i with:(NSString*)s
 {
 	NSLog(@"%@", s);
 	return i;
 }
-- (it_float_t)test_float:(it_float_t)i with:(NSString*)s
+- (tb_float_t)value_float:(tb_float_t)i with:(NSString*)s
 {
 	NSLog(@"%@", s);
 	return i;
 }
-- (it_double_t)test_double:(it_double_t)i with:(NSString*)s
+- (tb_double_t)value_double:(tb_double_t)i with:(NSString*)s
 {
 	NSLog(@"%@", s);
 	return i;
 }
-- (it_all_t)test_all:(it_all_t)i with:(NSString*)s
+- (tb_int8_t*)value_pint8:(tb_int8_t*)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_int16_t*)value_pint16:(tb_int16_t*)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_int32_t*)value_pint32:(tb_int32_t*)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_int64_t*)value_pint64:(tb_int64_t*)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_float_t*)value_pfloat:(tb_float_t*)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_double_t*)value_pdouble:(tb_double_t*)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_byte_t*)value_pbyte:(tb_byte_t*)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_char_t const*)value_cstring:(tb_char_t const*)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_int8_t**)value_ppint8:(tb_int8_t**)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_int16_t**)value_ppint16:(tb_int16_t**)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_int32_t**)value_ppint32:(tb_int32_t**)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_int64_t**)value_ppint64:(tb_int64_t**)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_float_t**)value_ppfloat:(tb_float_t**)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_double_t**)value_ppdouble:(tb_double_t**)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (tb_char_t const**)value_pcstring:(tb_char_t const**)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (it_int8_t)struct_int8:(it_int8_t)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (it_int16_t)struct_int16:(it_int16_t)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (it_int32_t)struct_int32:(it_int32_t)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (it_int64_t)struct_int64:(it_int64_t)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (it_float_t)struct_float:(it_float_t)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (it_double_t)struct_double:(it_double_t)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (it_all_t)struct_all:(it_all_t)i with:(NSString*)s
 {
 	NSLog(@"%@", s);
 	return i;
@@ -185,13 +315,37 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 
 		Test* t = [[Test alloc] init];
 		getchar();
-		[t test_int8:all.i8 with:@"hello"];
-		[t test_int16:all.i16 with:@"hello"];
-		[t test_int32:all.i32 with:@"hello"];
-		[t test_int64:all.i64 with:@"hello"];
-		[t test_float:all.f with:@"hello"];
-		[t test_double:all.d with:@"hello"];
-		[t test_all:all with:@"hello"];
+		[t value_int8:all.i8.i1 with:@"hello"];
+		[t value_int16:all.i16.i1 with:@"hello"];
+		[t value_int32:all.i32.i1 with:@"hello"];
+		[t value_int64:all.i64.i1 with:@"hello"];
+		[t value_float:all.f.f0 with:@"hello"];
+		[t value_double:all.d.d0 with:@"hello"];
+		
+		[t value_pint8:&all.i8.i1 with:@"hello"];
+		[t value_pint16:&all.i16.i1 with:@"hello"];
+		[t value_pint32:&all.i32.i1 with:@"hello"];
+		[t value_pint64:&all.i64.i1 with:@"hello"];
+		[t value_pfloat:&all.f.f0 with:@"hello"];
+		[t value_pdouble:&all.d.d0 with:@"hello"];
+		[t value_pbyte:all.b with:@"hello"];	
+		[t value_cstring:all.s with:@"hello"];		
+	
+		[t value_ppint8:TB_NULL with:@"hello"];
+		[t value_ppint16:TB_NULL with:@"hello"];
+		[t value_ppint32:TB_NULL with:@"hello"];
+		[t value_ppint64:TB_NULL with:@"hello"];
+		[t value_ppfloat:TB_NULL with:@"hello"];
+		[t value_ppdouble:TB_NULL with:@"hello"];
+		[t value_pcstring:&all.s with:@"hello"];		
+
+		[t struct_int8:all.i8 with:@"hello"];
+		[t struct_int16:all.i16 with:@"hello"];
+		[t struct_int32:all.i32 with:@"hello"];
+		[t struct_int64:all.i64 with:@"hello"];
+		[t struct_float:all.f with:@"hello"];
+		[t struct_double:all.d with:@"hello"];
+		[t struct_all:all with:@"hello"];
 		getchar();
 		objc_autoreleasePoolPop(pool);
 	}

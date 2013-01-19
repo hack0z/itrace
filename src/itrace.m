@@ -15,9 +15,6 @@
 #include <Foundation.h>
 #include <CoreFoundation.h>
 #include <asl.h>
-#ifdef TB_ARCH_ARM
-# 	include <CoreGraphics.h>
-#endif
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * macros
@@ -64,14 +61,15 @@
 #define IT_ROOT 			"/tmp/"
 #define IT_PATH_CFG 		IT_ROOT "itrace.xml"
 
+// the argument
 #if defined(TB_ARCH_ARM)
-# 	define it_seek_start 	(2 * sizeof(tb_pointer_t))
-# 	define it_seek_to_args() \
+# 	define it_chook_method_trace_args_begn 			(2 * sizeof(tb_pointer_t))
+# 	define it_chook_method_trace_args_skip(trace) 	\
  	do \
 	{ \
-		if (argb >= start && !seek) \
+		if (args_size >= start && !seek) \
 		{ \
-			argb += 44; \
+			args_size += 44; \
 			seek = TB_TRUE; \
 			__tb_volatile__ tb_size_t r0 = tb_va_arg(vl, tb_size_t); \
 			__tb_volatile__ tb_size_t r1 = tb_va_arg(vl, tb_size_t); \
@@ -88,37 +86,37 @@
  \
 	} while (0); 
 #elif defined(TB_ARCH_x86)
-# 	define it_seek_start 	(0)
-# 	define it_seek_to_args() \
+# 	define it_chook_method_trace_args_begn 			(0)
+# 	define it_chook_method_trace_args_skip(trace) 	\
  	do \
 	{ \
-		if (argb >= start && !seek) \
+		if (trace->args_size >= trace->args_begn && !trace->args_skip) \
 		{ \
-			argb += 48; \
-			seek = TB_TRUE; \
-			__tb_volatile__ tb_size_t edi = tb_va_arg(vl, tb_size_t); \
-			__tb_volatile__ tb_size_t esi = tb_va_arg(vl, tb_size_t); \
-			__tb_volatile__ tb_size_t ebp = tb_va_arg(vl, tb_size_t); \
-			__tb_volatile__ tb_size_t esp = tb_va_arg(vl, tb_size_t); \
-			__tb_volatile__ tb_size_t ebx = tb_va_arg(vl, tb_size_t); \
-			__tb_volatile__ tb_size_t edx = tb_va_arg(vl, tb_size_t); \
-			__tb_volatile__ tb_size_t ecx = tb_va_arg(vl, tb_size_t); \
-			__tb_volatile__ tb_size_t eax = tb_va_arg(vl, tb_size_t); \
-			__tb_volatile__ tb_size_t flags = tb_va_arg(vl, tb_size_t); \
-			__tb_volatile__ tb_size_t ret = tb_va_arg(vl, tb_size_t); \
-			__tb_volatile__ tb_size_t sef = tb_va_arg(vl, tb_size_t); \
-			__tb_volatile__ tb_size_t sel = tb_va_arg(vl, tb_size_t); \
+			trace->args_size += 48; \
+			trace->args_skip = 1; \
+			__tb_volatile__ tb_size_t edi = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t esi = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t ebp = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t esp = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t ebx = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t edx = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t ecx = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t eax = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t flags = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t ret = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t sef = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t sel = tb_va_arg(trace->args_list, tb_size_t); \
 		} \
  \
 	} while (0); 
 #elif defined(TB_ARCH_x64)		
-# 	define it_seek_start 	(4 * sizeof(tb_pointer_t))
-# 	define it_seek_to_args() \
+# 	define it_chook_method_trace_args_begn 			(4 * sizeof(tb_pointer_t))
+# 	define it_chook_method_trace_args_skip(trace) 	\
  	do \
 	{ \
-		if (argb >= start && !seek) \
+		if (args_size >= start && !seek) \
 		{ \
-			argb += 128; \
+			args_size += 128; \
 			seek = TB_TRUE; \	
 			__tb_volatile__ tb_size_t r15 = tb_va_arg(vl, tb_size_t); \
 			__tb_volatile__ tb_size_t r14 = tb_va_arg(vl, tb_size_t); \
@@ -145,34 +143,6 @@
  * types
  */
 
-// the int8 type
-typedef struct __it_int8_t
-{
-	tb_int8_t 		i;
-
-}it_int8_t;
-
-// the uint8 type
-typedef struct __it_uint8_t
-{
-	tb_uint8_t 		i;
-
-}it_uint8_t;
-
-// the int16 type
-typedef struct __it_int16_t
-{
-	tb_int16_t 		i;
-
-}it_int16_t;
-
-// the uint16 type
-typedef struct __it_uint16_t
-{
-	tb_uint16_t 	i;
-
-}it_uint16_t;
-
 // the float type
 typedef struct __it_float_t
 {
@@ -191,15 +161,22 @@ typedef struct __it_double_t
 typedef struct __it_chook_method_trace_t
 {
 	// the argument list
-	tb_va_list_t 	args;
+	tb_va_list_t 	args_list;
 
-	// the argument byte size
-	tb_size_t 		argb;
+	// the argument size
+	tb_size_t 		args_size;
 
-	// the is skip?
+	// the argument begn
+	tb_size_t 		args_begn;
+
+	// the argument skip
+	tb_size_t 		args_skip;
+
+	// the argument ptrn
+	tb_size_t 		args_ptrn;
 
 	// the info 
-	tb_char_t 		info[4096];
+	tb_char_t 		info[4096 + 1];
 	tb_size_t 		size;
 	tb_size_t 		maxn;
 
@@ -225,19 +202,381 @@ tb_void_t 		__clear_cache(tb_char_t* beg, tb_char_t* end);
 /* //////////////////////////////////////////////////////////////////////////////////////
  * implementation
  */
-
-static __tb_inline__ tb_void_t it_chook_method_trace_argument_type(it_chook_method_trace_t* trace, tb_char_t const* type)
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_type(it_chook_method_trace_t* trace, tb_char_t const* type);
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_objc(it_chook_method_trace_t* trace, tb_char_t const* type)
 {
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	tb_pointer_t 		o = tb_va_arg(trace->args_list, tb_pointer_t);
+	tb_pointer_t 		d = o && [o respondsToSelector:@selector(description)]? [o description] : TB_NULL;
+	tb_char_t const* 	s = d? [d UTF8String] : TB_NULL;
+
+	// format
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <@: %s>", s);
+
+	// args_size
+	trace->args_size += sizeof(tb_pointer_t);
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_selector(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	SEL 				sel = tb_va_arg(trace->args_list, SEL);
+	tb_char_t const*	sel_name = sel? sel_getName(sel) : TB_NULL;
+
+	// format
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": @selector(%s)", sel_name);
+
+	// args_size
+	trace->args_size += sizeof(SEL);
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_sint8(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	tb_long_t val = (tb_long_t)tb_va_arg(trace->args_list, tb_long_t);
+
+	// format
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <s8: %ld>", val);
+
+	// args_size
+	trace->args_size += sizeof(tb_long_t);
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_sint16(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	tb_long_t val = (tb_long_t)tb_va_arg(trace->args_list, tb_long_t);
+
+	// format
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <s16: %ld>", val);
+
+	// args_size
+	trace->args_size += sizeof(tb_long_t);
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_sint32(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	tb_long_t val = (tb_long_t)tb_va_arg(trace->args_list, tb_long_t);
+
+	// format
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <s32: %ld>", val);
+
+	// args_size
+	trace->args_size += sizeof(tb_long_t);
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_sint64(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	tb_sint64_t val = (tb_sint64_t)tb_va_arg(trace->args_list, tb_sint64_t);
+
+	// format
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <s64: %lld>", val);
+
+	// args_size
+	trace->args_size += sizeof(tb_sint64_t);
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_uint8(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	tb_size_t val = (tb_size_t)tb_va_arg(trace->args_list, tb_size_t);
+
+	// format
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <u8: %lu>", val);
+
+	// args_size
+	trace->args_size += sizeof(tb_size_t);
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_uint16(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	tb_size_t val = (tb_size_t)tb_va_arg(trace->args_list, tb_size_t);
+
+	// format
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <u16: %lu>", val);
+
+	// args_size
+	trace->args_size += sizeof(tb_size_t);
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_uint32(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	tb_size_t val = (tb_size_t)tb_va_arg(trace->args_list, tb_size_t);
+
+	// format
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <u32: %lu>", val);
+
+	// args_size
+	trace->args_size += sizeof(tb_size_t);
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_uint64(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	tb_uint64_t val = (tb_uint64_t)tb_va_arg(trace->args_list, tb_uint64_t);
+
+	// format
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <u64: %llu>", val);
+
+	// args_size
+	trace->args_size += sizeof(tb_uint64_t);
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_float(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	it_float_t val = (it_float_t)tb_va_arg(trace->args_list, it_float_t);
+
+	// format
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <float: %f>", val.f);
+
+	// args_size
+#ifndef TB_ARCH_x64
+	trace->args_size += sizeof(it_float_t);
+#endif
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_double(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	it_double_t val = (it_double_t)tb_va_arg(trace->args_list, it_double_t);
+
+	// format
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <double: %lf>", val.d);
+
+	// args_size
+#ifndef TB_ARCH_x64
+	trace->args_size += sizeof(it_double_t);
+#endif
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_bytes(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	tb_byte_t* b = (tb_pointer_t)tb_va_arg(trace->args_list, tb_byte_t*);
+
+	// is c-string?
+	tb_byte_t* 	p = b;
+	tb_byte_t* 	e = b + 4096;
+	while (p < e && *p && tb_isalpha(*p)) p++;
+
+	// format
+	if (trace->size < trace->maxn) 
+	{
+		if (p < e && !*p) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <cstr: %s>", b);
+		else if (b) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <bytes: %#x %#x %#x %#x ...>", b[0], b[1], b[2], b[3]);
+		else trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": null");
+	}
+
+	// args_size
+	trace->args_size += sizeof(tb_byte_t*);
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_pointer(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip
+	it_chook_method_trace_args_skip(trace);
+
+	// init
+	tb_pointer_t p = (tb_pointer_t)tb_va_arg(trace->args_list, tb_pointer_t);
+
+	// format
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <ptr: %p>", p);
+
+	// args size
+	trace->args_size += sizeof(tb_pointer_t);
+
+	// args ptrn
+	trace->args_ptrn = 0;
+
+	// ok
+	return type + 1;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_struct(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	// skip '{'
+	tb_char_t const* p = type + 1;
+
+	// ': <'
+	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": {");
+
+	// walk
+	while (*p)
+	{
+		switch (*p)
+		{
+		case '=':
+			p = it_chook_method_trace_argument_type(trace, p + 1);
+			break;
+		case '}':
+			if (trace->size < trace->maxn) trace->info[trace->size++] = '}';
+			return p + 1;
+		default:
+			if (trace->size < trace->maxn) trace->info[trace->size++] = *p;
+			p++;
+			break;
+		}
+	}
+
+	// ok
+	return p;
+}
+static __tb_inline__ tb_char_t const* it_chook_method_trace_argument_type(it_chook_method_trace_t* trace, tb_char_t const* type)
+{
+	tb_char_t const* p = type;
+	while (*p)
+	{
+		switch (*p)
+		{
+		case '@':
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_objc(trace, p); 
+			break;
+		case ':': 
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_selector(trace, p); 
+			break;
+		case 'f': 
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_float(trace, p); 
+			break;
+		case 'd': 
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_double(trace, p); 
+			break;
+		case 'q': 
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_sint64(trace, p); 
+			break;
+		case 'Q': 
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_uint64(trace, p); 
+			break;
+		case 'i': 
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_sint32(trace, p); 
+			break;
+		case 'I': 
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_uint32(trace, p); 
+			break;
+		case 's': 
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_sint16(trace, p); 
+			break;
+		case 'S': 
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_uint16(trace, p); 
+			break;
+		case 'c': 
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_sint8(trace, p); 
+			break;
+		case 'C': 
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_uint8(trace, p); 
+			break;
+		case '*':
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_bytes(trace, p); 
+			break;
+		case '{':
+			if (trace->args_ptrn) p = it_chook_method_trace_argument_pointer(trace, p); 
+			else p = it_chook_method_trace_argument_struct(trace, p); 
+			break;
+		case '}':
+			return p;
+		case '^':
+			trace->args_ptrn++;
+			p++;
+			break;
+		case 'r':
+		default:
+			p++;
+			break;
+		}
+	}
+
+	return p;
 }
 static __tb_inline__ tb_void_t it_chook_method_trace_argument(it_chook_method_trace_t* trace, tb_size_t argi)
 {	
 	// init the argument type
 	tb_char_t type[512 + 1] = {0};
-	method_getArgumentType(method, argi, type, 512);
-//	it_trace("argument: %s", type);
+	method_getArgumentType(trace->meth, argi, type, 512);
+	it_trace("argument: %s", type);
 
 	// init trace
-	trace->argb = 0;
+	trace->args_size = 0;
 
 	// trace argument type
 	it_chook_method_trace_argument_type(trace, type);
@@ -247,11 +586,11 @@ static __tb_inline__ tb_void_t it_chook_method_trace_skip_return(it_chook_method
 {
 	// init the return type
 	tb_char_t type[512 + 1] = {0};
-	method_getReturnType(method, type, 512);
+	method_getReturnType(trace->method, type, 512);
 //	it_trace("return: %s", type);
 
 	// init trace
-	trace->argb = 0;
+	trace->args_size = 0;
 
 	// trace return size
 	it_chook_method_trace_return_size(trace, type);
@@ -266,12 +605,12 @@ static tb_void_t it_chook_method_trace(tb_xml_node_t const* node, Method method,
 	it_assert_and_check_return(cname);
 
 	// tracing arguments?
-	tb_bool_t args = TB_TRUE;
+	tb_bool_t args_list = TB_TRUE;
 	if (node->ahead
-		&& !tb_pstring_cstricmp(&node->ahead->name, "args")
+		&& !tb_pstring_cstricmp(&node->ahead->name, "args_list")
 		&& !tb_pstring_cstricmp(&node->ahead->data, "0"))
 	{
-		args = TB_FALSE;
+		args_list = TB_FALSE;
 	}
 
 #if 0
@@ -283,15 +622,16 @@ static tb_void_t it_chook_method_trace(tb_xml_node_t const* node, Method method,
 	}
 #endif
 
-	if (args)
+	if (args_list)
 	{
 		// init trace 
 		it_chook_method_trace_t trace = {0};
 		trace.maxn = 4096;
 		trace.meth = method;
+		trace.args_begn = it_chook_method_trace_args_begn;
 
-		// init args
-		tb_va_start(trace.args, method);
+		// init args_list
+		tb_va_start(trace.args_list, method);
 
 		// skip the return argument for structure
 //		it_chook_method_trace_skip_return(&trace);
@@ -302,8 +642,8 @@ static tb_void_t it_chook_method_trace(tb_xml_node_t const* node, Method method,
 		for (argi = 2; argi < argn; argi++) 
 			it_chook_method_trace_argument(&trace, argi);
 		
-		// exit args
-		tb_va_end(trace.args);
+		// exit args_list
+		tb_va_end(trace.args_list);
 
 		// trace
 		tb_char_t const* mname = sel_getName(method_getName(method));
