@@ -53,6 +53,41 @@ typedef struct __it_double_t
 
 }it_double_t;
 
+typedef struct __it_data8_t
+{
+	tb_uint8_t 			s8[2];
+	tb_sint8_t 			u8[2];
+
+}it_data8_t;
+
+typedef struct __it_data16_t
+{
+	tb_uint16_t 		s16[2];
+	tb_sint16_t 		u16[2];
+
+}it_data16_t;
+
+typedef struct __it_data32_t
+{
+	tb_uint32_t 		s32[2];
+	tb_sint32_t 		u32[2];
+
+}it_data32_t;
+
+typedef struct __it_data64_t
+{
+	tb_uint64_t 		s64[2];
+	tb_sint64_t 		u64[2];
+
+}it_data64_t;
+
+typedef struct __it_datafd_t
+{
+	tb_float_t 			f[2];
+	tb_double_t 		d[2];
+
+}it_datafd_t;
+
 typedef struct __it_all_t
 {
 	it_int8_t 			i8;	
@@ -69,8 +104,11 @@ typedef struct __it_all_t
 	it_float_t* 		pf;	
 	it_double_t* 		pd;	
 	tb_char_t const* 	s;
-
-	tb_byte_t 			b[16];
+	it_data8_t 			d8;
+	it_data16_t 		d16;
+	it_data32_t 		d32;
+	it_data64_t 		d64;
+	it_datafd_t 		dfd;
 
 }it_all_t;
 
@@ -111,6 +149,12 @@ tb_void_t 		objc_autoreleasePoolPop(tb_pointer_t pool);
 - (tb_float_t**)value_ppfloat:(tb_float_t**)i with:(NSString*)s;
 - (tb_double_t**)value_ppdouble:(tb_double_t**)i with:(NSString*)s;
 - (tb_char_t const**)value_pcstring:(tb_char_t const**)i with:(NSString*)s;
+
+- (it_data8_t)value_data8:(it_data8_t)i with:(NSString*)s;
+- (it_data16_t)value_data16:(it_data16_t)i with:(NSString*)s;
+- (it_data32_t)value_data32:(it_data32_t)i with:(NSString*)s;
+- (it_data64_t)value_data64:(it_data64_t)i with:(NSString*)s;
+- (it_datafd_t)value_datafd:(it_datafd_t)i with:(NSString*)s;
 
 - (it_int8_t)struct_int8:(it_int8_t)i with:(NSString*)s;
 - (it_int16_t)struct_int16:(it_int16_t)i with:(NSString*)s;
@@ -230,6 +274,31 @@ tb_void_t 		objc_autoreleasePoolPop(tb_pointer_t pool);
 	NSLog(@"%@", s);
 	return i;
 }
+- (it_data8_t)value_data8:(it_data8_t)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (it_data16_t)value_data16:(it_data16_t)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (it_data32_t)value_data32:(it_data32_t)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (it_data64_t)value_data64:(it_data64_t)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
+- (it_datafd_t)value_datafd:(it_datafd_t)i with:(NSString*)s
+{
+	NSLog(@"%@", s);
+	return i;
+}
 - (it_int8_t)struct_int8:(it_int8_t)i with:(NSString*)s
 {
 	NSLog(@"%@", s);
@@ -296,22 +365,27 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 		all.pf = &all.f;
 		all.pd = &all.d;
 		all.s = "hello";
-		all.b[0] = 0;
-		all.b[1] = 1;
-		all.b[2] = 2;
-		all.b[3] = 3;
-		all.b[4] = 4;
-		all.b[5] = 5;
-		all.b[6] = 6;
-		all.b[7] = 7;
-		all.b[8] = 8;
-		all.b[9] = 9;
-		all.b[10] = 10;
-		all.b[11] = 11;
-		all.b[12] = 12;
-		all.b[13] = 13;
-		all.b[14] = 14;
-		all.b[15] = 15;
+		all.d8.u8[0] = 100;
+		all.d8.u8[1] = 200;
+		all.d8.s8[0] = -100;
+		all.d8.s8[1] = -200;
+		all.d16.u16[0] = 100;
+		all.d16.u16[1] = 200;
+		all.d16.s16[0] = -100;
+		all.d16.s16[1] = -200;
+		all.d32.u32[0] = 100;
+		all.d32.u32[1] = 200;
+		all.d32.s32[0] = -100;
+		all.d32.s32[1] = -200;
+		all.d64.u64[0] = 100;
+		all.d64.u64[1] = 200;
+		all.d64.s64[0] = -100;
+		all.d64.s64[1] = -200;
+		all.dfd.f[0] = 100;
+		all.dfd.f[1] = 200;
+		all.dfd.d[0] = -100;
+		all.dfd.d[1] = -200;
+
 
 		Test* t = [[Test alloc] init];
 		getchar();
@@ -328,7 +402,7 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 		[t value_pint64:&all.i64.i1 with:@"hello"];
 		[t value_pfloat:&all.f.f0 with:@"hello"];
 		[t value_pdouble:&all.d.d0 with:@"hello"];
-		[t value_pbyte:all.b with:@"hello"];	
+//		[t value_pbyte:all.b with:@"hello"];	
 		[t value_cstring:all.s with:@"hello"];		
 	
 		[t value_ppint8:TB_NULL with:@"hello"];
@@ -338,6 +412,12 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 		[t value_ppfloat:TB_NULL with:@"hello"];
 		[t value_ppdouble:TB_NULL with:@"hello"];
 		[t value_pcstring:&all.s with:@"hello"];		
+
+		[t value_data8:all.d8 with:@"hello"];
+		[t value_data16:all.d16 with:@"hello"];
+		[t value_data32:all.d32 with:@"hello"];
+		[t value_data64:all.d64 with:@"hello"];
+		[t value_datafd:all.dfd with:@"hello"];
 
 		[t struct_int8:all.i8 with:@"hello"];
 		[t struct_int16:all.i16 with:@"hello"];
