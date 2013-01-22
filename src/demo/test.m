@@ -347,7 +347,7 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 		// init
 		it_all_t all;
 		all.i8.i0 = 100;
-		all.i8.i1 = -200;
+		all.i8.i1 = -20;
 		all.i16.i0 = 100;
 		all.i16.i1 = -200;
 		all.i32.i0 = 100;
@@ -402,7 +402,6 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 		[t value_pint64:&all.i64.i1 with:@"hello"];
 		[t value_pfloat:&all.f.f0 with:@"hello"];
 		[t value_pdouble:&all.d.d0 with:@"hello"];
-//		[t value_pbyte:all.b with:@"hello"];	
 		[t value_cstring:all.s with:@"hello"];		
 	
 		[t value_ppint8:TB_NULL with:@"hello"];
