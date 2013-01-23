@@ -377,7 +377,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	{
 	case CPU_TYPE_ARM:
 		{
-			tb_trace("cputype: arm");
+			tb_print("cputype: arm");
 			memcpy(&state.arm.r[0], args_32 + 1, 4 * 4);
 			if (mach_vm_write(task, stack_end, (vm_offset_t)it_address_cast(args_32 + 5), 2 * 4)) return TB_FALSE;
 
@@ -391,7 +391,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 		break;
 	case CPU_TYPE_X86:
 		{
-			tb_trace("cputype: x86");
+			tb_print("cputype: x86");
 			if (mach_vm_write(task, stack_end, (vm_offset_t)it_address_cast(args_32), 7 * 4)) return TB_FALSE;
 
 			state.x86.esp 	= state.x86.ebp = (tb_uint32_t) stack_end;
@@ -403,7 +403,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 		break;
 	case CPU_TYPE_X86_64:
 		{
-			tb_trace("cputype: x64");
+			tb_print("cputype: x64");
 			state.x64.rdi 	= args_64[1];
 			state.x64.rsi 	= args_64[2];
 			state.x64.rdx 	= args_64[3];
@@ -550,7 +550,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	if (exc) mach_port_deallocate(mach_task_self(), exc);
 
 	// ok
-	tb_trace("ok");
+	tb_print("ok");
 	return TB_TRUE;
 }
 static pid_t it_pid(tb_char_t const* name)
@@ -596,13 +596,29 @@ static pid_t it_pid(tb_char_t const* name)
 		{
 			tb_size_t i = 0;
 			tb_size_t n = size / sizeof(struct kinfo_proc);
+
+			// try accurate name
 			for (i = 0; i < n; i++)
 			{
-				if (p[i].kp_proc.p_comm && !tb_strnicmp(p[i].kp_proc.p_comm, name, tb_strlen(name)))
+				if (p[i].kp_proc.p_comm && !tb_stricmp(p[i].kp_proc.p_comm, name))
 				{
-					tb_trace("name: %s, pid: %u", p[i].kp_proc.p_comm, p[i].kp_proc.p_pid);
+					tb_print("name: %s, pid: %u", p[i].kp_proc.p_comm, p[i].kp_proc.p_pid);
 					pid = p[i].kp_proc.p_pid;
 					break;
+				}
+			}
+			
+			// try other name
+			if (!pid)
+			{
+				for (i = 0; i < n; i++)
+				{
+					if (p[i].kp_proc.p_comm && !tb_strnicmp(p[i].kp_proc.p_comm, name, tb_strlen(name)))
+					{
+						tb_print("name: %s, pid: %u", p[i].kp_proc.p_comm, p[i].kp_proc.p_pid);
+						pid = p[i].kp_proc.p_pid;
+						break;
+					}
 				}
 			}
 		}

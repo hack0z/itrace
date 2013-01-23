@@ -6,16 +6,16 @@ PRO_DIR = /Users/ruki/projects/personal/itrace
 PRO_NAME = itrace
 
 # debug
-DEBUG = y
+DEBUG = n
 
 # platform
-PLAT = mac
+PLAT = ios
 
 # architecture
-ARCH = x64
+ARCH = armv7
 
 # toolchain
-SDK = 10.7
+SDK = 5.1
 NDK = /home/ruki/programs/android-ndk-r8
 BIN =
 HOST = mac

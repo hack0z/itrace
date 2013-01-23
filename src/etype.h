@@ -7,6 +7,27 @@
 #include "prefix.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+// the etype type
+typedef struct __it_etype_t
+{
+	// the type size
+	tb_size_t 			size;
+
+	// the pointer number
+	tb_size_t 			ptrn;
+
+	// the array element number
+	tb_size_t 			arrn;
+
+	// in struct?
+	tb_size_t 			stct;
+
+}it_etype_t;
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * inlines
  */
 static __tb_inline__ tb_long_t it_etype_subtype_util(tb_char_t const* type, tb_char_t end)
@@ -28,6 +49,7 @@ static __tb_inline__ tb_long_t it_etype_subtype_util(tb_char_t const* type, tb_c
 		type += 1;
 	}
 
+	it_assert(0);
 	return 0;
 }
 
@@ -256,6 +278,158 @@ static __tb_inline__ tb_size_t it_etype_argument_size(tb_char_t const* type, tb_
 	return ob < oe? oe - ob : 0;
 }
 
+static __tb_inline__ tb_char_t const* it_etype_size_type(it_etype_t* etype, tb_char_t const* type);
+static __tb_inline__ tb_char_t const* it_etype_size_struct(it_etype_t* etype, tb_char_t const* type)
+{
+	// skip '{'
+	tb_char_t const* p = type + 1;
+
+	// check
+	it_assert_and_check_return_val(etype->arrn == 1, p);
+
+	// in struct
+	etype->stct = 1;
+
+	// walk
+	while (*p)
+	{
+		switch (*p)
+		{
+		case '=':
+			p = it_etype_size_type(etype, p + 1);
+			break;
+		case '}':
+			etype->stct = 0;
+			return p + 1;
+		default:
+			p++;
+			break;
+		}
+	}
+
+	// ok
+	return p;
+}
+static __tb_inline__ tb_char_t const* it_etype_size_array(it_etype_t* etype, tb_char_t const* type)
+{
+	// skip '['
+	tb_char_t const* p = type + 1;
+
+	// check
+	it_assert_and_check_return_val(etype->arrn == 1, p);
+
+	// size
+	etype->arrn = tb_atoi(p);
+//	it_trace("arrn: %lu", etype->arrn);
+
+	// skip size
+	while (*p && *p >= '0' && *p <= '9') p++;
+
+	// walk
+	while (*p)
+	{
+		// end?
+		if (*p == ']')
+		{
+			etype->arrn = 1;
+			return p + 1;
+		}
+		// type
+		else p = it_etype_size_type(etype, p);
+	}
+
+	// ok
+	return p;
+}
+static __tb_inline__ tb_char_t const* it_etype_size_type(it_etype_t* etype, tb_char_t const* type)
+{
+	tb_char_t const* p = type;
+	while (*p)
+	{
+		switch (*p)
+		{
+		case '@':
+			etype->size += etype->arrn * sizeof(tb_pointer_t); p++;
+			break;
+		case ':': 
+			etype->size += etype->ptrn? etype->arrn * sizeof(tb_pointer_t) : etype->arrn * sizeof(SEL); p++;
+			break;
+		case 'f': 
+			etype->size += etype->ptrn? etype->arrn * sizeof(tb_pointer_t) : etype->arrn * sizeof(tb_float_t); p++;	
+			break;
+		case 'd': 
+			etype->size += etype->ptrn? etype->arrn * sizeof(tb_pointer_t) : etype->arrn * sizeof(tb_double_t); p++;	
+			break;
+		case 'q': 
+		case 'Q': 
+			etype->size += etype->ptrn? etype->arrn * sizeof(tb_pointer_t) : etype->arrn * sizeof(tb_uint64_t); p++;	
+			break;
+		case 'i': 
+		case 'I': 
+			if (etype->ptrn) etype->size += etype->arrn * sizeof(tb_pointer_t);
+			else etype->size += etype->arrn * sizeof(tb_uint32_t); p++;	
+			break;
+		case 'l': 
+		case 'L': 
+			if (etype->ptrn) etype->size += etype->arrn * sizeof(tb_pointer_t);
+			else etype->size += etype->arrn * sizeof(tb_uint32_t); p++;	
+			break;
+		case 's': 
+		case 'S': 
+			if (etype->ptrn) etype->size += etype->arrn * sizeof(tb_pointer_t);
+			else if (etype->arrn > 1 || etype->stct) etype->size += etype->arrn * sizeof(tb_uint16_t);
+			else etype->size += etype->arrn * sizeof(tb_uint32_t); p++;	
+			break;
+		case 'c': 
+		case 'C': 
+			if (etype->ptrn) etype->size += etype->arrn * sizeof(tb_pointer_t);
+			else if (etype->arrn > 1 || etype->stct) etype->size += etype->arrn * sizeof(tb_uint8_t);
+			else etype->size += etype->arrn * sizeof(tb_uint32_t); p++;	
+			break;
+		case 'v':
+			etype->size += etype->ptrn? etype->arrn * sizeof(tb_pointer_t) : 0; p++;
+			break;
+		case '*':
+			etype->size += etype->arrn * sizeof(tb_pointer_t); p++; 
+			break;
+		case '{':
+			if (etype->ptrn)
+			{
+				etype->size += etype->arrn * sizeof(tb_pointer_t); 
+				p++;
+			}
+			else p = it_etype_size_struct(etype, p); 
+			break;
+		case '[':
+			if (etype->ptrn)
+			{
+				etype->size += etype->arrn * sizeof(tb_pointer_t); 
+				p++;
+			}
+			else p = it_etype_size_array(etype, p); 
+			break;
+		case '}':
+		case ']':
+			return p;
+		case '^':
+			etype->ptrn++;
+			p++;
+			break;
+		case 'r':
+		default:
+			p++;
+			break;
+		}
+	}
+
+	return p;
+}
+static __tb_inline__ tb_size_t it_etype_size(tb_char_t const* type)
+{
+	it_etype_t etype = {0}; etype.arrn = 1;
+	it_etype_size_type(&etype, type);
+	return etype.size;
+}
 
 
 #endif
