@@ -169,7 +169,6 @@ static tb_xml_node_t* 		g_cfg = TB_NULL;
 
 // the objc implementation 
 static IMP 					g_NSObject_respondsToSelector 	= TB_NULL;
-static IMP 					g_NSObject_description 			= TB_NULL;
 static IMP 					g_NSString_UTF8String 			= TB_NULL;
 
 /* //////////////////////////////////////////////////////////////////////////////////////
@@ -188,13 +187,15 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_objc(it_chook_meth
 	it_assert_return(sizeof(tb_pointer_t) == argb);
 
 	// init
-#if 1
+#if 0
 	tb_pointer_t 		o = tb_va_arg(trace->args_list, tb_pointer_t);
 	tb_pointer_t 		d = o && [o respondsToSelector:@selector(description)]? [o description] : TB_NULL;
 	tb_char_t const* 	s = d? [d UTF8String] : TB_NULL;
 #else
 	tb_pointer_t 		o = tb_va_arg(trace->args_list, tb_pointer_t);
-	tb_pointer_t 		d = o && g_NSObject_respondsToSelector(o, @selector(respondsToSelector:), @selector(description))? g_NSObject_description(o, @selector(description)) : TB_NULL;
+	tb_pointer_t 		c = o? object_getClass(o) : TB_NULL;
+	IMP 				get_description = c? class_getMethodImplementation(c, @selector(description)) : TB_NULL;
+	tb_pointer_t 		d = get_description && g_NSObject_respondsToSelector(o, @selector(respondsToSelector:), @selector(description))? get_description(o, @selector(description)) : TB_NULL;
 	tb_char_t const* 	s = d? g_NSString_UTF8String(d, @selector(UTF8String)) : TB_NULL;
 #endif
 
@@ -757,11 +758,17 @@ static __tb_inline__ tb_bool_t it_cfg_init()
 	// check
 	it_check_return_val(!g_cfg, TB_TRUE);
 
-	// trace
-	it_print("init: cfg: ..");
+	// the root path
+	tb_char_t path[PATH_MAX] = {0};
+	getcwd(path, PATH_MAX);
+	it_print("init: root: %s", path);
+
+	// the itrace.xml path
+	if (!realpath("./itrace.xml", path)) tb_strcpy(path, IT_PATH_CFG);
+	it_print("init: cfg: %s: ..", path);
 
 	// init
-	tb_gstream_t* gst = tb_gstream_init_from_url(IT_PATH_CFG);
+	tb_gstream_t* gst = tb_gstream_init_from_url(path);
 	it_assert_and_check_return_val(gst, TB_FALSE);
 
 	// open
@@ -798,9 +805,8 @@ static __tb_inline__ tb_bool_t it_cfg_init()
 static __tb_inline__ tb_bool_t it_objc_init()
 {
 	g_NSObject_respondsToSelector 	= class_getMethodImplementation(objc_getClass("NSObject"), @selector(respondsToSelector:));
-	g_NSObject_description 			= class_getMethodImplementation(objc_getClass("NSObject"), @selector(description));
 	g_NSString_UTF8String 			= class_getMethodImplementation(objc_getClass("NSString"), @selector(UTF8String));
-	it_assert_and_check_return_val(g_NSObject_respondsToSelector && g_NSObject_description && g_NSString_UTF8String, TB_FALSE);
+	it_assert_and_check_return_val(g_NSObject_respondsToSelector && g_NSString_UTF8String, TB_FALSE);
 	return TB_TRUE;
 }
 static __tb_inline__ tb_bool_t it_chook_init()
@@ -851,7 +857,7 @@ static tb_void_t __attribute__((constructor)) it_init()
 	if (!it_cfg_init()) return ;
 
 	// init objc
-//	if (!it_objc_init()) return ;
+	if (!it_objc_init()) return ;
 
 	// init chook	
 	if (!it_chook_init()) return ;

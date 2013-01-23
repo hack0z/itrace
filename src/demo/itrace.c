@@ -333,11 +333,6 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	// check
 	tb_assert_and_check_return_val(pid && path, TB_FALSE);
 
-	// the real path
-	tb_char_t rpath[PATH_MAX] = {0};
-	if (!realpath(path, rpath)) return TB_FALSE;
-	tb_trace("rpath: %s", rpath);
-
 	// pid => task
 	task_t task = 0;
 	if (task_for_pid(mach_task_self(), (tb_int_t)pid, &task)) return TB_FALSE;
@@ -355,7 +350,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 
 	// write path
 	mach_vm_address_t stack_end = stack_address + it_stack_size - 0x100;
-	if (mach_vm_write(task, stack_address, (vm_offset_t)it_address_cast(rpath), strlen(rpath) + 1)) return TB_FALSE;
+	if (mach_vm_write(task, stack_address, (vm_offset_t)it_address_cast(path), strlen(path) + 1)) return TB_FALSE;
 
 	// the first one is the return address
 	tb_uint32_t args_32[] = {0, 360, 0xdeadbeef, 0xdeadbeef, 128 * 1024, 0, 0};
@@ -636,6 +631,11 @@ static pid_t it_pid(tb_char_t const* name)
  */
 tb_int_t main(tb_int_t argc, tb_char_t const** argv)
 {
+	// the itrace.dylib path
+	tb_char_t path[PATH_MAX] = {0};
+	if (!realpath(argv[2]? argv[2] : "./itrace.dylib", path)) return -1;
+	tb_trace("path: %s", path);
+
 	// wait pid
 	pid_t pid = 0;
 	while (!(pid = it_pid(argv[1]))) tb_msleep(500);
@@ -644,7 +644,7 @@ tb_int_t main(tb_int_t argc, tb_char_t const** argv)
 	tb_msleep(1000);
 
 	// inject
-	it_inject(pid, argv[2]);
+	it_inject(pid, path);
 
 	// ok
 	return 0;
