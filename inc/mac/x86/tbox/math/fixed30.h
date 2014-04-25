@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		fixed30.h
@@ -24,7 +24,7 @@
 #ifndef TB_MATH_FIXED30_H
 #define TB_MATH_FIXED30_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
@@ -39,7 +39,7 @@
 # 	include "opt/fixed16_sh4.h"
 #endif
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
@@ -58,7 +58,7 @@
 # 		define tb_fixed30_to_float(x) 		(((x) * 0.00000000093132257f))
 # 	endif
 # 	ifndef tb_float_to_fixed30
-# 		ifdef TB_DEBUG
+# 		ifdef __tb_debug__
 # 			define tb_float_to_fixed30(x) 	tb_float_to_fixed30_check(x)
 # 		else
 # 			define tb_float_to_fixed30(x) 	((tb_fixed30_t)((x) * TB_FIXED30_ONE))
@@ -66,7 +66,7 @@
 # 	endif
 #endif
 
-#ifdef TB_DEBUG
+#ifdef __tb_debug__
 # 	define tb_fixed16_to_fixed30(x) 		tb_fixed16_to_fixed30_check(x)
 #else
 # 	define tb_fixed16_to_fixed30(x) 		((x) << 14)
@@ -117,11 +117,11 @@
 # 	define tb_fixed30_sqrt(x) 				tb_fixed30_sqrt_int32(x)
 #endif
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * inlines
  */
 
-#ifdef TB_DEBUG
+#ifdef __tb_debug__
 # 	ifdef TB_CONFIG_TYPE_FLOAT
 static __tb_inline__ tb_fixed30_t tb_float_to_fixed30_check(tb_float_t x)
 {
@@ -219,7 +219,7 @@ static __tb_inline__ tb_fixed30_t tb_fixed30_sqre_int32(tb_fixed30_t x)
 static __tb_inline__ tb_fixed30_t tb_fixed30_sqrt_int32(tb_fixed30_t x)
 {
 	tb_assert(x > 0);
-	return (x > 0? (tb_int32_sqrt(x) << 15) : 0);
+	return (x > 0? (tb_isqrti(x) << 15) : 0);
 }
 
 

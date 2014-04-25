@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		fixed.h
@@ -24,7 +24,7 @@
 #ifndef TB_MATH_FIXED_H
 #define TB_MATH_FIXED_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
@@ -32,7 +32,7 @@
 #include "fixed16.h"
 #include "fixed30.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 #define TB_FIXED_ONE 				TB_FIXED16_ONE
@@ -91,8 +91,6 @@
 #define tb_fixed_exp1(x) 			tb_fixed16_exp1(x)
 #define tb_fixed_expi(x) 			tb_fixed16_expi(x)
 #define tb_fixed_ilog2(x) 			tb_fixed16_ilog2(x)
-#define tb_fixed_iclog2(x) 			tb_fixed16_iclog2(x)
-#define tb_fixed_irlog2(x) 			tb_fixed16_irlog2(x)
 
 
 

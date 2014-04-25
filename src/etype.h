@@ -146,7 +146,7 @@ static __tb_inline__ tb_size_t it_etype_argument_info(tb_char_t const* typedesc,
 {
 	tb_size_t nargs = 0;
 	tb_long_t self_offset = 0;
-	tb_bool_t offset_is_negative = TB_FALSE;
+	tb_bool_t offset_is_negative = tb_false;
 
 	// First, skip the return type
 	typedesc = it_etype_skip_first_type (typedesc);
@@ -169,10 +169,10 @@ static __tb_inline__ tb_size_t it_etype_argument_info(tb_char_t const* typedesc,
 			// Skip negative sign in offset
 			if (*typedesc == '-')
 			{
-				offset_is_negative = TB_TRUE;
+				offset_is_negative = tb_true;
 				typedesc += 1;
 			}
-			else offset_is_negative = TB_FALSE;
+			else offset_is_negative = tb_false;
 
 			while ((*typedesc >= '0') && (*typedesc <= '9'))
 				self_offset = self_offset * 10 + (*typedesc++ - '0');
@@ -211,10 +211,10 @@ static __tb_inline__ tb_size_t it_etype_argument_info(tb_char_t const* typedesc,
 			// Pick up (possibly negative) argument offset
 			if (*typedesc == '-')
 			{
-				offset_is_negative = TB_TRUE;
+				offset_is_negative = tb_true;
 				typedesc += 1;
 			}
-			else offset_is_negative = TB_FALSE;
+			else offset_is_negative = tb_false;
 
 			while ((*typedesc >= '0') && (*typedesc <= '9')) arg_offset = arg_offset * 10 + (*typedesc++ - '0');
 			if (offset_is_negative) arg_offset = - arg_offset;
@@ -270,8 +270,8 @@ static __tb_inline__ tb_size_t it_etype_argument_size(tb_char_t const* type, tb_
 {
 	tb_long_t 			ob = 0;
 	tb_long_t 			oe = 0;
-	tb_char_t const* 	tb = TB_NULL;
-	tb_char_t const* 	te = TB_NULL;
+	tb_char_t const* 	tb = tb_null;
+	tb_char_t const* 	te = tb_null;
 	it_etype_argument_info(type, index, &tb, &ob);
 	it_etype_argument_info(type, index + 1, &te, &oe);
 	if (!oe) oe = it_etype_arguments_size(type);

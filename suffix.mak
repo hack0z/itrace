@@ -23,25 +23,53 @@ MM := $(DISTCC) $(MM)
 AS := $(DISTCC) $(AS)
 endif
 
-# append debug cflags
+# append config flags
+CFLAGS += $(CFLAGS-y)
+CXFLAGS += $(CXFLAGS-y)
+CCFLAGS += $(CCFLAGS-y)
+MFLAGS += $(MFLAGS-y)
+MMFLAGS += $(MMFLAGS-y)
+MXFLAGS += $(MXFLAGS-y)
+LDFLAGS += $(LDFLAGS-y)
+ASFLAGS += $(ASFLAGS-y)
+
+CFLAGS_DEBUG += $(CFLAGS_DEBUG-y)
+CXFLAGS_DEBUG += $(CXFLAGS_DEBUG-y)
+CCFLAGS_DEBUG += $(CCFLAGS_DEBUG-y)
+MFLAGS_DEBUG += $(MFLAGS_DEBUG-y)
+MMFLAGS_DEBUG += $(MMFLAGS_DEBUG-y)
+MXFLAGS_DEBUG += $(MXFLAGS_DEBUG-y)
+LDFLAGS_DEBUG += $(LDFLAGS_DEBUG-y)
+ASFLAGS_DEBUG += $(ASFLAGS_DEBUG-y)
+
+CFLAGS_RELEASE += $(CFLAGS_RELEASE-y)
+CXFLAGS_RELEASE += $(CXFLAGS_RELEASE-y)
+CCFLAGS_RELEASE += $(CCFLAGS_RELEASE-y)
+MFLAGS_RELEASE += $(MFLAGS_RELEASE-y)
+MMFLAGS_RELEASE += $(MMFLAGS_RELEASE-y)
+MXFLAGS_RELEASE += $(MXFLAGS_RELEASE-y)
+LDFLAGS_RELEASE += $(LDFLAGS_RELEASE-y)
+ASFLAGS_RELEASE += $(ASFLAGS_RELEASE-y)
+
+# append debug flags
 ifeq ($(DEBUG),y)
-CFLAGS := $(CFLAGS) $(CFLAGS_DEBUG)
-CXFLAGS := $(CXFLAGS) $(CXFLAGS_DEBUG)
-CCFLAGS := $(CCFLAGS) $(CCFLAGS_DEBUG)
-MFLAGS := $(MFLAGS) $(MFLAGS_DEBUG)
-MMFLAGS := $(MMFLAGS) $(MMFLAGS_DEBUG)
-MXFLAGS := $(MXFLAGS) $(MXFLAGS_DEBUG)
-LDFLAGS := $(LDFLAGS) $(LDFLAGS_DEBUG)
-ASFLAGS := $(ASFLAGS) $(ASFLAGS_DEBUG)
+CFLAGS += $(CFLAGS_DEBUG)
+CXFLAGS += $(CXFLAGS_DEBUG)
+CCFLAGS += $(CCFLAGS_DEBUG)
+MFLAGS += $(MFLAGS_DEBUG)
+MMFLAGS += $(MMFLAGS_DEBUG)
+MXFLAGS += $(MXFLAGS_DEBUG)
+LDFLAGS += $(LDFLAGS_DEBUG)
+ASFLAGS += $(ASFLAGS_DEBUG)
 else
-CFLAGS := $(CFLAGS) $(CFLAGS_RELEASE) 
-CXFLAGS := $(CXFLAGS) $(CXFLAGS_RELEASE) 
-CCFLAGS := $(CCFLAGS) $(CCFLAGS_RELEASE) 
-MFLAGS := $(MFLAGS) $(MFLAGS_RELEASE)
-MMFLAGS := $(MMFLAGS) $(MMFLAGS_RELEASE)
-MXFLAGS := $(MXFLAGS) $(MXFLAGS_RELEASE)
-LDFLAGS := $(LDFLAGS) $(LDFLAGS_RELEASE) 
-ASFLAGS := $(ASFLAGS) $(ASFLAGS_RELEASE) 
+CFLAGS += $(CFLAGS_RELEASE)
+CXFLAGS += $(CXFLAGS_RELEASE)
+CCFLAGS += $(CCFLAGS_RELEASE)
+MFLAGS += $(MFLAGS_RELEASE)
+MMFLAGS += $(MMFLAGS_RELEASE)
+MXFLAGS += $(MXFLAGS_RELEASE)
+LDFLAGS += $(LDFLAGS_RELEASE)
+ASFLAGS += $(ASFLAGS_RELEASE)
 endif
 
 # append source files
@@ -103,43 +131,43 @@ $(foreach name, $(NAMES), $(eval $(call MAKE_DEFINE_OBJS_SRCS,$(name))))
 
 define MAKE_OBJ_C
 $(1)$(OBJ_SUFFIX) : $(1).c
-	@echo $(CCACHE) $(DISTCC) compile $(1).c
+	@echo $(CCACHE) $(DISTCC) compile.$(DTYPE) $(1).c
 	@$(CC) $(2) $(3) $(CXFLAGS-o) $(1)$(OBJ_SUFFIX) $(1).c 2>>/tmp/$(PRO_NAME).out
 endef
 
 define MAKE_OBJ_CC
 $(1)$(OBJ_SUFFIX) : $(1).cc
-	@echo $(CCACHE) $(DISTCC) compile $(1).cc
+	@echo $(CCACHE) $(DISTCC) compile.$(DTYPE) $(1).cc
 	@$(CC) $(2) $(3) $(CXFLAGS-o) $(1)$(OBJ_SUFFIX) $(1).cc 2>>/tmp/$(PRO_NAME).out
 endef
 
 define MAKE_OBJ_CPP
 $(1)$(OBJ_SUFFIX) : $(1).cpp
-	@echo $(CCACHE) $(DISTCC) compile $(1).cpp
+	@echo $(CCACHE) $(DISTCC) compile.$(DTYPE) $(1).cpp
 	@$(CC) $(2) $(3) $(CXFLAGS-o) $(1)$(OBJ_SUFFIX) $(1).cpp 2>>/tmp/$(PRO_NAME).out
 endef
 
 define MAKE_OBJ_M
 $(1)$(OBJ_SUFFIX) : $(1).m
-	@echo $(CCACHE) $(DISTCC) compile $(1).m
+	@echo $(CCACHE) $(DISTCC) compile.$(DTYPE) $(1).m
 	@$(MM) -x objective-c $(2) $(3) $(MXFLAGS-o) $(1)$(OBJ_SUFFIX) $(1).m 2>>/tmp/$(PRO_NAME).out
 endef
 
 define MAKE_OBJ_MM
 $(1)$(OBJ_SUFFIX) : $(1).mm
-	@echo $(CCACHE) $(DISTCC) compile $(1).mm
+	@echo $(CCACHE) $(DISTCC) compile.$(DTYPE) $(1).mm
 	@$(MM) -x objective-c++ $(2) $(3) $(MXFLAGS-o) $(1)$(OBJ_SUFFIX) $(1).mm 2>>/tmp/$(PRO_NAME).out
 endef
 
 define MAKE_OBJ_ASM_WITH_CC
 $(1)$(OBJ_SUFFIX) : $(1)$(ASM_SUFFIX)
-	@echo $(CCACHE) $(DISTCC) compile $(1)$(ASM_SUFFIX)
+	@echo $(CCACHE) $(DISTCC) compile.$(DTYPE) $(1)$(ASM_SUFFIX)
 	@$(CC) $(2) $(CXFLAGS-o) $(1)$(OBJ_SUFFIX) $(1)$(ASM_SUFFIX) 2>>/tmp/$(PRO_NAME).out
 endef
 
 define MAKE_OBJ_ASM_WITH_AS
 $(1)$(OBJ_SUFFIX) : $(1)$(ASM_SUFFIX)
-	@echo compile $(1)$(ASM_SUFFIX)
+	@echo compile.$(DTYPE) $(1)$(ASM_SUFFIX)
 	@$(AS) $(2) $(ASFLAGS-o) $(1)$(OBJ_SUFFIX) $(1)$(ASM_SUFFIX) 2>>/tmp/$(PRO_NAME).out
 endef
 

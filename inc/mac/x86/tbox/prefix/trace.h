@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		trace.h
@@ -23,158 +23,189 @@
 #ifndef TB_PREFIX_TRACE_H
 #define TB_PREFIX_TRACE_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "config.h"
 #include "type.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
-// tag
-#if defined(TB_TRACE_ENABLE) && !defined(TB_PRINT_TAG)
-# 	define TB_PRINT_TAG 									"tbox"
+// the trace prefix
+#ifndef TB_TRACE_PREFIX 
+# 	define TB_TRACE_PREFIX									tb_null
 #endif
 
-// print
-#ifndef TB_CONFIG_COMPILER_NOT_SUPPORT_VARARG_MACRO
-# 	if defined(TB_COMPILER_IS_MSVC) && (_MSC_VER >= 1300)
-#		define tb_print_tag(tag, fmt, ...)					do { tb_printf("["tag"]: " fmt "\n" , __VA_ARGS__); } while (0)
-# 		define tb_print(fmt, ...)							tb_print_tag(TB_PRINT_TAG, fmt, __VA_ARGS__)
-# 	else
-#		define tb_print_tag(tag, fmt, arg ...)				do { tb_printf("["tag"]: " fmt "\n" , ## arg); } while (0)
-# 		define tb_print(fmt, arg ...)						tb_print_tag(TB_PRINT_TAG, fmt, ## arg)
-# 	endif
+// the trace module name
+#ifndef TB_TRACE_MODULE_NAME
+# 	define TB_TRACE_MODULE_NAME 							tb_null
+#endif
+
+// the trace module debug
+#ifndef TB_TRACE_MODULE_DEBUG
+# 	define TB_TRACE_MODULE_DEBUG 							(1)
+#endif
+
+// trace prefix
+#if defined(TB_COMPILER_IS_GCC)
+#	define tb_trace_p(prefix, fmt, arg ...)				do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, fmt __tb_newline__, ## arg); } while (0)
+# 	define tb_trace_error_p(prefix, fmt, arg ...) 		do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, "[error]: " fmt " at func: %s, line: %d, file: %s" __tb_newline__, ##arg, __tb_func__, __tb_line__, __tb_file__); tb_trace_sync(); } while (0)
+# 	define tb_trace_assert_p(prefix, fmt, arg ...) 		do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, "[assert]: " fmt " at func: %s, line: %d, file: %s" __tb_newline__, ##arg, __tb_func__, __tb_line__, __tb_file__); tb_trace_sync(); } while (0)
+# 	define tb_trace_warning_p(prefix, fmt, arg ...) 	do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, "[warning]: " fmt " at func: %s, line: %d, file: %s" __tb_newline__, ##arg, __tb_func__, __tb_line__, __tb_file__); tb_trace_sync(); } while (0)
+#	define tb_tracef_p(prefix, fmt, arg ...)			do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, fmt, ## arg); } while (0)
+# 	define tb_tracef_error_p(prefix, fmt, arg ...) 		do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, "[error]: " fmt " at func: %s, line: %d, file: %s", ##arg, __tb_func__, __tb_line__, __tb_file__); tb_trace_sync(); } while (0)
+# 	define tb_tracef_assert_p(prefix, fmt, arg ...) 	do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, "[assert]: " fmt " at func: %s, line: %d, file: %s", ##arg, __tb_func__, __tb_line__, __tb_file__); tb_trace_sync(); } while (0)
+# 	define tb_tracef_warning_p(prefix, fmt, arg ...) 	do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, "[warning]: " fmt " at func: %s, line: %d, file: %s", ##arg, __tb_func__, __tb_line__, __tb_file__); tb_trace_sync(); } while (0)
+#elif defined(TB_COMPILER_IS_MSVC) && TB_COMPILER_VERSION_BE(13, 0)
+#	define tb_trace_p(prefix, fmt, ...)					do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, fmt __tb_newline__, __VA_ARGS__)
+# 	define tb_trace_error_p(prefix, fmt, ...) 			do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, "[error]: at func: %s, line: %d, file: %s: " fmt __tb_newline__, __tb_func__, __tb_line__, __tb_file__, __VA_ARGS__); tb_trace_sync(); } while (0)
+# 	define tb_trace_assert_p(prefix, fmt, ...) 			do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, "[assert]: at func: %s, line: %d, file: %s: " fmt __tb_newline__, __tb_func__, __tb_line__, __tb_file__, __VA_ARGS__); tb_trace_sync(); } while (0)
+# 	define tb_trace_warning_p(prefix, fmt, ...) 		do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, "[warning]: at func: %s, line: %d, file: %s: " fmt __tb_newline__, __tb_func__, __tb_line__, __tb_file__, __VA_ARGS__); tb_trace_sync(); } while (0)
+#	define tb_tracef_p(prefix, fmt, ...)				do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, fmt, __VA_ARGS__)
+# 	define tb_tracef_error_p(prefix, fmt, ...) 			do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, "[error]: at func: %s, line: %d, file: %s: " fmt, __tb_func__, __tb_line__, __tb_file__, __VA_ARGS__); tb_trace_sync(); } while (0)
+# 	define tb_tracef_assert_p(prefix, fmt, ...) 		do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, "[assert]: at func: %s, line: %d, file: %s: " fmt, __tb_func__, __tb_line__, __tb_file__, __VA_ARGS__); tb_trace_sync(); } while (0)
+# 	define tb_tracef_warning_p(prefix, fmt, ...) 		do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, "[warning]: at func: %s, line: %d, file: %s: " fmt, __tb_func__, __tb_line__, __tb_file__, __VA_ARGS__); tb_trace_sync(); } while (0)
 #else
-#	define tb_print_tag
-#	define tb_print
+#	define tb_trace_p
+# 	define tb_trace_error_p
+#	define tb_trace_assert_p
+#	define tb_trace_warning_p
+#	define tb_tracef_p
+# 	define tb_tracef_error_p
+#	define tb_tracef_assert_p
+#	define tb_tracef_warning_p
 #endif
 
-// trace_tag, the private macro
-#if defined(TB_TRACE_ENABLE) && !defined(TB_CONFIG_COMPILER_NOT_SUPPORT_VARARG_MACRO)
-# 	if defined(TB_COMPILER_IS_MSVC) && (_MSC_VER >= 1300)
-#		define tb_trace_tag(tag, fmt, ...)					tb_print_tag(tag, fmt, __VA_ARGS__)
-# 		define tb_trace_line_tag(tag, fmt, ...) 			tb_print_tag(tag, "func: %s, line: %d, file: %s:\n" fmt, __tb_func__, __tb_line__, __tb_file__, __VA_ARGS__)
-# 		define tb_trace_warning_tag(tag, fmt, ...) 			tb_print_tag(tag, "warning: func: %s, line: %d, file: %s:\n" fmt, __tb_func__, __tb_line__, __tb_file__, __VA_ARGS__)
-# 	else
-#		define tb_trace_tag(tag, fmt, arg ...)				tb_print_tag(tag, fmt, ## arg)
-# 		define tb_trace_line_tag(tag, fmt, arg ...) 		tb_print_tag(tag, fmt " at func: %s, line: %d, file: %s", ##arg, __tb_func__, __tb_line__, __tb_file__)
-# 		define tb_trace_warning_tag(tag, fmt, arg ...) 		tb_print_tag(tag, "warning: " fmt " at func: %s, line: %d, file: %s", ##arg, __tb_func__, __tb_line__, __tb_file__)
-# 	endif
-#elif !defined(TB_CONFIG_COMPILER_NOT_SUPPORT_VARARG_MACRO)
-#	define tb_trace_tag(...)
-# 	define tb_trace_line_tag(...)
-# 	define tb_trace_warning_tag(...)
-#else
-#	define tb_trace_tag
-# 	define tb_trace_line_tag
-# 	define tb_trace_warning_tag
-#endif
-
-// trace, the debug print
-#ifndef TB_CONFIG_COMPILER_NOT_SUPPORT_VARARG_MACRO
-# 	if defined(TB_COMPILER_IS_MSVC) && (_MSC_VER >= 1300)
-# 		define tb_trace(fmt, ...)							tb_trace_tag(TB_PRINT_TAG, fmt, __VA_ARGS__)
-# 		define tb_trace_line(fmt, ...) 						tb_trace_line_tag(TB_PRINT_TAG, fmt, __VA_ARGS__)
-# 		define tb_trace_warning(fmt, ...) 					tb_trace_warning_tag(TB_PRINT_TAG, fmt, __VA_ARGS__)
-# 	else
-# 		define tb_trace(fmt, arg ...)						tb_trace_tag(TB_PRINT_TAG, fmt, ## arg)
-# 		define tb_trace_line(fmt, arg ...) 					tb_trace_line_tag(TB_PRINT_TAG, fmt, ## arg)
-# 		define tb_trace_warning(fmt, arg ...) 				tb_trace_warning_tag(TB_PRINT_TAG, fmt, ## arg)
-# 	endif
-#else
-# 	define tb_trace
-# 	define tb_trace_line
-# 	define tb_trace_warning
-#endif
-
-/* trace_impl
- *
- * only for the .c file, debug the module implementation
- * disable it if the module implementation is ok
- *
- * .e.g.1
+/* trace
  *
  * at file xxxx.c:
  *
  * // macros
- * #define TB_TRACE_IMPL_TAG "module"
+ * #define TB_TRACE_MODULE_NAME 	"module"
+ * #define TB_TRACE_MODULE_DEBUG 	(1)
  *
  * // includes
  * #include "tbox.h"
  *
- * // codes
- * tb_trace_impl("hello world");
+ * // trace
+ * tb_trace_d("trace debug");
+ * tb_trace_i("trace info");
+ * tb_trace_e("trace error");
+ * tb_trace_w("trace warning");
  *
- * // output
- * "[tag]: [module]: hello world"
+ * // output for debug
+ * "[prefix]: [module]: trace debug"
+ * "[prefix]: [module]: trace info"
+ * "[prefix]: [module]: [error]: trace error" at func: xxx, line: xxx, file: xxx
+ * "[prefix]: [module]: [warning]: trace warning" at func: xxx, line: xxx, file: xxx
  *
+ * // output for release or TB_TRACE_MODULE_DEBUG == 0
+ * "[prefix]: [module]: trace info"
+ * "[prefix]: [module]: [error]: trace error" at func: xxx, line: xxx, file: xxx
+ * "[prefix]: [module]: [warning]: trace warning" at func: xxx, line: xxx, file: xxx
  *
- * .e.g.2
- *
- * at file xxxx.c:
- *
- * // macros
- * // #define TB_TRACE_IMPL_TAG "module"
- *
- * // includes
- * #include "tbox.h"
- *
- * // codes
- * tb_trace_impl("hello world");
- *
- * // no output
+ * note: [module]: will be not output if TB_TRACE_MODULE_NAME is not defined
  *
  */
-#if defined(TB_TRACE_IMPL_TAG) && !defined(TB_CONFIG_COMPILER_NOT_SUPPORT_VARARG_MACRO)
-# 	if defined(TB_COMPILER_IS_MSVC) && (_MSC_VER >= 1300)
-# 		define tb_trace_impl(fmt, ...)						tb_trace("["TB_TRACE_IMPL_TAG"]: " fmt, __VA_ARGS__)
-# 		define tb_trace_line_impl(fmt, ...) 				tb_trace_line("["TB_TRACE_IMPL_TAG"]: " fmt, __VA_ARGS__)
-# 		define tb_trace_warning_impl(fmt, ...) 				tb_trace_warning("["TB_TRACE_IMPL_TAG"]: " fmt, __VA_ARGS__)
+#if TB_TRACE_MODULE_DEBUG && defined(__tb_debug__)
+# 	if defined(TB_COMPILER_IS_GCC)
+# 		define tb_trace_d(fmt, arg ...)					tb_trace_p(TB_TRACE_PREFIX, fmt, ## arg)
+# 		define tb_tracef_d(fmt, arg ...)				tb_tracef_p(TB_TRACE_PREFIX, fmt, ## arg)
+# 		define tb_tracet_d(fmt, arg ...)				tb_trace_tail(fmt, ## arg)
+# 	elif defined(TB_COMPILER_IS_MSVC) && TB_COMPILER_VERSION_BE(13, 0)
+# 		define tb_trace_d(fmt, ...)						tb_trace_p(TB_TRACE_PREFIX, fmt, __VA_ARGS__)
+# 		define tb_tracef_d(fmt, ...)					tb_tracef_p(TB_TRACE_PREFIX, fmt, __VA_ARGS__)
+# 		define tb_tracet_d(fmt, ...)					tb_trace_tail(fmt, __VA_ARGS__)
 # 	else
-# 		define tb_trace_impl(fmt, arg ...)					tb_trace("["TB_TRACE_IMPL_TAG"]: " fmt, ## arg)
-# 		define tb_trace_line_impl(fmt, arg ...) 			tb_trace_line("["TB_TRACE_IMPL_TAG"]: " fmt, ## arg)
-# 		define tb_trace_warning_impl(fmt, arg ...) 			tb_trace_warning("["TB_TRACE_IMPL_TAG"]: " fmt, ## arg)
+# 		define tb_trace_d
+# 		define tb_tracef_d
+# 		define tb_tracet_d
 # 	endif
-#elif !defined(TB_CONFIG_COMPILER_NOT_SUPPORT_VARARG_MACRO)
-#	define tb_trace_impl(...)
-# 	define tb_trace_line_impl(...)
-# 	define tb_trace_warning_impl(...)
 #else
-# 	define tb_trace_impl
-# 	define tb_trace_line_impl
-# 	define tb_trace_warning_impl
+# 	if defined(TB_COMPILER_IS_GCC) || (defined(TB_COMPILER_IS_MSVC) && TB_COMPILER_VERSION_BE(13, 0))
+# 		define tb_trace_d(fmt, ...)			
+# 		define tb_tracef_d(fmt, ...)			
+# 		define tb_tracet_d(fmt, ...)			
+# 	else
+# 		define tb_trace_d
+# 		define tb_tracef_d
+# 		define tb_tracet_d
+# 	endif
 #endif
 
-// print_impl
-#if defined(TB_PRINT_IMPL_TAG) && !defined(TB_CONFIG_COMPILER_NOT_SUPPORT_VARARG_MACRO)
-# 	if defined(TB_COMPILER_IS_MSVC) && (_MSC_VER >= 1300)
-# 		define tb_print_impl(fmt, ...)						tb_print("["TB_PRINT_IMPL_TAG"]: " fmt, __VA_ARGS__)
-# 	else
-# 		define tb_print_impl(fmt, arg ...)					tb_print("["TB_PRINT_IMPL_TAG"]: " fmt, ## arg)
-# 	endif
-#elif !defined(TB_CONFIG_COMPILER_NOT_SUPPORT_VARARG_MACRO)
-#	define tb_print_impl(...)
+#if defined(TB_COMPILER_IS_GCC)
+#	define tb_trace_i(fmt, arg ...)					tb_trace_p(TB_TRACE_PREFIX, fmt, ## arg)
+#	define tb_trace_e(fmt, arg ...)					tb_trace_error_p(TB_TRACE_PREFIX, fmt, ## arg)
+#	define tb_trace_a(fmt, arg ...)					tb_trace_assert_p(TB_TRACE_PREFIX, fmt, ## arg)
+#	define tb_trace_w(fmt, arg ...)					tb_trace_warning_p(TB_TRACE_PREFIX, fmt, ## arg)
+#	define tb_tracef_i(fmt, arg ...)				tb_tracef_p(TB_TRACE_PREFIX, fmt, ## arg)
+#	define tb_tracef_e(fmt, arg ...)				tb_tracef_error_p(TB_TRACE_PREFIX, fmt, ## arg)
+#	define tb_tracef_a(fmt, arg ...)				tb_tracef_assert_p(TB_TRACE_PREFIX, fmt, ## arg)
+#	define tb_tracef_w(fmt, arg ...)				tb_tracef_warning_p(TB_TRACE_PREFIX, fmt, ## arg)
+#	define tb_tracet_i(fmt, arg ...)				tb_trace_tail(fmt, ## arg)
+#	define tb_tracet_e(fmt, arg ...)				tb_trace_tail(fmt, ## arg)
+#	define tb_tracet_a(fmt, arg ...)				tb_trace_tail(fmt, ## arg)
+#	define tb_tracet_w(fmt, arg ...)				tb_trace_tail(fmt, ## arg)
+#elif defined(TB_COMPILER_IS_MSVC) && TB_COMPILER_VERSION_BE(13, 0)
+# 	define tb_trace_i(fmt, ...)						tb_trace_p(TB_TRACE_PREFIX, fmt, __VA_ARGS__)
+# 	define tb_trace_e(fmt, ...)						tb_trace_error_p(TB_TRACE_PREFIX, fmt, __VA_ARGS__)
+# 	define tb_trace_a(fmt, ...)						tb_trace_assert_p(TB_TRACE_PREFIX, fmt, __VA_ARGS__)
+# 	define tb_trace_w(fmt, ...)						tb_trace_warning_p(TB_TRACE_PREFIX, fmt, __VA_ARGS__)
+# 	define tb_tracef_i(fmt, ...)					tb_tracef_p(TB_TRACE_PREFIX, fmt, __VA_ARGS__)
+# 	define tb_tracef_e(fmt, ...)					tb_tracef_error_p(TB_TRACE_PREFIX, fmt, __VA_ARGS__)
+# 	define tb_tracef_a(fmt, ...)					tb_tracef_assert_p(TB_TRACE_PREFIX, fmt, __VA_ARGS__)
+# 	define tb_tracef_w(fmt, ...)					tb_tracef_warning_p(TB_TRACE_PREFIX, fmt, __VA_ARGS__)
+# 	define tb_tracet_i(fmt, ...)					tb_trace_tail(fmt, __VA_ARGS__)
+# 	define tb_tracet_e(fmt, ...)					tb_trace_tail(fmt, __VA_ARGS__)
+# 	define tb_tracet_a(fmt, ...)					tb_trace_tail(fmt, __VA_ARGS__)
+# 	define tb_tracet_w(fmt, ...)					tb_trace_tail(fmt, __VA_ARGS__)
 #else
-# 	define tb_print_impl
+# 	define tb_trace_i
+# 	define tb_trace_e
+# 	define tb_trace_a
+# 	define tb_trace_w
+# 	define tb_tracef_i
+# 	define tb_tracef_e
+# 	define tb_tracef_a
+# 	define tb_tracef_w
+# 	define tb_tracet_i
+# 	define tb_tracet_e
+# 	define tb_tracet_a
+# 	define tb_tracet_w
 #endif
+
+// trace once
+#if defined(TB_COMPILER_IS_GCC)
+#	define tb_trace1_d(fmt, arg ...)				do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_d(fmt, ## arg); __trace_once = tb_true; } } while (0)
+#	define tb_trace1_i(fmt, arg ...)				do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_i(fmt, ## arg); __trace_once = tb_true; } } while (0)
+#	define tb_trace1_e(fmt, arg ...)				do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_e(fmt, ## arg); __trace_once = tb_true; } } while (0)
+#	define tb_trace1_a(fmt, arg ...)				do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_a(fmt, ## arg); __trace_once = tb_true; } } while (0)
+#	define tb_trace1_w(fmt, arg ...)				do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_w(fmt, ## arg); __trace_once = tb_true; } } while (0)
+#elif defined(TB_COMPILER_IS_MSVC) && TB_COMPILER_VERSION_BE(13, 0)
+#	define tb_trace1_d(fmt, ...)					do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_d(fmt, __VA_ARGS__); __trace_once = tb_true; } } while (0)
+#	define tb_trace1_i(fmt, ...)					do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_i(fmt, __VA_ARGS__); __trace_once = tb_true; } } while (0)
+#	define tb_trace1_e(fmt, ...)					do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_e(fmt, __VA_ARGS__); __trace_once = tb_true; } } while (0)
+#	define tb_trace1_a(fmt, ...)					do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_a(fmt, __VA_ARGS__); __trace_once = tb_true; } } while (0)
+#	define tb_trace1_w(fmt, ...)					do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_w(fmt, __VA_ARGS__); __trace_once = tb_true; } } while (0)
+#else
+# 	define tb_trace1_i
+#endif
+
 
 // noimpl
-#define tb_trace_noimpl() 									tb_trace_line("[no_impl]:")
-
-// warning
-#define tb_warning 											tb_trace_warning
+#define tb_trace_noimpl() 							tb_trace1_w("noimpl")
 
 // nosafe
-#define tb_trace_nosafe() 									tb_trace_warning("no_safe")
+#define tb_trace_nosafe() 							tb_trace1_w("nosafe")
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * declaration
  */
-
-tb_void_t 		tb_printf(tb_char_t const* fmt, ...);
+tb_void_t 		tb_trace_sync(tb_noarg_t);
+tb_void_t 		tb_trace_done(tb_char_t const* prefix, tb_char_t const* module, tb_char_t const* format, ...);
+tb_void_t 		tb_trace_tail(tb_char_t const* format, ...);
 
 #endif
 

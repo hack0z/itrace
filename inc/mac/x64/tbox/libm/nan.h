@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		nan.h
@@ -24,19 +24,18 @@
 #ifndef TB_LIBM_NAN_H
 #define TB_LIBM_NAN_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
 
 #if defined(TB_COMPILER_IS_GCC) \
-		&& !defined(TB_CONFIG_COMPILER_NOT_SUPPORT_BUILTIN_FUNCTIONS) \
-			&& TB_COMPILER_VERSION_BE(3, 3)
+		&& TB_COMPILER_VERSION_BE(3, 3)
 # 	define TB_NAN	(__builtin_nanf (""))
 #elif defined(TB_COMPILER_IS_GCC)
 # 	define TB_NAN 	(__extension__ ((union { unsigned __l __attribute__ ((__mode__ (__SI__))); tb_float_t __d; }) { __l: 0x7fc00000UL }).__d)

@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		atomic.h
@@ -24,17 +24,16 @@
 #define TB_PLATFORM_ARCH_ATOMIC_H
 
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-
-#if defined(TB_ARCH_x86) || defined(TB_ARCH_x64)
+#if defined(TB_ARCH_x86)
 # 	include "x86/atomic.h"
+#elif defined(TB_ARCH_x64)
+# 	include "x64/atomic.h"
 #elif defined(TB_ARCH_ARM)
 # 	include "arm/atomic.h"
-#elif defined(TB_ARCH_SH4)
-# 	include "sh4/atomic.h"
 #endif
 
 #endif

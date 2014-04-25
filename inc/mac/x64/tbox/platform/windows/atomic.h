@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		atomic.h
@@ -23,13 +23,13 @@
 #ifndef TB_PLATFORM_WINDOWS_ATOMIC_H
 #define TB_PLATFORM_WINDOWS_ATOMIC_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 #include <windows.h>
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
@@ -47,6 +47,10 @@
 
 #ifndef tb_atomic_pset
 # 	define tb_atomic_pset(a, p, v) 				tb_atomic_fetch_and_pset_windows(a, p, v)
+#endif
+
+#ifndef tb_atomic_bool_and_pset
+# 	define tb_atomic_bool_and_pset(a, p, v) 	tb_atomic_bool_and_pset_windows(a, p, v)
 #endif
 
 #ifndef tb_atomic_fetch_and_set0
@@ -93,7 +97,7 @@
 # 	define tb_atomic_sub_and_fetch(a, v) 		tb_atomic_add_and_fetch_windows(a, -(v))
 #endif
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * get & set
  */
 
@@ -101,7 +105,7 @@ static __tb_inline__ tb_size_t tb_atomic_fetch_and_set_windows(tb_atomic_t* a, t
 {
 	tb_assert(a);
 
-#if TB_CPU_BITSIZE == 64
+#if TB_CPU_BIT64
 	return (tb_size_t)InterlockedExchange64((LONGLONG __tb_volatile__*)a, v);
 #else
 	return (tb_size_t)InterlockedExchange((LONG __tb_volatile__*)a, v);
@@ -112,14 +116,14 @@ static __tb_inline__ tb_size_t tb_atomic_fetch_and_pset_windows(tb_atomic_t* a, 
 {
 	tb_assert(a);
 
-#if TB_CPU_BITSIZE == 64
+#if TB_CPU_BIT64
 	return (tb_size_t)InterlockedCompareExchange64((LONGLONG __tb_volatile__*)a, v, p);
 #else
 	return (tb_size_t)InterlockedCompareExchange((LONG __tb_volatile__*)a, v, p);
 #endif
 }
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * fetch and ...
  */
 static __tb_inline__ tb_long_t tb_atomic_fetch_and_inc_windows(tb_atomic_t* a)
@@ -128,7 +132,7 @@ static __tb_inline__ tb_long_t tb_atomic_fetch_and_inc_windows(tb_atomic_t* a)
 
 	tb_long_t o = tb_atomic_get(a);
 
-#if TB_CPU_BITSIZE == 64
+#if TB_CPU_BIT64
 	InterlockedIncrement64((LONGLONG __tb_volatile__*)a);
 #else
 	InterlockedIncrement((LONG __tb_volatile__*)a);
@@ -142,7 +146,7 @@ static __tb_inline__ tb_long_t tb_atomic_fetch_and_dec_windows(tb_atomic_t* a)
 
 	tb_long_t o = tb_atomic_get(a);
 
-#if TB_CPU_BITSIZE == 64
+#if TB_CPU_BIT64
 	InterlockedDecrement64((LONGLONG __tb_volatile__*)a);
 #else
 	InterlockedDecrement((LONG __tb_volatile__*)a);
@@ -153,21 +157,21 @@ static __tb_inline__ tb_long_t tb_atomic_fetch_and_add_windows(tb_atomic_t* a, t
 {
 	tb_assert(a);
 
-#if TB_CPU_BITSIZE == 64
+#if TB_CPU_BIT64
 	return (tb_long_t)InterlockedExchangeAdd64((LONGLONG __tb_volatile__*)a, v);
 #else
 	return (tb_long_t)InterlockedExchangeAdd((LONG __tb_volatile__*)a, v);
 #endif
 }
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * ... and fetch
  */
 static __tb_inline__ tb_long_t tb_atomic_inc_and_fetch_windows(tb_atomic_t* a)
 {
 	tb_assert(a);
 
-#if TB_CPU_BITSIZE == 64
+#if TB_CPU_BIT64
 	return (tb_long_t)InterlockedIncrement64((LONGLONG __tb_volatile__*)a);
 #else
 	return (tb_long_t)InterlockedIncrement((LONG __tb_volatile__*)a);
@@ -178,7 +182,7 @@ static __tb_inline__ tb_long_t tb_atomic_dec_and_fetch_windows(tb_atomic_t* a)
 {
 	tb_assert(a);
 
-#if TB_CPU_BITSIZE == 64
+#if TB_CPU_BIT64
 	return (tb_long_t)InterlockedDecrement64((LONGLONG __tb_volatile__*)a);
 #else
 	return (tb_long_t)InterlockedDecrement((LONG __tb_volatile__*)a);
@@ -189,7 +193,7 @@ static __tb_inline__ tb_long_t tb_atomic_add_and_fetch_windows(tb_atomic_t* a, t
 {
 	tb_assert(a);
 
-#if TB_CPU_BITSIZE == 64
+#if TB_CPU_BIT64
 	return InterlockedExchangeAdd64((LONGLONG __tb_volatile__*)a, v) + v;
 #else
 	return InterlockedExchangeAdd((LONG __tb_volatile__*)a, v) + v;

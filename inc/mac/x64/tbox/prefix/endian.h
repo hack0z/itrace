@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		endian.h
@@ -23,20 +23,30 @@
 #ifndef TB_PREFIX_ENDIAN_H
 #define TB_PREFIX_ENDIAN_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "config.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
-#ifdef TB_CONFIG_CPU_BIGENDIAN
-# 	define TB_WORDS_BIGENDIAN
-# 	define TB_FLOAT_BIGENDIAN
+// words endian
+#ifdef __BYTE_ORDER__
+# 	if __BYTE_ORDER__ != __ORDER_LITTLE_ENDIAN__
+# 		define TB_WORDS_BIGENDIAN
+# 		error check it
+# 	endif
 #endif
 
+// float endian
+#ifdef __FLOAT_WORD_ORDER__
+# 	if __FLOAT_WORD_ORDER__ != __ORDER_LITTLE_ENDIAN__
+# 	define TB_FLOAT_BIGENDIAN
+# 		error check it
+# 	endif
+#endif
 
 #endif
 

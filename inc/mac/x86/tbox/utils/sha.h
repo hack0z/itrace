@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		sha.h
@@ -24,12 +24,12 @@
 #ifndef TB_UTILS_SHA_H
 #define TB_UTILS_SHA_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
 
@@ -37,7 +37,7 @@
 typedef struct __tb_sha_t
 {
 	tb_uint8_t  	digest_len;  //!< digest length in 32-bit words
-	tb_hize_t 	count;       //!< number of bytes in buffer
+	tb_hize_t 		count;       //!< number of bytes in buffer
 	tb_uint8_t  	buffer[64];  //!< 512-bit buffer of input values used in hash updating
 	tb_uint32_t 	state[8];    //!< current hash value
 	tb_void_t     	(*transform)(tb_uint32_t *state, tb_uint8_t const buffer[64]);
@@ -53,15 +53,43 @@ typedef enum __tb_sha_mode_t
 
 }tb_sha_mode_t;
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
-tb_void_t 	tb_sha_init(tb_sha_t* sha, tb_size_t mode);
-tb_void_t 	tb_sha_exit(tb_sha_t* sha, tb_byte_t* data, tb_size_t size);
-tb_void_t 	tb_sha_spank(tb_sha_t* sha, tb_byte_t const* data, tb_size_t size);
+/*! init sha 
+ *
+ * @param sha 			the sha
+ * @param mode 			the mode
+ */
+tb_void_t 				tb_sha_init(tb_sha_t* sha, tb_size_t mode);
 
-tb_size_t 	tb_sha_encode(tb_size_t mode, tb_byte_t const* ib, tb_size_t ip, tb_byte_t* ob, tb_size_t on);
+/*! exit sha 
+ *
+ * @param sha 			the sha
+ * @param data 			the data
+ * @param size 			the size
+ */
+tb_void_t 				tb_sha_exit(tb_sha_t* sha, tb_byte_t* data, tb_size_t size);
+
+/*! spak sha 
+ *
+ * @param sha 			the sha
+ * @param data 			the data
+ * @param size 			the size
+ */
+tb_void_t 				tb_sha_spak(tb_sha_t* sha, tb_byte_t const* data, tb_size_t size);
+
+/*! encode sha 
+ *
+ * @param ib 			the input data
+ * @param in 			the input size
+ * @param ob 			the output data
+ * @param on 			the output size
+ *
+ * @return 				the real size
+ */
+tb_size_t 				tb_sha_encode(tb_size_t mode, tb_byte_t const* ib, tb_size_t ip, tb_byte_t* ob, tb_size_t on);
 
 #endif
 

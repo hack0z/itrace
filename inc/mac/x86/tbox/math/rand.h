@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		rand.h
@@ -24,12 +24,12 @@
 #ifndef TB_MATH_RAND_H
 #define TB_MATH_RAND_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
 
@@ -44,7 +44,7 @@ typedef enum __tb_rand_mode_t
 // the rand type
 typedef struct __tb_rand_t
 {
-	tb_size_t 	mode;
+	tb_size_t 		mode;
 
 }tb_rand_t;
 
@@ -62,15 +62,16 @@ typedef struct __tb_rand_linear_t
 
 }tb_rand_linear_t;
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 // the global rand
-tb_bool_t 			tb_rand_init();
-tb_void_t 			tb_rand_exit();
+tb_bool_t 			tb_rand_init(tb_noarg_t);
+tb_void_t 			tb_rand_exit(tb_noarg_t);
 
-tb_void_t 			tb_rand_clear();
+tb_void_t 			tb_rand_seed(tb_uint32_t seed);
+tb_void_t 			tb_rand_clear(tb_noarg_t);
 
 tb_uint32_t 		tb_rand_uint32(tb_uint32_t b, tb_uint32_t e);
 tb_sint32_t 		tb_rand_sint32(tb_sint32_t b, tb_sint32_t e);
@@ -83,6 +84,7 @@ tb_float_t 			tb_rand_float(tb_float_t b, tb_float_t e);
 tb_rand_linear_t* 	tb_rand_linear_init(tb_uint32_t seed);
 tb_void_t 			tb_rand_linear_exit(tb_rand_linear_t* rand);
 
+tb_void_t 			tb_rand_linear_seed(tb_rand_linear_t* rand, tb_uint32_t seed);
 tb_void_t 			tb_rand_linear_clear(tb_rand_linear_t* rand);
 
 tb_uint32_t 		tb_rand_linear_uint32(tb_rand_linear_t* rand, tb_uint32_t b, tb_uint32_t e);

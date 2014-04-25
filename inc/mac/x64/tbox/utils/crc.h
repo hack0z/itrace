@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		crc.h
@@ -24,19 +24,19 @@
 #ifndef TB_UTILS_CRC_H
 #define TB_UTILS_CRC_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
 
-// the crc mode type
+/// the crc mode type
 typedef enum __tb_crc_mode_t
 {
-#ifdef TB_CONFIG_BINARY_SMALL
+#ifdef __tb_small__
 	TB_CRC_MODE_16_CCITT 	= 0
 ,	TB_CRC_MODE_32_IEEE_LE 	= 1
 ,	TB_CRC_MODE_MAX 		= 2
@@ -51,10 +51,30 @@ typedef enum __tb_crc_mode_t
 
 }tb_crc_mode_t;
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
-tb_uint32_t tb_crc_encode(tb_crc_mode_t mode, tb_uint32_t crc, tb_byte_t const* ib, tb_size_t in);
+
+/*! encode crc
+ *
+ * @param mode 		the crc mode
+ * @param crc 		the initial crc value
+ * @param ib		the input data
+ * @param in 		the input size
+ *
+ * @return 			the crc value
+ */
+tb_uint32_t 		tb_crc_encode(tb_crc_mode_t mode, tb_uint32_t crc, tb_byte_t const* ib, tb_size_t in);
+
+/*! encode crc for cstr
+ *
+ * @param mode 		the crc mode
+ * @param crc 		the initial crc value
+ * @param cstr		the input cstr
+ *
+ * @return 			the crc value
+ */
+tb_uint32_t 		tb_crc_encode_cstr(tb_crc_mode_t mode, tb_uint32_t crc, tb_char_t const* cstr);
 
 #endif
 

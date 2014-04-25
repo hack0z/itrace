@@ -21,7 +21,7 @@ FWKROOT 						= $(SDKROOT)/System/Library/Frameworks
 # itrace
 itrace_TYPE 					= DLL
 itrace_M_FILES					+= itrace
-itrace_LIBS						+= tbox
+itrace_LIBS						+= tbox$(DTYPE)
 itrace_MXFLAGS 					+= -DTB_PRINT_TAG=\"itrace\" 
 itrace_MXFLAGS-$(DEBUG) 		+= -DTB_TRACE_ENABLE -DTB_ASSERT_ENABLE
 itrace_SHFLAGS					+= -F$(SDKROOT)/System/Library/PrivateFrameworks -framework Foundation -framework CoreFoundation -L$(SRC_DIR)/

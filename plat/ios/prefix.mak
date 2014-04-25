@@ -10,7 +10,7 @@ OBJ_SUFFIX 			= .o
 LIB_PREFIX 			= lib
 LIB_SUFFIX 			= .a
 	
-DLL_PREFIX 			= 
+DLL_PREFIX 			= lib
 DLL_SUFFIX 			= .dylib
 
 ASM_SUFFIX 			= .S
@@ -18,7 +18,7 @@ ASM_SUFFIX 			= .S
 # toolchain
 PRE 				= xcrun -sdk iphoneos 
 CC 					= $(PRE)gcc 
-MM 					= $(PRE)clang
+MM 					= $(PRE)gcc
 AR 					= $(PRE)ar
 STRIP 				= $(PRE)strip
 RANLIB 				= $(PRE)ranlib
@@ -46,19 +46,21 @@ CPU_CXFLAGS 		= -mcpu=cortex-a8
 endif
 
 # cxflags: .c/.cc/.cpp files
-CXFLAGS_RELEASE 	= \
-					-O3 -DNDEBUG \
-					-fomit-frame-pointer -freg-struct-return -fno-bounds-check \
-					-fvisibility=hidden
-
+CXFLAGS_RELEASE 	= -fomit-frame-pointer -fvisibility=hidden
 CXFLAGS_DEBUG 		= -g 
-CXFLAGS 			= -arch $(ARCH) -D__tb_arch_$(ARCH)__ -c -Wall  \
-					-mthumb $(CPU_CXFLAGS) -miphoneos-version-min=$(SDK) \
-					-fmessage-length=0  -Wreturn-type -Wunused-variable \
-					-pipe -Wno-trigraphs -fpascal-strings \
-					--sysroot=/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDK).sdk
+CXFLAGS 			= \
+					-arch $(ARCH) -c -Wall -mthumb $(CPU_CXFLAGS) \
+					-Werror -Wno-error=deprecated-declarations -Qunused-arguments \
+					-fmessage-length=0 -pipe -fpascal-strings
 CXFLAGS-I 			= -I
 CXFLAGS-o 			= -o
+
+# opti
+ifeq ($(SMALL),y)
+CXFLAGS_RELEASE 	+= -Os
+else
+CXFLAGS_RELEASE 	+= -O3
+endif
 
 # cflags: .c files
 CFLAGS_RELEASE 		= 
@@ -71,22 +73,27 @@ CCFLAGS_DEBUG 		=
 CCFLAGS 			= 
 
 # mxflags: .m/.mm files
-MXFLAGS_RELEASE 	= \
-					-O3 -DNDEBUG \
-					-fomit-frame-pointer -freg-struct-return -fno-bounds-check \
-					-fvisibility=hidden
-
-MXFLAGS_DEBUG 		= -g -DDEBUG=1
-MXFLAGS 			= -arch $(ARCH) -D__tb_arch_$(ARCH)__  -c -Wall  \
-					-mthumb $(CPU_CXFLAGS) -miphoneos-version-min=$(SDK) \
-					-fmessage-length=0  -Wreturn-type -Wunused-variable \
-					-pipe -Wno-trigraphs -fpascal-strings \
+MXFLAGS_RELEASE 	= -fomit-frame-pointer -fvisibility=hidden
+MXFLAGS_DEBUG 		= -g 
+MXFLAGS 			= \
+					-arch $(ARCH) -c -Wall -mthumb $(CPU_CXFLAGS) \
+					-Werror -Wno-error=deprecated-declarations -Qunused-arguments \
+					-fmessage-length=0 -pipe -fpascal-strings \
 					"-DIBOutlet=__attribute__((iboutlet))" \
 					"-DIBOutletCollection(ClassName)=__attribute__((iboutletcollection(ClassName)))" \
-					"-DIBAction=void)__attribute__((ibaction)" \
-					--sysroot=/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDK).sdk
+					"-DIBAction=void)__attribute__((ibaction)"
 MXFLAGS-I 			= -I
 MXFLAGS-o 			= -o
+
+# opti
+ifeq ($(SMALL),y)
+MXFLAGS_RELEASE 	+= -Os
+else
+MXFLAGS_RELEASE 	+= -O3
+endif
+
+# small
+MXFLAGS-$(SMALL) 	+= 
 
 # mflags: .m files
 MFLAGS_RELEASE 		= 
@@ -99,11 +106,9 @@ MMFLAGS_DEBUG 		=
 MMFLAGS 			=
 
 # ldflags
-LDFLAGS_RELEASE 	=
+LDFLAGS_RELEASE 	= -s
 LDFLAGS_DEBUG 		= 
-LDFLAGS 			= -arch $(ARCH) \
-					-isysroot /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDK).sdk \
-					--sysroot=/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDK).sdk
+LDFLAGS 			= -arch $(ARCH) 
 LDFLAGS-L 			= -L
 LDFLAGS-l 			= -l
 LDFLAGS-o 			= -o
@@ -119,9 +124,7 @@ ASFLAGS-o 			= -o
 ARFLAGS 			= -cr
 
 # share ldflags
-SHFLAGS 			= -arch $(ARCH) -dynamiclib  \
-					-isysroot /Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDK).sdk \
-					--sysroot=/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDK).sdk
+SHFLAGS 			= -arch $(ARCH) -dynamiclib -Wl,-single_module
 
 # config
 include 			$(PLAT_DIR)/config.mak

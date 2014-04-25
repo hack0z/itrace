@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		fixed16_arm.h
@@ -23,13 +23,13 @@
 #ifndef TB_MATH_OPT_FIXED16_ARM_H
 #define TB_MATH_OPT_FIXED16_ARM_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
@@ -41,11 +41,11 @@
 
 #endif /* TB_CONFIG_ASSEMBLER_GAS */
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
-#if defined(TB_CONFIG_ASSEMBLER_GAS)
+#if defined(TB_CONFIG_ASSEMBLER_GAS) && !defined(TB_ARCH_ARM64)
 static __tb_inline__ tb_fixed16_t tb_fixed16_mul_asm(tb_fixed16_t x, tb_fixed16_t y)
 {
 	__tb_register__ tb_fixed16_t t;

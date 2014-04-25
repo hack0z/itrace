@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		algorithm.h
@@ -24,11 +24,22 @@
 #ifndef TB_ALGORITHM_H
 #define TB_ALGORITHM_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "find.h"
+#include "for.h"
+#include "rfor.h"
 #include "sort.h"
+#include "heap_sort.h"
+#include "quick_sort.h"
+#include "insert_sort.h"
+#include "bubble_sort.h"
+#include "find.h"
+#include "rfind.h"
+#include "binary_find.h"
+#include "walk.h"
+#include "rwalk.h"
+#include "count.h"
 
 #endif

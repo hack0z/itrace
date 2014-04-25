@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		fixed6.h
@@ -24,13 +24,13 @@
 #ifndef TB_MATH_FIXED6_H
 #define TB_MATH_FIXED6_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 #include "fixed16.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
@@ -54,7 +54,7 @@
 # 	endif
 #endif
 
-#ifdef TB_DEBUG
+#ifdef __tb_debug__
 # 	define tb_int_to_fixed6(x) 		tb_long_to_fixed6_check(x)
 # 	define tb_fixed6_to_int(x) 		tb_fixed6_to_long_check(x)
 
@@ -84,11 +84,11 @@
 #	define tb_fixed6_div(x, y) 		tb_fixed6_div_inline(x, y)
 #endif
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * inlines
  */
 
-#ifdef TB_DEBUG
+#ifdef __tb_debug__
 static __tb_inline__ tb_fixed6_t tb_long_to_fixed6_check(tb_long_t x)
 {
 	// check overflow

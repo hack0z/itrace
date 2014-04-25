@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		maf.h
@@ -24,18 +24,17 @@
 #ifndef TB_LIBM_MAF_H
 #define TB_LIBM_MAF_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
 #if defined(TB_COMPILER_IS_GCC) \
-		&& !defined(TB_CONFIG_COMPILER_NOT_SUPPORT_BUILTIN_FUNCTIONS) \
-			&& TB_COMPILER_VERSION_BE(3, 3)
+		&& TB_COMPILER_VERSION_BE(3, 3)
 # 	define TB_MAF 		(__builtin_huge_val())
 #elif defined(TB_COMPILER_IS_GCC) && TB_COMPILER_VERSION_BE(2, 96)
 #	define TB_MAF 		(__extension__ 0x1.0p2047)

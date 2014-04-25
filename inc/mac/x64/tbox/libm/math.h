@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		math.h
@@ -24,27 +24,31 @@
 #ifndef TB_LIBM_MATH_H
 #define TB_LIBM_MATH_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "nan.h"
-#include "inf.h"
-#include "maf.h"
-#include "mif.h"
-#include "pi.h"
-#include "fabs.h"
-#include "round.h"
-#include "ceil.h"
-#include "floor.h"
+#ifdef TB_CONFIG_TYPE_FLOAT
+# 	include "nan.h"
+# 	include "inf.h"
+# 	include "maf.h"
+# 	include "mif.h"
+# 	include "pi.h"
+# 	include "fabs.h"
+# 	include "round.h"
+# 	include "ceil.h"
+# 	include "floor.h"
+#endif
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
-// isinf
-tb_long_t 		tb_isinf(tb_double_t x);
-tb_long_t 		tb_isinff(tb_float_t x);
+#ifdef TB_CONFIG_TYPE_FLOAT
+
+// isin
+tb_long_t 		tb_isin(tb_double_t x);
+tb_long_t 		tb_isinf(tb_float_t x);
 
 // isnan
 tb_long_t 		tb_isnan(tb_double_t x);
@@ -105,5 +109,15 @@ tb_void_t 		tb_sincosf(tb_float_t x, tb_float_t* s, tb_float_t* c);
 // pow
 tb_double_t 	tb_pow(tb_double_t x, tb_double_t y);
 tb_float_t 		tb_powf(tb_float_t x, tb_float_t y);
+#endif
+
+// ilog2i
+tb_uint32_t 	tb_ilog2i(tb_uint32_t x);
+
+// isqrti
+tb_uint32_t 	tb_isqrti(tb_uint32_t x);
+
+// idivi8
+tb_uint32_t 	tb_idivi8(tb_uint32_t x, tb_uint8_t y);
 
 #endif

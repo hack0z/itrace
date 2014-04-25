@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		zlib.h
@@ -24,15 +24,15 @@
 #ifndef TB_ZIP_ZLIB_H
 #define TB_ZIP_ZLIB_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#ifdef TB_CONFIG_THIRD_ZLIB
-# 	include "../third/zlib/zlib.h"
+#ifdef TB_CONFIG_HAVE_ZLIB
+# 	include <zlib.h>
 #endif
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
 
@@ -42,13 +42,13 @@ typedef struct __tb_zip_zlib_t
 	// the zip base
 	tb_zip_t 		base;
 
-#ifdef TB_CONFIG_THIRD_ZLIB
+#ifdef TB_CONFIG_HAVE_ZLIB
 	z_stream 		zst;
 #endif
 
 }tb_zip_zlib_t;
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 

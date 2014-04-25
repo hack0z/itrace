@@ -15,14 +15,19 @@ DLL_SUFFIX 			= .dylib
 
 ASM_SUFFIX 			= .S
 
+# cpu bits
+BITS 				:= $(if $(findstring x64,$(ARCH)),64,)
+BITS 				:= $(if $(findstring x86,$(ARCH)),32,)
+BITS 				:= $(if $(BITS),$(BITS),$(shell getconf LONG_BIT))
+
 # tool
-PRE 				= 
-CC 					= $(PRE)gcc
-MM 					= $(PRE)gcc
+PRE 				= xcrun -sdk macosx 
+CC 					= $(PRE)clang
+MM 					= $(PRE)clang
+LD 					= $(PRE)clang
 AR 					= $(PRE)ar
 STRIP 				= $(PRE)strip
 RANLIB 				= $(PRE)ranlib
-LD 					= $(PRE)g++
 AS					= yasm
 RM 					= rm -f
 RMDIR 				= rm -rf
@@ -32,39 +37,35 @@ MKDIR 				= mkdir -p
 MAKE 				= make
 PWD 				= pwd
 
-# arch flags
-ifeq ($(ARCH),x86)
-ARCH_CXFLAGS 		= -arch i386
-ARCH_ASFLAGS 		= -arch i386
-ARCH_LDFLAGS 		= -arch i386
-endif
-
-ifeq ($(ARCH),x64)
-ARCH_CXFLAGS 		= -m64
-ARCH_ASFLAGS 		= -m amd64
-ARCH_LDFLAGS 		= -m64
-endif
-
 # cxflags: .c/.cc/.cpp files
-CXFLAGS_RELEASE 	= -O3 -DNDEBUG -freg-struct-return -fno-bounds-check
-CXFLAGS_DEBUG 		= -g
-CXFLAGS 			= -c -Wall -mssse3 $(ARCH_CXFLAGS) -D__tb_arch_$(ARCH)__
+CXFLAGS_RELEASE 	= -fvisibility=hidden
+CXFLAGS_DEBUG 		= -g  
+CXFLAGS 			= -m$(BITS) -c -Wall -Werror -Wno-error=deprecated-declarations -Qunused-arguments -mssse3
 CXFLAGS-I 			= -I
 CXFLAGS-o 			= -o
+
+# opti
+ifeq ($(SMALL),y)
+CXFLAGS_RELEASE 	+= -Os
+else
+CXFLAGS_RELEASE 	+= -O3
+endif
+
+# prof
+ifeq ($(PROF),y)
+CXFLAGS 			+= -g -fno-omit-frame-pointer 
+else
+CXFLAGS_RELEASE 	+= -fomit-frame-pointer 
+CXFLAGS_DEBUG 		+= -fno-omit-frame-pointer -ftrapv
+endif
 
 # cflags: .c files
 CFLAGS_RELEASE 		= 
 CFLAGS_DEBUG 		= 
 CFLAGS 				= \
 					-std=c99 \
-					-fomit-frame-pointer \
 					-D_GNU_SOURCE=1 -D_REENTRANT \
-					-Wall -Wno-parentheses \
-					-Wno-switch -Wno-format-zero-length -Wdisabled-optimization \
-					-Wpointer-arith -Wredundant-decls -Wno-pointer-sign -Wwrite-strings \
-					-Wundef -Wmissing-prototypes -Wno-pointer-to-int-cast \
-					-Wstrict-prototypes -fno-math-errno -fno-tree-vectorize \
-					-Werror=implicit-function-declaration -Werror=missing-prototypes 
+					-fno-math-errno -fno-tree-vectorize 
 
 # ccflags: .cc/.cpp files
 CCFLAGS_RELEASE 	= 
@@ -74,25 +75,36 @@ CCFLAGS 			= \
 					-D_POSIX_C_SOURCE=200112 -D_XOPEN_SOURCE=600
 
 # mxflags: .m/.mm files
-MXFLAGS_RELEASE 	= \
-					-O3 -DNDEBUG \
-					-fomit-frame-pointer -freg-struct-return -fno-bounds-check \
-					-fvisibility=hidden
-
-MXFLAGS_DEBUG 		= -g -DDEBUG=1
-MXFLAGS 			= -c -Wall -mssse3 $(ARCH_CXFLAGS) -D__tb_arch_$(ARCH)__ \
-					-fmessage-length=0  -Wreturn-type -Wunused-variable \
-					-pipe -Wno-trigraphs -fpascal-strings \
+MXFLAGS_RELEASE 	= -fvisibility=hidden
+MXFLAGS_DEBUG 		= -g  
+MXFLAGS 			= \
+					-m$(BITS) -c -Wall -Werror -Wno-error=deprecated-declarations -Qunused-arguments \
+					-mssse3 $(ARCH_CXFLAGS) -fmessage-length=0 -pipe -fpascal-strings \
 					"-DIBOutlet=__attribute__((iboutlet))" \
 					"-DIBOutletCollection(ClassName)=__attribute__((iboutletcollection(ClassName)))" \
 					"-DIBAction=void)__attribute__((ibaction)" 
 MXFLAGS-I 			= -I
 MXFLAGS-o 			= -o
 
+# opti
+ifeq ($(SMALL),y)
+MXFLAGS_RELEASE 	+= -Os
+else
+MXFLAGS_RELEASE 	+= -O3
+endif
+
+# prof
+ifeq ($(PROF),y)
+MXFLAGS 			+= -g -fno-omit-frame-pointer 
+else
+MXFLAGS_RELEASE 	+= -fomit-frame-pointer 
+MXFLAGS_DEBUG 		+= -fno-omit-frame-pointer -ftrapv
+endif
+
 # mflags: .m files
 MFLAGS_RELEASE 		= 
 MFLAGS_DEBUG 		= 
-MFLAGS 				= -std=gnu99
+MFLAGS 				= -std=c99
 
 # mmflags: .mm files
 MMFLAGS_RELEASE 	= 
@@ -101,16 +113,23 @@ MMFLAGS 			=
 
 # ldflags
 LDFLAGS_RELEASE 	= 
-LDFLAGS_DEBUG 		= 
-LDFLAGS 			= $(ARCH_LDFLAGS)
+LDFLAGS_DEBUG 		= -rdynamic 
+LDFLAGS 			= -m$(BITS)
 LDFLAGS-L 			= -L
 LDFLAGS-l 			= -l
 LDFLAGS-o 			= -o
 
+# prof
+ifeq ($(PROF),y)
+else
+LDFLAGS_RELEASE 	+= -s
+LDFLAGS_DEBUG 		+= -ftrapv
+endif
+
 # asflags
 ASFLAGS_RELEASE 	= Wa,-march=native
 ASFLAGS_DEBUG 		= 
-ASFLAGS 			= -f elf $(ARCH_ASFLAGS)
+ASFLAGS 			= -m$(BITS) -f elf $(ARCH_ASFLAGS)
 ASFLAGS-I 			= -I
 ASFLAGS-o 			= -o
 
@@ -118,9 +137,7 @@ ASFLAGS-o 			= -o
 ARFLAGS 			= -cr
 
 # share ldflags
-SHFLAGS 			= $(ARCH_LDFLAGS) -dynamiclib \
-					-isysroot /Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$(SDK).sdk/ \
-					--sysroot=/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX$(SDK).sdk/
+SHFLAGS 			= $(ARCH_LDFLAGS) -dynamiclib
 
 # config
 include 			$(PLAT_DIR)/config.mak

@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		libc.h
@@ -24,13 +24,11 @@
 #ifndef TB_LIBC_H
 #define TB_LIBC_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "ctype.h"
-#include "limits.h"
-#include "stdarg.h"
+#include "misc/misc.h"
 #include "stdio/stdio.h"
 #include "stdlib/stdlib.h"
 #include "string/string.h"

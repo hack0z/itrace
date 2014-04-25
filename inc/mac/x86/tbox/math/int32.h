@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		int32.h
@@ -24,18 +24,14 @@
 #ifndef TB_MATH_INT32_H
 #define TB_MATH_INT32_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
-
-// constant
-#define TB_INT32_MAX 					(TB_MAXS32)
-#define TB_INT32_MIN 					(TB_MINS32)
 
 // sign
 #define tb_int32_get_sign(x) 			tb_int32_get_sign_inline(x)
@@ -44,22 +40,14 @@
 // bool: is true?
 #define tb_int32_nz(x) 					tb_int32_nz_inline(x)
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
-
-// sqrt
-tb_uint32_t tb_int32_sqrt(tb_uint32_t x);
-
-// log2
-tb_uint32_t tb_int32_log2(tb_uint32_t x);
-tb_uint32_t tb_int32_clog2(tb_uint32_t x);
-tb_uint32_t tb_int32_rlog2(tb_uint32_t x);
 
 // div
 tb_int32_t 	tb_int32_div(tb_int32_t x, tb_int32_t y, tb_int_t nbits);
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * inline
  */
 
@@ -82,6 +70,5 @@ static __tb_inline__ tb_long_t tb_int32_nz_inline(tb_uint32_t x)
 	//return (x? 1 : 0);
 	return ((x | (0 - x)) >> 31);
 }
-
 #endif
 

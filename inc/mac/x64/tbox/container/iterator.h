@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		iterator.h
@@ -24,12 +24,12 @@
 #ifndef TB_CONTAINER_ITERATOR_H
 #define TB_CONTAINER_ITERATOR_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
 
@@ -49,17 +49,17 @@ typedef struct __tb_iterator_t
 	/// the iterator mode
 	tb_size_t 				mode;
 
+	/// the iterator step
+	tb_size_t 				step;
+
+	/// the iterator size
+	tb_size_t 				size;
+
 	/// the iterator data
 	tb_pointer_t 			data;
 
-	/// the iterator size
-	tb_pointer_t 			size;
-
 	/// the iterator priv
 	tb_pointer_t 			priv;
-
-	/// the iterator step
-	tb_size_t 				step;
 
 	/// the iterator head
 	tb_size_t 				(*head)(struct __tb_iterator_t* iterator);
@@ -76,15 +76,21 @@ typedef struct __tb_iterator_t
 	/// the iterator item
 	tb_pointer_t 			(*item)(struct __tb_iterator_t* iterator, tb_size_t itor);
 
-	/// the iterator move
-	tb_void_t 				(*move)(struct __tb_iterator_t* iterator, tb_size_t itor, tb_cpointer_t item);
-
 	/// the iterator comp
 	tb_long_t 				(*comp)(struct __tb_iterator_t* iterator, tb_cpointer_t ltem, tb_cpointer_t rtem);
 
+	/// the iterator copy
+	tb_void_t 				(*copy)(struct __tb_iterator_t* iterator, tb_size_t itor, tb_cpointer_t item);
+
+	/// the iterator delt
+	tb_void_t 				(*delt)(struct __tb_iterator_t* iterator, tb_size_t itor);
+
 }tb_iterator_t;
 
-/* ///////////////////////////////////////////////////////////////////////
+/// the iterator comp func type
+typedef tb_long_t 			(*tb_iterator_comp_t)(tb_iterator_t* iterator, tb_cpointer_t ltem, tb_cpointer_t rtem);
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
@@ -124,8 +130,11 @@ tb_size_t 		tb_iterator_next(tb_iterator_t* iterator, tb_size_t itor);
 /// the iterator item
 tb_pointer_t 	tb_iterator_item(tb_iterator_t* iterator, tb_size_t itor);
 
-/// the iterator move
-tb_void_t 		tb_iterator_move(tb_iterator_t* iterator, tb_size_t itor, tb_cpointer_t item);
+/// the iterator delt
+tb_void_t 		tb_iterator_delt(tb_iterator_t* iterator, tb_size_t itor);
+
+/// the iterator copy
+tb_void_t 		tb_iterator_copy(tb_iterator_t* iterator, tb_size_t itor, tb_cpointer_t item);
 
 /// the iterator comp
 tb_long_t 		tb_iterator_comp(tb_iterator_t* iterator, tb_cpointer_t ltem, tb_cpointer_t rtem);

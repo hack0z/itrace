@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		hash.h
@@ -24,27 +24,27 @@
 #ifndef TB_CONTAINER_HASH_H
 #define TB_CONTAINER_HASH_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 #include "item.h"
 #include "iterator.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 #define TB_HASH_SIZE_MICRO 					(64)
 #define TB_HASH_SIZE_SMALL 					(256)
 #define TB_HASH_SIZE_LARGE 					(65536)
 
-#ifdef TB_CONFIG_MEMORY_MODE_SMALL
-# 	define TB_HASH_SIZE_DEFAULT 			TB_HASH_SIZE_SMALL
+#ifdef __tb_small__
+# 	define TB_HASH_SIZE_DEFAULT 			TB_HASH_SIZE_MICRO
 #else
-# 	define TB_HASH_SIZE_DEFAULT 			TB_HASH_SIZE_LARGE
+# 	define TB_HASH_SIZE_DEFAULT 			TB_HASH_SIZE_SMALL
 #endif
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
 
@@ -52,121 +52,122 @@
 typedef struct __tb_hash_item_t
 {
 	/// the item name
-	tb_pointer_t 			name;
+	tb_pointer_t 		name;
 
 	/// the item data
-	tb_pointer_t 			data;
+	tb_pointer_t 		data;
 
 }tb_hash_item_t;
 
-/// the hash item list type
-typedef struct __tb_hash_item_list_t
-{
-	tb_size_t 				size;
-	tb_size_t 				maxn;
+/// the hash type
+typedef tb_void_t 		tb_hash_t;
 
-}tb_hash_item_list_t;
-
-/*!the hash type
- *
- * <pre>
- *                 0        1        3       ...     ...                n       n + 1
- * hash_list: |--------|--------|--------|--------|--------|--------|--------|--------|
- *                         |
- *                       -----    
- * item_list:           |     |       key:0                                      
- *                       -----   
- *                      |     |       key:1                                              
- *                       -----               <= insert by binary search algorithm
- *                      |     |       key:2                                               
- *                       -----  
- *                      |     |       key:3                                               
- *                       -----   
- *                      |     |       key:4                                               
- *                       -----  
- *                      |     |                                              
- *                       -----  
- *                      |     |                                              
- *                       -----  
- *                      |     |                                              
- *                       -----  
- *
- * </pre>
- *
- * @note the itor of the same item is mutable
- */
-typedef struct __tb_hash_t
-{
-	// the item itor
-	tb_iterator_t 			item_itor;
-
-	/// the hash list
-	tb_hash_item_list_t** 	hash_list;
-	tb_size_t 				hash_size;
-
-	/// the item size
-	tb_size_t 				item_size;
-
-	/// the item maxn
-	tb_size_t 				item_maxn;
-
-	/// the hash item
-	tb_hash_item_t 			hash_item;
-
-	/// the hash func
-	tb_item_func_t 			name_func;
-	tb_item_func_t 			data_func;
-
-}tb_hash_t;
-
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
-// init & exit
+/*! init hash
+ *
+ * @param size 			the hash size
+ * @param name_func 	the hash name func
+ * @param data_func 	the hash data func
+ *
+ * @return 				the hash
+ */
 tb_hash_t* 				tb_hash_init(tb_size_t size, tb_item_func_t name_func, tb_item_func_t data_func);
+
+/*! exit hash
+ *
+ * @param hash 			the hash
+ */
 tb_void_t 				tb_hash_exit(tb_hash_t* hash);
 
-// accessors & modifiors
+/*! clear hash
+ *
+ * @param hash 			the hash
+ */
 tb_void_t 				tb_hash_clear(tb_hash_t* hash);
 
-tb_pointer_t 			tb_hash_get(tb_hash_t* hash, tb_cpointer_t name);
-tb_void_t 	 			tb_hash_del(tb_hash_t* hash, tb_cpointer_t name);
-tb_void_t 	 			tb_hash_set(tb_hash_t* hash, tb_cpointer_t name, tb_cpointer_t data);
+/*! get hash item itor
+ *
+ * @param hash 			the hash
+ * @param name 			the hash item name
+ *
+ * @return 				the hash itor, @note: itor => item maybe changed if insert or remove item
+ */
+tb_size_t				tb_hash_itor(tb_hash_t const* hash, tb_cpointer_t name);
 
-// attributes
+/*! get hash item data
+ *
+ * @param hash 			the hash
+ * @param name 			the hash item name
+ *
+ * @return 				the hash item data
+ */
+tb_pointer_t 			tb_hash_get(tb_hash_t const* hash, tb_cpointer_t name);
+
+/*! del hash item
+ *
+ * @param hash 			the hash
+ * @param name 			the hash item name
+ */
+tb_void_t 	 			tb_hash_del(tb_hash_t* hash, tb_cpointer_t name);
+
+/*! set hash item
+ *
+ * @param hash 			the hash
+ * @param name 			the hash item name
+ * @param data 			the hash item data
+ *
+ * @return 				the hash itor, @note: itor => item maybe changed if insert or remove item
+ */
+tb_size_t 		 		tb_hash_set(tb_hash_t* hash, tb_cpointer_t name, tb_cpointer_t data);
+
+/*! the hash size
+ *
+ * @param hash 			the hash
+ *
+ * @return 				the hash size
+ */
 tb_size_t 				tb_hash_size(tb_hash_t const* hash);
+
+/*! the hash maxn
+ *
+ * @param hash 			the hash
+ *
+ * @return 				the hash maxn
+ */
 tb_size_t 				tb_hash_maxn(tb_hash_t const* hash);
 
-// debug
+/*! dump hash
+ *
+ * @param hash 			the hash
+ */
 tb_void_t 				tb_hash_dump(tb_hash_t const* hash);
 
-/*!walk
+/*! walk hash items
  *
  * be faster than the iterator mode, optimizate to remove items for walking
  *
  * @code
- * tb_bool_t tb_hash_item_func(tb_hash_t* hash, tb_hash_item_t* item, tb_bool_t* bdel, tb_pointer_t data)
+ * tb_bool_t tb_hash_item_func(tb_hash_t* hash, tb_hash_item_t* item, tb_bool_t* bdel, tb_pointer_t priv)
  * {
- * 		tb_assert_and_check_return_val(hash && bdel, TB_FALSE);
- *
- * 		// is tail?
- * 		if (!item) ;
+ * 		tb_assert_and_check_return_val(hash && bdel, tb_false);
  *
  * 		// delete it?
- * 		// *bdel = TB_TRUE;
+ * 		// *bdel = tb_true;
  *
- * 		// ok
- * 		return TB_TRUE;
- *
- * fail:
- * 		// break
- * 		return TB_FALSE;
+ * 		// continue or break
+ * 		return tb_true;
  * }
  * @endcode
  *
+ * @param hash 			the hash
+ * @param func 			the walk callback func
+ * @param data 			the walk callback data
+ *
  */
-tb_void_t 				tb_hash_walk(tb_hash_t* hash, tb_bool_t (*func)(tb_hash_t* hash, tb_hash_item_t* item, tb_bool_t* bdel, tb_pointer_t data), tb_pointer_t data);
+tb_void_t 				tb_hash_walk(tb_hash_t* hash, tb_bool_t (*func)(tb_hash_t* hash, tb_hash_item_t* item, tb_bool_t* bdel, tb_pointer_t priv), tb_pointer_t priv);
 
 #endif
 

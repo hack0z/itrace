@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		prefix.h
@@ -23,15 +23,15 @@
 #ifndef TB_ZIP_PREFIX_H
 #define TB_ZIP_PREFIX_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "../prefix.h"
-#include "../stream/bstream.h"
+#include "../stream/static_stream.h"
 #include "../memory/memory.h"
 #include "vlc.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
 
@@ -69,7 +69,7 @@ typedef struct __tb_zip_t
 	tb_uint16_t 			action;
 
 	// spak
-	tb_long_t 				(*spak)(struct __tb_zip_t* zip, tb_bstream_t* ist, tb_bstream_t* ost, tb_bool_t sync);
+	tb_long_t 				(*spak)(struct __tb_zip_t* zip, tb_static_stream_t* ist, tb_static_stream_t* ost, tb_long_t sync);
 
 	// the vlc 
 	union __tb_zip_vlc_union_t

@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		cookies.h
@@ -24,7 +24,7 @@
 #ifndef TB_NETWORK_COOKIES_H
 #define TB_NETWORK_COOKIES_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * INTRODUCTION 
  * Cookies are a general mechanism which server side connections (such as CGI scripts) 
  * can use to both store and retrieve information on the client side of the connection. 
@@ -183,26 +183,26 @@
  *
  */
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 #include "../container/container.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
 #define TB_COOKIES_VALUE_MAX 		(32 * 1024)
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
 
 // the cookie type
 typedef struct __tb_cookie_t
 {
-	tb_hize_t 		expires;
+	tb_hize_t 			expires;
 	tb_size_t 			secure;
 	tb_size_t 			domain;
 	tb_size_t 			path;
@@ -228,12 +228,12 @@ typedef struct __tb_cookies_t
 
 }tb_cookies_t;
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 // init & exit
-tb_cookies_t* 		tb_cookies_init();
+tb_cookies_t* 		tb_cookies_init(tb_noarg_t);
 tb_void_t 			tb_cookies_exit(tb_cookies_t* cookies);
 
 /* get & set

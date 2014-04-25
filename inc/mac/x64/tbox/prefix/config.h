@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		config.h
@@ -23,20 +23,10 @@
 #ifndef TB_PREFIX_CONFIG_H
 #define TB_PREFIX_CONFIG_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "../config.h"
-
-/* ///////////////////////////////////////////////////////////////////////
- * macros
- */
-
-// is debug?
-#if tbox_CONFIG_DEBUG
-# 	define TB_DEBUG
-#endif
-
 
 #endif
 

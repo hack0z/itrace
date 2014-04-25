@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		vlc.h
@@ -24,27 +24,27 @@
 #ifndef TB_ZIP_VLC_H
 #define TB_ZIP_VLC_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "../prefix.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
 // adaptive golomb coding
 #define TB_ZIP_VLC_GOLOMB_ADAPTIVE
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
 
 // the callback type
 struct __tb_zip_vlc_t;
-typedef tb_void_t 		(*tb_zip_vlc_set_t)(struct __tb_zip_vlc_t* vlc, tb_uint32_t val, tb_bstream_t* bst);
-typedef tb_uint32_t (*tb_zip_vlc_get_t)(struct __tb_zip_vlc_t* vlc, tb_bstream_t const* bst);
-typedef tb_void_t 		(*tb_zip_vlc_close_t)(struct __tb_zip_vlc_t* vlc);
+typedef tb_void_t 		(*tb_zip_vlc_set_t)(struct __tb_zip_vlc_t* vlc, tb_uint32_t val, tb_static_stream_t* sstream);
+typedef tb_uint32_t 	(*tb_zip_vlc_get_t)(struct __tb_zip_vlc_t* vlc, tb_static_stream_t const* sstream);
+typedef tb_void_t 		(*tb_zip_vlc_clos_t)(struct __tb_zip_vlc_t* vlc);
 
 // the vlc type
 typedef enum __tb_zip_vlc_type_t
@@ -68,7 +68,7 @@ typedef struct __tb_zip_vlc_t
 	tb_zip_vlc_get_t 	get;
 
 	// close it
-	tb_zip_vlc_close_t 	close;
+	tb_zip_vlc_clos_t 	clos;
 
 }tb_zip_vlc_t;
 
@@ -109,7 +109,7 @@ typedef struct __tb_zip_vlc_golomb_t
 
 }tb_zip_vlc_golomb_t;
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 

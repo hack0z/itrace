@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		fixed16.h
@@ -24,7 +24,7 @@
 #ifndef TB_MATH_FIXED16_H
 #define TB_MATH_FIXED16_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
@@ -39,7 +39,7 @@
 # 	include "opt/fixed16_sh4.h"
 #endif
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
@@ -63,7 +63,7 @@
 # 	endif
 #endif
 
-#ifdef TB_DEBUG
+#ifdef __tb_debug__
 # 	define tb_int_to_fixed16(x) 			tb_long_to_fixed16_check(x)
 # 	define tb_fixed16_to_int(x) 			tb_fixed16_to_long_check(x)
 
@@ -263,15 +263,7 @@
 # 	define tb_fixed16_ilog2(x) 				tb_fixed16_ilog2_int32(x)
 #endif
 
-#ifndef tb_fixed16_iclog2
-# 	define tb_fixed16_iclog2(x) 			tb_fixed16_iclog2_int32(x)
-#endif
-
-#ifndef tb_fixed16_irlog2
-# 	define tb_fixed16_irlog2(x) 			tb_fixed16_irlog2_int32(x)
-#endif
-
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
@@ -282,11 +274,11 @@ tb_fixed16_t 	tb_fixed16_asin_int32(tb_fixed16_t x);
 tb_fixed16_t 	tb_fixed16_atan_int32(tb_fixed16_t x);
 tb_fixed16_t 	tb_fixed16_exp_int32(tb_fixed16_t x);
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * inlines
  */
 
-#ifdef TB_DEBUG
+#ifdef __tb_debug__
 static __tb_inline__ tb_fixed16_t tb_long_to_fixed16_check(tb_long_t x)
 {
 	// check overflow
@@ -409,36 +401,24 @@ static __tb_inline__ tb_fixed16_t tb_fixed16_sqre_int32(tb_fixed16_t x)
 static __tb_inline__ tb_fixed16_t tb_fixed16_sqrt_int32(tb_fixed16_t x)
 {
 	tb_assert(x > 0);
-	return (x > 0? (tb_int32_sqrt(x) << 8) : 0);
+	return (x > 0? (tb_isqrti(x) << 8) : 0);
 }
 static __tb_inline__ tb_uint32_t tb_fixed16_ilog2_int32(tb_fixed16_t x)
 {
 	tb_assert(x > 0);
-	tb_uint32_t lg = tb_int32_log2(x);
-	return (lg > 16? (lg - 16) : 0);
-}
-static __tb_inline__ tb_uint32_t tb_fixed16_iclog2_int32(tb_fixed16_t x)
-{
-	tb_assert(x > 0);
-	tb_uint32_t lg = tb_int32_clog2(x);
-	return (lg > 16? (lg - 16) : 0);
-}
-static __tb_inline__ tb_uint32_t tb_fixed16_irlog2_int32(tb_fixed16_t x)
-{
-	tb_assert(x > 0);
-	tb_uint32_t lg = tb_int32_rlog2(x);
+	tb_uint32_t lg = tb_ilog2i(x);
 	return (lg > 16? (lg - 16) : 0);
 }
 static __tb_inline__ tb_fixed16_t tb_fixed16_sin_int32(tb_fixed16_t x)
 {
 	tb_fixed16_t s = 0;
-	tb_fixed16_sincos_int32(x, &s, TB_NULL);
+	tb_fixed16_sincos_int32(x, &s, tb_null);
 	return s;
 }
 static __tb_inline__ tb_fixed16_t tb_fixed16_cos_int32(tb_fixed16_t x)
 {
 	tb_fixed16_t c = 0;
-	tb_fixed16_sincos_int32(x, TB_NULL, &c);
+	tb_fixed16_sincos_int32(x, tb_null, &c);
 	return c;
 }
 static __tb_inline__ tb_fixed16_t tb_fixed16_tan_int32(tb_fixed16_t x)

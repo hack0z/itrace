@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		cpu.h
@@ -23,20 +23,26 @@
 #ifndef TB_PREFIX_CPU_H
 #define TB_PREFIX_CPU_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "config.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
 // check 64-bits
 #if defined (__LP64__) \
 	|| defined (__64BIT__) \
-		|| defined (_LP64) \
-		|| (__WORDSIZE == 64)
+	|| defined (_LP64) \
+	|| defined (__x86_64) \
+	|| defined (__x86_64__) \
+	|| defined (__amd64) \
+	|| defined (__amd64__) \
+	|| defined (__arm64) \
+	|| defined (__arm64__) \
+	|| (__WORDSIZE == 64)
 # 	define TB_CPU_BITSIZE 		(64)
 # 	define TB_CPU_BITBYTE 		(8)
 # 	define TB_CPU_BITALIGN 		(7)

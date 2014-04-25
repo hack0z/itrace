@@ -15,9 +15,9 @@
 #define IT_DEBUG 		itrace_CONFIG_DEBUG
 
 // trace
-#define it_print(fmt, arg ...)						do { asl_log(TB_NULL, TB_NULL, 4, "[itrace]: " fmt , ## arg); } while (0)
+#define it_print(fmt, arg ...)						do { asl_log(tb_null, tb_null, 4, "[itrace]: " fmt , ## arg); } while (0)
 #if IT_DEBUG
-# 	define it_trace(fmt, arg ...)					do { asl_log(TB_NULL, TB_NULL, 4, "[itrace]: " fmt , ## arg); } while (0)
+# 	define it_trace(fmt, arg ...)					do { asl_log(tb_null, tb_null, 4, "[itrace]: " fmt , ## arg); } while (0)
 #else
 # 	define it_trace(fmt, arg ...)
 #endif

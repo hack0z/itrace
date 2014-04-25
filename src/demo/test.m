@@ -55,29 +55,29 @@ typedef struct __it_double_t
 
 typedef struct __it_data8_t
 {
-	tb_uint8_t 			s8[2];
-	tb_sint8_t 			u8[2];
+	tb_sint8_t 			s8[2];
+	tb_uint8_t 			u8[2];
 
 }it_data8_t;
 
 typedef struct __it_data16_t
 {
-	tb_uint16_t 		s16[2];
-	tb_sint16_t 		u16[2];
+	tb_sint16_t 		s16[2];
+	tb_uint16_t 		u16[2];
 
 }it_data16_t;
 
 typedef struct __it_data32_t
 {
-	tb_uint32_t 		s32[2];
-	tb_sint32_t 		u32[2];
+	tb_sint32_t 		s32[2];
+	tb_uint32_t 		u32[2];
 
 }it_data32_t;
 
 typedef struct __it_data64_t
 {
-	tb_uint64_t 		s64[2];
-	tb_sint64_t 		u64[2];
+	tb_sint64_t 		s64[2];
+	tb_uint64_t 		u64[2];
 
 }it_data64_t;
 
@@ -367,12 +367,12 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 		all.s = "hello";
 		all.d8.u8[0] = 100;
 		all.d8.u8[1] = 200;
-		all.d8.s8[0] = -100;
-		all.d8.s8[1] = -200;
+		all.d8.s8[0] = (tb_sint8_t)-100;
+		all.d8.s8[1] = (tb_sint8_t)-200;
 		all.d16.u16[0] = 100;
 		all.d16.u16[1] = 200;
-		all.d16.s16[0] = -100;
-		all.d16.s16[1] = -200;
+		all.d16.s16[0] = (tb_sint16_t)-100;
+		all.d16.s16[1] = (tb_sint16_t)-200;
 		all.d32.u32[0] = 100;
 		all.d32.u32[1] = 200;
 		all.d32.s32[0] = -100;
@@ -404,12 +404,12 @@ tb_int_t main(tb_int_t argc, tb_char_t** argv)
 		[t value_pdouble:&all.d.d0 with:@"hello"];
 		[t value_cstring:all.s with:@"hello"];		
 	
-		[t value_ppint8:TB_NULL with:@"hello"];
-		[t value_ppint16:TB_NULL with:@"hello"];
-		[t value_ppint32:TB_NULL with:@"hello"];
-		[t value_ppint64:TB_NULL with:@"hello"];
-		[t value_ppfloat:TB_NULL with:@"hello"];
-		[t value_ppdouble:TB_NULL with:@"hello"];
+		[t value_ppint8:tb_null with:@"hello"];
+		[t value_ppint16:tb_null with:@"hello"];
+		[t value_ppint32:tb_null with:@"hello"];
+		[t value_ppint64:tb_null with:@"hello"];
+		[t value_ppfloat:tb_null with:@"hello"];
+		[t value_ppdouble:tb_null with:@"hello"];
 		[t value_pcstring:&all.s with:@"hello"];		
 
 		[t value_data8:all.d8 with:@"hello"];

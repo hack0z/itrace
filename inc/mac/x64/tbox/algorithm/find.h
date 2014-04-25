@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		find.h
@@ -24,26 +24,35 @@
 #ifndef TB_ALGORITHM_FIND_H
 #define TB_ALGORITHM_FIND_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
-/// the finder
-tb_size_t tb_find(tb_iterator_t* iterator, tb_size_t head, tb_size_t tail, tb_cpointer_t data);
+/*! the finder
+ *
+ * @param iterator 	the iterator
+ * @param head 		the iterator head
+ * @param tail 		the iterator tail
+ * @param data 		the finded data
+ * @param comp 		the comparer
+ *
+ * @return 			the iterator itor
+ */
+tb_size_t 			tb_find(tb_iterator_t* iterator, tb_size_t head, tb_size_t tail, tb_cpointer_t data, tb_iterator_comp_t comp);
 
-// the finder for all
-tb_size_t tb_find_all(tb_iterator_t* iterator, tb_cpointer_t data);
-
-/// the binary finder for ascending
-tb_size_t tb_binary_find(tb_iterator_t* iterator, tb_size_t head, tb_size_t tail, tb_cpointer_t data);
-
-/// the binary finder for all
-tb_size_t tb_binary_find_all(tb_iterator_t* iterator, tb_cpointer_t data);
-
+/*! the finder for all
+ *
+ * @param iterator 	the iterator
+ * @param data 		the finded data
+ * @param comp 		the comparer
+ *
+ * @return 			the iterator itor
+ */
+tb_size_t 			tb_find_all(tb_iterator_t* iterator, tb_cpointer_t data, tb_iterator_comp_t comp);
 
 #endif

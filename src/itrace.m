@@ -35,17 +35,17 @@
 		{ \
 			trace->args_size += 44; \
 			trace->args_skip = 1; \
-			__tb_volatile__ tb_size_t r0 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r1 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r2 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r3 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r4 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r5 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r6 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r7 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r8 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r9 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t lr = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t r0 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r0); \
+			__tb_volatile__ tb_size_t r1 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r1); \
+			__tb_volatile__ tb_size_t r2 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r2); \
+			__tb_volatile__ tb_size_t r3 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r3); \
+			__tb_volatile__ tb_size_t r4 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r4); \
+			__tb_volatile__ tb_size_t r5 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r5); \
+			__tb_volatile__ tb_size_t r6 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r6); \
+			__tb_volatile__ tb_size_t r7 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r7); \
+			__tb_volatile__ tb_size_t r8 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r8); \
+			__tb_volatile__ tb_size_t r9 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r9); \
+			__tb_volatile__ tb_size_t lr = tb_va_arg(trace->args_list, tb_size_t); tb_used(lr); \
 		} \
  \
 	} while (0); 
@@ -58,18 +58,18 @@
 		{ \
 			trace->args_size += 48; \
 			trace->args_skip = 1; \
-			__tb_volatile__ tb_size_t edi = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t esi = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t ebp = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t esp = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t ebx = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t edx = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t ecx = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t eax = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t flags = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t ret = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t sef = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t sel = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t edi = tb_va_arg(trace->args_list, tb_size_t); tb_used(edi); \
+			__tb_volatile__ tb_size_t esi = tb_va_arg(trace->args_list, tb_size_t); tb_used(esi); \
+			__tb_volatile__ tb_size_t ebp = tb_va_arg(trace->args_list, tb_size_t); tb_used(ebp); \
+			__tb_volatile__ tb_size_t esp = tb_va_arg(trace->args_list, tb_size_t); tb_used(esp); \
+			__tb_volatile__ tb_size_t ebx = tb_va_arg(trace->args_list, tb_size_t); tb_used(ebx); \
+			__tb_volatile__ tb_size_t edx = tb_va_arg(trace->args_list, tb_size_t); tb_used(edx); \
+			__tb_volatile__ tb_size_t ecx = tb_va_arg(trace->args_list, tb_size_t); tb_used(ecx); \
+			__tb_volatile__ tb_size_t eax = tb_va_arg(trace->args_list, tb_size_t); tb_used(eax); \
+			__tb_volatile__ tb_size_t flags = tb_va_arg(trace->args_list, tb_size_t); tb_used(flags); \
+			__tb_volatile__ tb_size_t ret = tb_va_arg(trace->args_list, tb_size_t); tb_used(ret); \
+			__tb_volatile__ tb_size_t sef = tb_va_arg(trace->args_list, tb_size_t); tb_used(sef); \
+			__tb_volatile__ tb_size_t sel = tb_va_arg(trace->args_list, tb_size_t); tb_used(sel); \
 		} \
  \
 	} while (0); 
@@ -82,22 +82,22 @@
 		{ \
 			trace->args_size += 128; \
 			trace->args_skip = 1; \
-			__tb_volatile__ tb_size_t r15 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r14 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r13 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r12 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r11 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r10 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r9 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t r8 = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t rsi = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t rdi = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t rdx = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t rcx = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t rbx = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t rax = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t flags = tb_va_arg(trace->args_list, tb_size_t); \
-			__tb_volatile__ tb_size_t ret = tb_va_arg(trace->args_list, tb_size_t); \
+			__tb_volatile__ tb_size_t r15 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r15); \
+			__tb_volatile__ tb_size_t r14 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r14); \
+			__tb_volatile__ tb_size_t r13 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r13); \
+			__tb_volatile__ tb_size_t r12 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r12); \
+			__tb_volatile__ tb_size_t r11 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r11); \
+			__tb_volatile__ tb_size_t r10 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r10); \
+			__tb_volatile__ tb_size_t r9 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r9); \
+			__tb_volatile__ tb_size_t r8 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r8); \
+			__tb_volatile__ tb_size_t rsi = tb_va_arg(trace->args_list, tb_size_t); tb_used(rsi); \
+			__tb_volatile__ tb_size_t rdi = tb_va_arg(trace->args_list, tb_size_t); tb_used(rdi); \
+			__tb_volatile__ tb_size_t rdx = tb_va_arg(trace->args_list, tb_size_t); tb_used(rdx); \
+			__tb_volatile__ tb_size_t rcx = tb_va_arg(trace->args_list, tb_size_t); tb_used(rcx); \
+			__tb_volatile__ tb_size_t rbx = tb_va_arg(trace->args_list, tb_size_t); tb_used(rbx); \
+			__tb_volatile__ tb_size_t rax = tb_va_arg(trace->args_list, tb_size_t); tb_used(rax); \
+			__tb_volatile__ tb_size_t flags = tb_va_arg(trace->args_list, tb_size_t); tb_used(flags); \
+			__tb_volatile__ tb_size_t ret = tb_va_arg(trace->args_list, tb_size_t); tb_used(ret); \
 		} \
  \
 	} while (0); 
@@ -165,22 +165,24 @@ typedef struct __it_chook_method_trace_t
  */
 
 // the config
-static tb_xml_node_t* 		g_cfg = TB_NULL;
+static tb_xml_node_t* 		g_cfg = tb_null;
 
 // the objc implementation 
-static IMP 					g_NSObject_respondsToSelector 	= TB_NULL;
-static IMP 					g_NSString_UTF8String 			= TB_NULL;
-
-/* //////////////////////////////////////////////////////////////////////////////////////
- * declaration
- */
-
-// clear cache for gcc
-tb_void_t 		__clear_cache(tb_char_t* beg, tb_char_t* end);
+static IMP 					g_NSObject_respondsToSelector 	= tb_null;
+static IMP 					g_NSString_UTF8String 			= tb_null;
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * implementation
  */
+static __tb_inline__ tb_void_t tb_clear_cache(tb_pointer_t start, tb_pointer_t end)
+{
+	// for ios
+// 	sys_icache_invalidate(start, (tb_char_t*)end - (tb_char_t*)start);
+
+	// for gcc
+// 	__clear_cache(start, end);
+// 	__builtin___clear_cache(start, end);
+}
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_objc(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
@@ -189,14 +191,14 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_objc(it_chook_meth
 	// init
 #if 0
 	tb_pointer_t 		o = tb_va_arg(trace->args_list, tb_pointer_t);
-	tb_pointer_t 		d = o && [o respondsToSelector:@selector(description)]? [o description] : TB_NULL;
-	tb_char_t const* 	s = d? [d UTF8String] : TB_NULL;
+	tb_pointer_t 		d = o && [o respondsToSelector:@selector(description)]? [o description] : tb_null;
+	tb_char_t const* 	s = d? [d UTF8String] : tb_null;
 #else
 	tb_pointer_t 		o = tb_va_arg(trace->args_list, tb_pointer_t);
-	tb_pointer_t 		c = o? object_getClass(o) : TB_NULL;
-	IMP 				get_description = c? class_getMethodImplementation(c, @selector(description)) : TB_NULL;
-	tb_pointer_t 		d = get_description && g_NSObject_respondsToSelector(o, @selector(respondsToSelector:), @selector(description))? get_description(o, @selector(description)) : TB_NULL;
-	tb_char_t const* 	s = d? g_NSString_UTF8String(d, @selector(UTF8String)) : TB_NULL;
+	tb_pointer_t 		c = o? object_getClass(o) : tb_null;
+	IMP 				get_description = c? class_getMethodImplementation(c, @selector(description)) : tb_null;
+	tb_pointer_t 		d = get_description && g_NSObject_respondsToSelector(o, @selector(respondsToSelector:), @selector(description))? get_description(o, @selector(description)) : tb_null;
+	tb_char_t const* 	s = d? (tb_char_t const*)g_NSString_UTF8String(d, @selector(UTF8String)) : tb_null;
 #endif
 
 	// format
@@ -209,7 +211,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_selector(it_chook_
 
 	// init
 	SEL 				sel = tb_va_arg(trace->args_list, SEL);
-	tb_char_t const*	sel_name = sel? sel_getName(sel) : TB_NULL;
+	tb_char_t const*	sel_name = sel? sel_getName(sel) : tb_null;
 
 	// format
 	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": @selector(%s)", sel_name);
@@ -397,7 +399,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_skip(it_chook_meth
 		tb_size_t skip = argb / sizeof(tb_uint32_t);
 		while (skip--)
 		{
-			__tb_volatile__ tb_uint32_t val = tb_va_arg(trace->args_list, tb_uint32_t); 
+			__tb_volatile__ tb_uint32_t val = tb_va_arg(trace->args_list, tb_uint32_t); tb_used(&val);
 		}
 	}
 	else if (unit == 2)
@@ -405,7 +407,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_skip(it_chook_meth
 		tb_size_t skip = argb / sizeof(it_uint16_t);
 		while (skip--)
 		{
-			__tb_volatile__ it_uint16_t val = tb_va_arg(trace->args_list, it_uint16_t); 
+			__tb_volatile__ it_uint16_t val = tb_va_arg(trace->args_list, it_uint16_t); tb_used(&val);
 		}
 	}
 	else 
@@ -413,7 +415,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_skip(it_chook_meth
 		tb_size_t skip = argb;
 		while (skip--)
 		{
-			__tb_volatile__ it_uint8_t val = tb_va_arg(trace->args_list, it_uint8_t); 
+			__tb_volatile__ it_uint8_t val = tb_va_arg(trace->args_list, it_uint8_t); tb_used(&val);
 		}
 	}
 	
@@ -491,7 +493,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_skip_return(it_chook_method
 		{
 			// skip the argument first
 			it_trace("skip");
-			__tb_volatile__ tb_pointer_t pstruct = (tb_pointer_t)tb_va_arg(trace->args_list, tb_pointer_t);
+			__tb_volatile__ tb_pointer_t pstruct = (tb_pointer_t)tb_va_arg(trace->args_list, tb_pointer_t); tb_used(pstruct);
 			trace->args_size += sizeof(tb_pointer_t);
 		}
 	}
@@ -501,16 +503,16 @@ static tb_void_t it_chook_method_trace(tb_xml_node_t const* node, Method method,
 	it_assert_and_check_return(node && method);
 
 	// the class name
-	tb_char_t const* cname = tb_pstring_cstr(&node->name);
+	tb_char_t const* cname = tb_scoped_string_cstr(&node->name);
 	it_assert_and_check_return(cname);
 
 	// tracing arguments?
-	tb_bool_t args_list = TB_TRUE;
+	tb_bool_t args_list = tb_true;
 	if (node->ahead
-		&& !tb_pstring_cstricmp(&node->ahead->name, "args_list")
-		&& !tb_pstring_cstricmp(&node->ahead->data, "0"))
+		&& !tb_scoped_string_cstricmp(&node->ahead->name, "args_list")
+		&& !tb_scoped_string_cstricmp(&node->ahead->data, "0"))
 	{
-		args_list = TB_FALSE;
+		args_list = tb_false;
 	}
 
 #if 0
@@ -525,7 +527,8 @@ static tb_void_t it_chook_method_trace(tb_xml_node_t const* node, Method method,
 	if (args_list)
 	{
 		// init trace 
-		it_chook_method_trace_t trace = {0};
+		it_chook_method_trace_t trace;
+		tb_memset(&trace, 0, sizeof(it_chook_method_trace_t));
 		trace.maxn = 4096;
 		trace.meth = method;
 		trace.args_begn = it_chook_method_trace_args_begn;
@@ -557,11 +560,11 @@ static __tb_inline__ tb_size_t it_chook_method_size_for_class(tb_char_t const* c
 {
 	it_assert_and_check_return_val(class_name, 0);
 
-	tb_size_t 	method_n = 0;
+	tb_uint_t 	method_n = 0;
 	Method* 	method_s = class_copyMethodList(objc_getClass(class_name), &method_n);
 
 	if (method_s) free(method_s);
-	method_s = TB_NULL;
+	method_s = tb_null;
 
 	return method_n;
 }
@@ -571,11 +574,11 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 	it_assert_and_check_return_val(node && mmapfunc && mmaptail, mmapfunc);
 
 	// the class name
-	tb_char_t const* class_name = tb_pstring_cstr(&node->name);
+	tb_char_t const* class_name = tb_scoped_string_cstr(&node->name);
 	it_assert_and_check_return_val(class_name, mmapfunc);
 
 	// init method list
-	tb_size_t 	method_n = 0;
+	tb_uint_t 	method_n = 0;
 	Method* 	method_s = class_copyMethodList(objc_getClass(class_name), &method_n);
 //	it_print("class: %s, method: %u", class_name, method_n);
 	it_assert_and_check_return_val(method_n && method_s, mmapfunc);
@@ -602,7 +605,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				// hook
 #if defined(TB_ARCH_ARM)
 				tb_uint32_t* p = (tb_uint32_t*)mmapfunc;
-				it_assert_and_check_break(p + 11 <= mmaptail);
+				it_assert_and_check_break(p + 11 <= (tb_uint32_t*)mmaptail);
 				*p++ = A$push$r0_r9_lr$;
 				*p++ = A$movw_rd_im(A$r0, ((tb_uint32_t)node) & 0xffff);
 				*p++ = A$movt_rd_im(A$r0, ((tb_uint32_t)node) >> 16);
@@ -618,7 +621,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				mmapfunc = p;
 #elif defined(TB_ARCH_x86)
 				tb_byte_t* p = (tb_byte_t*)mmapfunc;
-				it_assert_and_check_break(p + 32 <= mmaptail);
+				it_assert_and_check_break(p + 32 <= (tb_byte_t*)mmaptail);
 
 				x86$pushf(p);
 				x86$pusha(p);
@@ -644,7 +647,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				mmapfunc = p;
 #elif defined(TB_ARCH_x64)
 				tb_byte_t* p = (tb_byte_t*)mmapfunc;
-				it_assert_and_check_break(p + 96 <= mmaptail);
+				it_assert_and_check_break(p + 96 <= (tb_byte_t*)mmaptail);
 
 				// 78-bytes
 				x64$pushf(p);
@@ -707,7 +710,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 
 	// free it
 	if (method_s) free(method_s);
-	method_s = TB_NULL;
+	method_s = tb_null;
 
 	// ok
 	return mmapfunc;
@@ -724,7 +727,7 @@ static __tb_inline__ tb_size_t it_chook_method_size()
 	while (node)
 	{
 		if (node->type == TB_XML_NODE_TYPE_ELEMENT) 
-			size += it_chook_method_size_for_class(tb_pstring_cstr(&node->name));
+			size += it_chook_method_size_for_class(tb_scoped_string_cstr(&node->name));
 		node = node->next;
 	}
 
@@ -735,7 +738,7 @@ static __tb_inline__ tb_size_t it_chook_method_size()
 static __tb_inline__ tb_pointer_t it_chook_method_done(tb_pointer_t mmapfunc, tb_cpointer_t mmaptail)
 {
 	// check
-	it_assert_and_check_return_val(g_cfg, TB_NULL);
+	it_assert_and_check_return_val(g_cfg, tb_null);
 
 	// walk
 	tb_xml_node_t* 	root = tb_xml_node_goto(g_cfg, "/itrace/class");
@@ -756,7 +759,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done(tb_pointer_t mmapfunc, tb
 static __tb_inline__ tb_bool_t it_cfg_init()
 {
 	// check
-	it_check_return_val(!g_cfg, TB_TRUE);
+	it_check_return_val(!g_cfg, tb_true);
 
 	// the root path
 	tb_char_t path[PATH_MAX] = {0};
@@ -768,14 +771,14 @@ static __tb_inline__ tb_bool_t it_cfg_init()
 	it_print("init: cfg: %s: ..", path);
 
 	// init
-	tb_gstream_t* gst = tb_gstream_init_from_url(path);
-	it_assert_and_check_return_val(gst, TB_FALSE);
+	tb_basic_stream_t* stream = tb_basic_stream_init_from_url(path);
+	it_assert_and_check_return_val(stream, tb_false);
 
 	// open
-	if (!tb_gstream_bopen(gst)) return TB_FALSE;
+	if (!tb_basic_stream_open(stream)) return tb_false;
 
 	// init reader
-	tb_handle_t reader = tb_xml_reader_init(gst);
+	tb_handle_t reader = tb_xml_reader_init(stream);
 	if (reader)
 	{
 		// load
@@ -787,37 +790,37 @@ static __tb_inline__ tb_bool_t it_cfg_init()
 	}
 	
 	// exit stream
-	tb_gstream_exit(gst);
+	tb_basic_stream_exit(stream);
 
 	// check
 	if (!tb_xml_node_goto(g_cfg, "/itrace/class") && !tb_xml_node_goto(g_cfg, "/itrace/function"))
 	{
 		tb_xml_node_exit(g_cfg);
-		g_cfg = TB_NULL;
+		g_cfg = tb_null;
 	}
 
 	// trace
 	it_print("init: cfg: %s", g_cfg? "ok" : "no");
 
 	// ok
-	return g_cfg? TB_TRUE : TB_FALSE;
+	return g_cfg? tb_true : tb_false;
 }
 static __tb_inline__ tb_bool_t it_objc_init()
 {
 	g_NSObject_respondsToSelector 	= class_getMethodImplementation(objc_getClass("NSObject"), @selector(respondsToSelector:));
 	g_NSString_UTF8String 			= class_getMethodImplementation(objc_getClass("NSString"), @selector(UTF8String));
-	it_assert_and_check_return_val(g_NSObject_respondsToSelector && g_NSString_UTF8String, TB_FALSE);
-	return TB_TRUE;
+	it_assert_and_check_return_val(g_NSObject_respondsToSelector && g_NSString_UTF8String, tb_false);
+	return tb_true;
 }
 static __tb_inline__ tb_bool_t it_chook_init()
 {
 	// check
-	it_assert_and_check_return_val(g_cfg, TB_FALSE);
+	it_assert_and_check_return_val(g_cfg, tb_false);
 
 	// the method size
 	tb_size_t method_size = it_chook_method_size();
-	it_assert_and_check_return_val(method_size, TB_FALSE);
-	it_print("chook: method_size: %u", method_size);
+	it_assert_and_check_return_val(method_size, tb_false);
+	it_print("chook: method_size: %lu", method_size);
 
 	// init mmap base
 #if defined(TB_ARCH_ARM)
@@ -831,22 +834,22 @@ static __tb_inline__ tb_bool_t it_chook_init()
 	tb_size_t 		mmapsize = mmapmaxn;
 #endif
 
-	tb_byte_t* 		mmapbase = (tb_byte_t*)mmap(TB_NULL, mmapsize, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-	it_assert_and_check_return_val(mmapbase != MAP_FAILED && mmapbase, TB_FALSE);
-	it_print("mmapmaxn: %u, mmapbase: %p", mmapmaxn, mmapbase);
+	tb_byte_t* 		mmapbase = (tb_byte_t*)mmap(tb_null, mmapsize, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
+	it_assert_and_check_return_val(mmapbase != MAP_FAILED && mmapbase, tb_false);
+	it_print("mmapmaxn: %lu, mmapbase: %p", mmapmaxn, mmapbase);
 
 	// hook
 	tb_pointer_t 	mmaptail = it_chook_method_done(mmapbase, mmapbase + mmapsize);
 
 	// clear cache
-	if (mmapbase != mmaptail) __clear_cache(mmapbase, mmaptail);
+	if (mmapbase != mmaptail) tb_clear_cache(mmapbase, mmaptail);
 
 	// protect: rx
 	tb_long_t ok = mprotect(mmapbase, mmapsize, PROT_READ | PROT_EXEC);
-	it_assert_and_check_return_val(!ok, TB_FALSE);
+	it_assert_and_check_return_val(!ok, tb_false);
 
 	// ok
-	return TB_TRUE;
+	return tb_true;
 }
 static tb_void_t __attribute__((constructor)) it_init()
 {

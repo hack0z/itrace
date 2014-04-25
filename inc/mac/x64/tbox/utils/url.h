@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		url.h
@@ -24,16 +24,36 @@
 #ifndef TB_UTILS_URL_H
 #define TB_UTILS_URL_H
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
-tb_size_t tb_url_encode(tb_char_t const* ib, tb_size_t in, tb_char_t* ob, tb_size_t on);
-tb_size_t tb_url_decode(tb_char_t const* ib, tb_size_t in, tb_char_t* ob, tb_size_t on);
+
+/*! encode url
+ *
+ * @param ib 		the input data
+ * @param in 		the input size
+ * @param ob 		the output data
+ * @param on 		the output size
+ *
+ * @return 			the real size
+ */
+tb_size_t 			tb_url_encode(tb_char_t const* ib, tb_size_t in, tb_char_t* ob, tb_size_t on);
+
+/*! decode url
+ *
+ * @param ib 		the input data
+ * @param in 		the input size
+ * @param ob 		the output data
+ * @param on 		the output size
+ *
+ * @return 			the real size
+ */
+tb_size_t 			tb_url_decode(tb_char_t const* ib, tb_size_t in, tb_char_t* ob, tb_size_t on);
 
 #endif
 

@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		utils.h
@@ -25,17 +25,21 @@
 #define TB_UTILS_H
 
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
-#include "time.h"
 #include "bits.h"
 #include "sha.h"
 #include "md5.h"
 #include "crc.h"
 #include "url.h"
+#include "dump.h"
+#include "used.h"
+#include "trace.h"
 #include "base32.h"
 #include "base64.h"
+#include "option.h"
+#include "singleton.h"
 
 #endif

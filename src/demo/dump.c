@@ -23,9 +23,9 @@ tb_int_t main(tb_int_t argc, tb_char_t const** argv)
 {
 #if defined(TB_ARCH_ARM)
 	__tb_asm__ __tb_volatile__("nop");
-	__tb_asm__ __tb_volatile__("push {r0-r9, lr}");
-	__tb_asm__ __tb_volatile__("bx r1");
-	__tb_asm__ __tb_volatile__("pop {r0-r9, lr}");
+//	__tb_asm__ __tb_volatile__("push {r0-r9, lr}");
+//	__tb_asm__ __tb_volatile__("bx r1");
+//	__tb_asm__ __tb_volatile__("pop {r0-r9, lr}");
 
 #elif defined(TB_ARCH_x86)
 
@@ -77,8 +77,8 @@ tb_int_t main(tb_int_t argc, tb_char_t const** argv)
 	__tb_asm__ __tb_volatile__("pushq $0x22334455");
 	__tb_asm__ __tb_volatile__("movq $0x1234567811223344, %rax");
 	__tb_asm__ __tb_volatile__("movq $0x1234567811223344, %rbx");
-	__tb_asm__ __tb_volatile__("callq %rax");
-	__tb_asm__ __tb_volatile__("callq %rbx");
+//	__tb_asm__ __tb_volatile__("callq %rax");
+//	__tb_asm__ __tb_volatile__("callq %rbx");
 	__tb_asm__ __tb_volatile__("addq $0x8, %rsp");
 	__tb_asm__ __tb_volatile__("popq %rbp");
 	__tb_asm__ __tb_volatile__("popq %rax");
@@ -109,6 +109,8 @@ tb_int_t main(tb_int_t argc, tb_char_t const** argv)
 	__tb_asm__ __tb_volatile__("ret");
 
 #endif
+
+	tb_used(test);
 
 	return 0;
 }

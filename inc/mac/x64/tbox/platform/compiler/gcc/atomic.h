@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		atomic.h
@@ -24,12 +24,12 @@
 #define TB_PLATFORM_COMPILER_GCC_ATOMIC_H
 
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
@@ -56,12 +56,12 @@
 #define tb_atomic_and_and_fetch(a, v) 		tb_atomic_and_and_fetch_sync(a, v)
 
 // FIXME: ios armv6: no defined refernece?
-#if !(defined(TB_CONFIG_OS_IOS) && TB_CONFIG_ARM_VERSION < 7)
+#if !(defined(TB_CONFIG_OS_IOS) && TB_ARCH_ARM_VERSION < 7)
 # 	define tb_atomic_fetch_and_xor(a, v) 		tb_atomic_fetch_and_xor_sync(a, v)
 # 	define tb_atomic_xor_and_fetch(a, v) 		tb_atomic_xor_and_fetch_sync(a, v)
 #endif
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * get & set
  */
 static __tb_inline__ tb_size_t tb_atomic_get_sync(tb_atomic_t* a)
@@ -100,7 +100,7 @@ static __tb_inline__ tb_size_t tb_atomic_fetch_and_pset_sync(tb_atomic_t* a, tb_
 	return __sync_val_compare_and_swap(a, p, v);
 }
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * fetch and ...
  */
 static __tb_inline__ tb_long_t tb_atomic_fetch_and_inc_sync(tb_atomic_t* a)
@@ -124,7 +124,7 @@ static __tb_inline__ tb_long_t tb_atomic_fetch_and_sub_sync(tb_atomic_t* a, tb_l
 	return __sync_fetch_and_sub(a, v);
 }
 
-#if !(defined(TB_CONFIG_OS_IOS) && (TB_CONFIG_ARM_VERSION < 7))
+#if !(defined(TB_CONFIG_OS_IOS) && (TB_ARCH_ARM_VERSION < 7))
 static __tb_inline__ tb_size_t tb_atomic_fetch_and_xor_sync(tb_atomic_t* a, tb_size_t v)
 {
 	tb_assert(a);
@@ -142,7 +142,7 @@ static __tb_inline__ tb_size_t tb_atomic_fetch_and_or_sync(tb_atomic_t* a, tb_si
 	return __sync_fetch_and_or(a, v);
 }
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * ... and fetch
  */
 static __tb_inline__ tb_long_t tb_atomic_inc_and_fetch_sync(tb_atomic_t* a)
@@ -166,7 +166,7 @@ static __tb_inline__ tb_long_t tb_atomic_sub_and_fetch_sync(tb_atomic_t* a, tb_l
 	return __sync_sub_and_fetch(a, v);
 }
 
-#if !(defined(TB_CONFIG_OS_IOS) && (TB_CONFIG_ARM_VERSION < 7))
+#if !(defined(TB_CONFIG_OS_IOS) && (TB_ARCH_ARM_VERSION < 7))
 static __tb_inline__ tb_size_t tb_atomic_xor_and_fetch_sync(tb_atomic_t* a, tb_size_t v)
 {
 	tb_assert(a);

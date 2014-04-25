@@ -14,7 +14,7 @@
  * along with TBox; 
  * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
  * 
- * Copyright (C) 2009 - 2012, ruki All rights reserved.
+ * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
  * @author		ruki
  * @file		dns.h
@@ -25,15 +25,22 @@
 #define TB_PLATFORM_DNS_H
 
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
 
-/* ///////////////////////////////////////////////////////////////////////
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
-tb_void_t 			tb_dns_local_init();
-tb_void_t 			tb_dns_local_exit();
+
+/*! init dns 
+ *
+ * @return 	tb_true or tb_false
+ */
+tb_bool_t 	tb_dns_init(tb_noarg_t);
+
+/// exit dns
+tb_void_t 	tb_dns_exit(tb_noarg_t);
 
 #endif
