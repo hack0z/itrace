@@ -2,7 +2,7 @@
 #define TB_CONFIG_H
 
 // build version
-#define TB_CONFIG_VERSION_BUILD 		201404251549
+#define TB_CONFIG_VERSION_BUILD 		201404281454
 
 // debug
 #define TB_CONFIG_DEBUG					(0)
@@ -96,5 +96,11 @@
 
 // polarssl
 //#define TB_CONFIG_HAVE_POLARSSL	
+
+// mysql
+//#define TB_CONFIG_HAVE_MYSQL
+
+// sqlite3
+#define TB_CONFIG_HAVE_SQLITE3
 
 #endif

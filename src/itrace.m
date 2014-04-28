@@ -186,7 +186,7 @@ static __tb_inline__ tb_void_t tb_clear_cache(tb_pointer_t start, tb_pointer_t e
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_objc(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(tb_pointer_t) == argb);
+	tb_assert_return(sizeof(tb_pointer_t) == argb);
 
 	// init
 #if 0
@@ -207,7 +207,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_objc(it_chook_meth
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_selector(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(SEL) == argb);
+	tb_assert_return(sizeof(SEL) == argb);
 
 	// init
 	SEL 				sel = tb_va_arg(trace->args_list, SEL);
@@ -219,7 +219,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_selector(it_chook_
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint8(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(tb_sint32_t) == argb);
+	tb_assert_return(sizeof(tb_sint32_t) == argb);
 
 	// init
 	tb_long_t val = (tb_sint8_t)tb_va_arg(trace->args_list, tb_sint32_t);
@@ -230,7 +230,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint8(it_chook_met
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint8(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(tb_uint32_t) == argb);
+	tb_assert_return(sizeof(tb_uint32_t) == argb);
 
 	// init
 	tb_size_t val = (tb_uint8_t)tb_va_arg(trace->args_list, tb_uint32_t);
@@ -241,7 +241,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint8(it_chook_met
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint16(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(tb_sint32_t) == argb);
+	tb_assert_return(sizeof(tb_sint32_t) == argb);
 
 	// init
 	tb_long_t val = (tb_sint16_t)tb_va_arg(trace->args_list, tb_sint32_t);
@@ -252,7 +252,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint16(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint16(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(tb_uint32_t) == argb);
+	tb_assert_return(sizeof(tb_uint32_t) == argb);
 
 	// init
 	tb_size_t val = (tb_uint16_t)tb_va_arg(trace->args_list, tb_uint32_t);
@@ -263,7 +263,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint16(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint32(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(tb_sint32_t) == argb);
+	tb_assert_return(sizeof(tb_sint32_t) == argb);
 
 	// init
 	tb_long_t val = (tb_sint32_t)tb_va_arg(trace->args_list, tb_sint32_t);
@@ -274,7 +274,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint32(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint32(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(tb_uint32_t) == argb);
+	tb_assert_return(sizeof(tb_uint32_t) == argb);
 
 	// init
 	tb_size_t val = (tb_uint32_t)tb_va_arg(trace->args_list, tb_uint32_t);
@@ -285,7 +285,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint32(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint64(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(tb_sint64_t) == argb);
+	tb_assert_return(sizeof(tb_sint64_t) == argb);
 
 	// init
 	tb_sint64_t val = (tb_sint64_t)tb_va_arg(trace->args_list, tb_sint64_t);
@@ -296,7 +296,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint64(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint64(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(tb_uint64_t) == argb);
+	tb_assert_return(sizeof(tb_uint64_t) == argb);
 
 	// init
 	tb_uint64_t val = (tb_uint64_t)tb_va_arg(trace->args_list, tb_uint64_t);
@@ -307,7 +307,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint64(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_long(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(tb_long_t) == argb);
+	tb_assert_return(sizeof(tb_long_t) == argb);
 
 	// init
 	tb_long_t val = (tb_long_t)tb_va_arg(trace->args_list, tb_long_t);
@@ -318,7 +318,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_long(it_chook_meth
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_size(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(tb_size_t) == argb);
+	tb_assert_return(sizeof(tb_size_t) == argb);
 
 	// init
 	tb_size_t val = (tb_size_t)tb_va_arg(trace->args_list, tb_size_t);
@@ -329,7 +329,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_size(it_chook_meth
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_float(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(it_float_t) == argb);
+	tb_assert_return(sizeof(it_float_t) == argb);
 
 	// init
 	it_float_t val = (it_float_t)tb_va_arg(trace->args_list, it_float_t);
@@ -340,7 +340,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_float(it_chook_met
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_double(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(it_double_t) == argb);
+	tb_assert_return(sizeof(it_double_t) == argb);
 
 	// init
 	it_double_t val = (it_double_t)tb_va_arg(trace->args_list, it_double_t);
@@ -351,7 +351,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_double(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_data(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(tb_byte_t*) == argb);
+	tb_assert_return(sizeof(tb_byte_t*) == argb);
 
 	// init
 	tb_byte_t* 	b = (tb_byte_t*)tb_va_arg(trace->args_list, tb_byte_t*);
@@ -372,7 +372,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_data(it_chook_meth
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_pointer(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(sizeof(tb_pointer_t) == argb);
+	tb_assert_return(sizeof(tb_pointer_t) == argb);
 
 	// init
 	tb_pointer_t val = (tb_pointer_t)tb_va_arg(trace->args_list, tb_pointer_t);
@@ -383,7 +383,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_pointer(it_chook_m
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_void(it_chook_method_trace_t* trace, tb_size_t argb)
 {	
 	// check
-	it_assert_return(!argb);
+	tb_assert_return(!argb);
 
 	// format
 	if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <void>");
@@ -426,8 +426,8 @@ static __tb_inline__ tb_void_t it_chook_method_trace_arguments(it_chook_method_t
 {	
 	// init the method type encoding
 	tb_char_t const* type = method_getTypeEncoding(trace->meth);
-	it_assert_and_check_return(type);
-	it_trace("type: %s", type);
+	tb_assert_and_check_return(type);
+	tb_trace_d("type: %s", type);
 
 	// walk arguments
 	tb_size_t 			argi = 0;
@@ -443,7 +443,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_arguments(it_chook_method_t
 		argb = it_etype_argument_size(type, argi);
 
 		// trace
-		it_trace("argt: %s, argb: %lu", argt, argb);
+		tb_trace_d("argt: %s, argb: %lu", argt, argb);
 
 		// skip
 		it_chook_method_trace_args_skip(trace);
@@ -475,14 +475,14 @@ static __tb_inline__ tb_void_t it_chook_method_trace_skip_return(it_chook_method
 	// init the return type
 	tb_char_t type[512 + 1] = {0};
 	method_getReturnType(trace->meth, type, 512);
-	it_trace("return: %s", type);
+	tb_trace_d("return: %s", type);
 
 	// struct?
 	if (type[0] == '{')
 	{
 		// init return type size
 		tb_size_t size = it_etype_size(type);
-		it_trace("size: %lu", size);
+		tb_trace_d("size: %lu", size);
 
 		// has argument: struct*?
 #ifdef TB_ARCH_ARM
@@ -492,7 +492,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_skip_return(it_chook_method
 #endif
 		{
 			// skip the argument first
-			it_trace("skip");
+			tb_trace_d("skip");
 			__tb_volatile__ tb_pointer_t pstruct = (tb_pointer_t)tb_va_arg(trace->args_list, tb_pointer_t); tb_used(pstruct);
 			trace->args_size += sizeof(tb_pointer_t);
 		}
@@ -500,11 +500,11 @@ static __tb_inline__ tb_void_t it_chook_method_trace_skip_return(it_chook_method
 }
 static tb_void_t it_chook_method_trace(tb_xml_node_t const* node, Method method, ...)
 {
-	it_assert_and_check_return(node && method);
+	tb_assert_and_check_return(node && method);
 
 	// the class name
 	tb_char_t const* cname = tb_scoped_string_cstr(&node->name);
-	it_assert_and_check_return(cname);
+	tb_assert_and_check_return(cname);
 
 	// tracing arguments?
 	tb_bool_t args_list = tb_true;
@@ -519,7 +519,7 @@ static tb_void_t it_chook_method_trace(tb_xml_node_t const* node, Method method,
 	{
 		// the method name
 		tb_char_t const* mname = sel_getName(method_getName(method));
-		it_print("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
+		tb_trace_i("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
 		tb_msleep(10);
 	}
 #endif
@@ -547,18 +547,18 @@ static tb_void_t it_chook_method_trace(tb_xml_node_t const* node, Method method,
 
 		// trace
 		tb_char_t const* mname = sel_getName(method_getName(method));
-		it_print("[%lx]: [%s %s]%s", (tb_size_t)pthread_self(), cname, mname? mname : "", trace.info);
+		tb_trace_i("[%lx]: [%s %s]%s", (tb_size_t)pthread_self(), cname, mname? mname : "", trace.info);
 	}
 	else
 	{
 		// the method name
 		tb_char_t const* mname = sel_getName(method_getName(method));
-		it_print("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
+		tb_trace_i("[%lx]: [%s %s]", (tb_size_t)pthread_self(), cname, mname? mname : "");
 	}
 }
 static __tb_inline__ tb_size_t it_chook_method_size_for_class(tb_char_t const* class_name)
 {
-	it_assert_and_check_return_val(class_name, 0);
+	tb_assert_and_check_return_val(class_name, 0);
 
 	tb_uint_t 	method_n = 0;
 	Method* 	method_s = class_copyMethodList(objc_getClass(class_name), &method_n);
@@ -571,17 +571,17 @@ static __tb_inline__ tb_size_t it_chook_method_size_for_class(tb_char_t const* c
 static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t const* node, tb_pointer_t mmapfunc, tb_cpointer_t mmaptail)
 {
 	// check
-	it_assert_and_check_return_val(node && mmapfunc && mmaptail, mmapfunc);
+	tb_assert_and_check_return_val(node && mmapfunc && mmaptail, mmapfunc);
 
 	// the class name
 	tb_char_t const* class_name = tb_scoped_string_cstr(&node->name);
-	it_assert_and_check_return_val(class_name, mmapfunc);
+	tb_assert_and_check_return_val(class_name, mmapfunc);
 
 	// init method list
 	tb_uint_t 	method_n = 0;
 	Method* 	method_s = class_copyMethodList(objc_getClass(class_name), &method_n);
-//	it_print("class: %s, method: %u", class_name, method_n);
-	it_assert_and_check_return_val(method_n && method_s, mmapfunc);
+//	tb_trace_i("class: %s, method: %u", class_name, method_n);
+	tb_assert_and_check_return_val(method_n && method_s, mmapfunc);
 
 	// walk methods
 	tb_size_t i = 0;
@@ -597,7 +597,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 			IMP imp = method_getImplementation(method);
 
 			// trace
-//			it_print("[%s %s]: %p", class_name, sel_getName(sel), imp);
+//			tb_trace_i("[%s %s]: %p", class_name, sel_getName(sel), imp);
 
 			// ok?
 			if (imp)
@@ -605,7 +605,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				// hook
 #if defined(TB_ARCH_ARM)
 				tb_uint32_t* p = (tb_uint32_t*)mmapfunc;
-				it_assert_and_check_break(p + 11 <= (tb_uint32_t*)mmaptail);
+				tb_assert_and_check_break(p + 11 <= (tb_uint32_t*)mmaptail);
 				*p++ = A$push$r0_r9_lr$;
 				*p++ = A$movw_rd_im(A$r0, ((tb_uint32_t)node) & 0xffff);
 				*p++ = A$movt_rd_im(A$r0, ((tb_uint32_t)node) >> 16);
@@ -621,7 +621,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				mmapfunc = p;
 #elif defined(TB_ARCH_x86)
 				tb_byte_t* p = (tb_byte_t*)mmapfunc;
-				it_assert_and_check_break(p + 32 <= (tb_byte_t*)mmaptail);
+				tb_assert_and_check_break(p + 32 <= (tb_byte_t*)mmaptail);
 
 				x86$pushf(p);
 				x86$pusha(p);
@@ -642,12 +642,12 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				x86$nop(p);
 				x86$nop(p);
 
-				it_assert_and_check_break(!((tb_uint32_t)p & 0x3));
+				tb_assert_and_check_break(!((tb_uint32_t)p & 0x3));
 				method_setImplementation(method, (IMP)mmapfunc);
 				mmapfunc = p;
 #elif defined(TB_ARCH_x64)
 				tb_byte_t* p = (tb_byte_t*)mmapfunc;
-				it_assert_and_check_break(p + 96 <= (tb_byte_t*)mmaptail);
+				tb_assert_and_check_break(p + 96 <= (tb_byte_t*)mmaptail);
 
 				// 78-bytes
 				x64$pushf(p);
@@ -700,7 +700,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 //				x64$nop(p);
 //				x64$nop(p);
 
-				it_assert_and_check_break(!((tb_uint32_t)p & 0x7));
+				tb_assert_and_check_break(!((tb_uint32_t)p & 0x7));
 				method_setImplementation(method, (IMP)mmapfunc);
 				mmapfunc = p;	
 #endif
@@ -718,7 +718,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 static __tb_inline__ tb_size_t it_chook_method_size()
 {
 	// check
-	it_assert_and_check_return_val(g_cfg, 0);
+	tb_assert_and_check_return_val(g_cfg, 0);
 
 	// walk
 	tb_xml_node_t* 	root = tb_xml_node_goto(g_cfg, "/itrace/class");
@@ -738,7 +738,7 @@ static __tb_inline__ tb_size_t it_chook_method_size()
 static __tb_inline__ tb_pointer_t it_chook_method_done(tb_pointer_t mmapfunc, tb_cpointer_t mmaptail)
 {
 	// check
-	it_assert_and_check_return_val(g_cfg, tb_null);
+	tb_assert_and_check_return_val(g_cfg, tb_null);
 
 	// walk
 	tb_xml_node_t* 	root = tb_xml_node_goto(g_cfg, "/itrace/class");
@@ -759,20 +759,20 @@ static __tb_inline__ tb_pointer_t it_chook_method_done(tb_pointer_t mmapfunc, tb
 static __tb_inline__ tb_bool_t it_cfg_init()
 {
 	// check
-	it_check_return_val(!g_cfg, tb_true);
+	tb_check_return_val(!g_cfg, tb_true);
 
 	// the root path
 	tb_char_t path[PATH_MAX] = {0};
 	getcwd(path, PATH_MAX);
-	it_print("init: root: %s", path);
+	tb_trace_i("init: root: %s", path);
 
 	// the itrace.xml path
 	if (!realpath("./itrace.xml", path)) tb_strcpy(path, IT_PATH_CFG);
-	it_print("init: cfg: %s: ..", path);
+	tb_trace_i("init: cfg: %s: ..", path);
 
 	// init
 	tb_basic_stream_t* stream = tb_basic_stream_init_from_url(path);
-	it_assert_and_check_return_val(stream, tb_false);
+	tb_assert_and_check_return_val(stream, tb_false);
 
 	// open
 	if (!tb_basic_stream_open(stream)) return tb_false;
@@ -783,7 +783,7 @@ static __tb_inline__ tb_bool_t it_cfg_init()
 	{
 		// load
 		g_cfg = tb_xml_reader_load(reader);
-		it_assert(g_cfg);
+		tb_assert(g_cfg);
 
 		// exit reader & writer 
 		tb_xml_reader_exit(reader);
@@ -800,7 +800,7 @@ static __tb_inline__ tb_bool_t it_cfg_init()
 	}
 
 	// trace
-	it_print("init: cfg: %s", g_cfg? "ok" : "no");
+	tb_trace_i("init: cfg: %s", g_cfg? "ok" : "no");
 
 	// ok
 	return g_cfg? tb_true : tb_false;
@@ -809,18 +809,20 @@ static __tb_inline__ tb_bool_t it_objc_init()
 {
 	g_NSObject_respondsToSelector 	= class_getMethodImplementation(objc_getClass("NSObject"), @selector(respondsToSelector:));
 	g_NSString_UTF8String 			= class_getMethodImplementation(objc_getClass("NSString"), @selector(UTF8String));
-	it_assert_and_check_return_val(g_NSObject_respondsToSelector && g_NSString_UTF8String, tb_false);
+	tb_assert_and_check_return_val(g_NSObject_respondsToSelector && g_NSString_UTF8String, tb_false);
 	return tb_true;
 }
 static __tb_inline__ tb_bool_t it_chook_init()
 {
 	// check
-	it_assert_and_check_return_val(g_cfg, tb_false);
+	tb_assert_and_check_return_val(g_cfg, tb_false);
 
 	// the method size
 	tb_size_t method_size = it_chook_method_size();
-	it_assert_and_check_return_val(method_size, tb_false);
-	it_print("chook: method_size: %lu", method_size);
+	tb_assert_and_check_return_val(method_size, tb_false);
+
+	// trace
+	tb_trace_i("chook: method_size: %lu", method_size);
 
 	// init mmap base
 #if defined(TB_ARCH_ARM)
@@ -835,8 +837,10 @@ static __tb_inline__ tb_bool_t it_chook_init()
 #endif
 
 	tb_byte_t* 		mmapbase = (tb_byte_t*)mmap(tb_null, mmapsize, PROT_READ | PROT_WRITE, MAP_ANON | MAP_PRIVATE, -1, 0);
-	it_assert_and_check_return_val(mmapbase != MAP_FAILED && mmapbase, tb_false);
-	it_print("mmapmaxn: %lu, mmapbase: %p", mmapmaxn, mmapbase);
+	tb_assert_and_check_return_val(mmapbase != MAP_FAILED && mmapbase, tb_false);
+
+	// trace
+	tb_trace_i("mmapmaxn: %lu, mmapbase: %p", mmapmaxn, mmapbase);
 
 	// hook
 	tb_pointer_t 	mmaptail = it_chook_method_done(mmapbase, mmapbase + mmapsize);
@@ -846,7 +850,7 @@ static __tb_inline__ tb_bool_t it_chook_init()
 
 	// protect: rx
 	tb_long_t ok = mprotect(mmapbase, mmapsize, PROT_READ | PROT_EXEC);
-	it_assert_and_check_return_val(!ok, tb_false);
+	tb_assert_and_check_return_val(!ok, tb_false);
 
 	// ok
 	return tb_true;
@@ -854,7 +858,7 @@ static __tb_inline__ tb_bool_t it_chook_init()
 static tb_void_t __attribute__((constructor)) it_init()
 {
 	// trace
-	it_print("init: ..");
+	tb_trace_i("init: ..");
 
 	// init cfg
 	if (!it_cfg_init()) return ;
@@ -866,5 +870,5 @@ static tb_void_t __attribute__((constructor)) it_init()
 	if (!it_chook_init()) return ;
 	
 	// trace
-	it_print("init: ok");
+	tb_trace_i("init: ok");
 }

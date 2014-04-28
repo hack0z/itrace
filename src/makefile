@@ -34,6 +34,10 @@ INC_DIR 						+= $(FWKROOT)/Foundation.framework/Headers/ \
 # demo
 SUB_PROS 						= demo
 
+# headers
+INC_FILES 						+= \
+								config.h
+
 # suffix
 include $(PRO_DIR)/suffix.mak
 

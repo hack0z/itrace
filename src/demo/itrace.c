@@ -33,6 +33,26 @@
 // stack size
 #define it_stack_size 				((mach_vm_size_t)(32 * 1024))
 
+// arm thread state
+#ifndef ARM_THREAD_STATE
+# 	define ARM_THREAD_STATE 		(1)
+#endif
+
+// arm64 thread state
+#ifndef ARM_THREAD_STATE64 
+# 	define ARM_THREAD_STATE64 		(1)
+#endif
+
+// x86 thread state
+#ifndef x86_THREAD_STATE32
+# 	define x86_THREAD_STATE32 		(1)
+#endif
+
+// x86_64 thread state
+#ifndef x86_THREAD_STATE64
+# 	define x86_THREAD_STATE64 		(4)
+#endif
+
 /* //////////////////////////////////////////////////////////////////////////////////////
  * declaration
  */
@@ -117,7 +137,6 @@ typedef struct __it_dyld_all_image_infos_64_t
 }it_dyld_all_image_infos_64_t;
 
 // the thread state type
-#define ARM_THREAD_STATE 1
 typedef struct __it_arm_thread_state_t
 {
 	tb_uint32_t 		r[13];
@@ -125,16 +144,26 @@ typedef struct __it_arm_thread_state_t
 	tb_uint32_t 		lr;
 	tb_uint32_t 		pc;
 	tb_uint32_t 		cpsr;
+
 }it_arm_thread_state_t;
 
-#define x86_THREAD_STATE32 1
+typedef struct __it_arm_thread_state64_t
+{
+	tb_uint64_t 		x[29];
+	tb_uint64_t 		fp;
+	tb_uint64_t 		lr;
+	tb_uint64_t 		sp;
+	tb_uint64_t 		pc;
+	tb_uint32_t 		cpsr;
+
+}it_arm_thread_state64_t;
+
 typedef struct __it_x86_thread_state32_t
 {
 	tb_uint32_t 		eax, ebx, ecx, edx, edi, esi, ebp, esp, ss, eflags, eip, cs, ds, es, fs, gs;
 
 }it_x86_thread_state32_t;
 
-#define x86_THREAD_STATE64 4
 typedef struct __it_x86_thread_state64_t
 {
 	tb_uint64_t 		rax, rbx, rcx, rdx, rdi, rsi, rbp, rsp, r8, r9, r10, r11, r12, r13, r14, r15, rip, rflags, cs, fs, gs;
@@ -311,7 +340,7 @@ static kern_return_t it_stuff(task_t task, cpu_type_t* cputype, it_addr_bundle_t
 	if (u.data.version <= 1) return tb_false;
 
 	// read mach header
-#if defined(TB_ARCH_x86) || defined(TB_ARCH_x64)
+#if defined(TB_ARCH_x86) || defined(TB_ARCH_x64) || defined(TB_ARCH_ARM64)
 	tb_bool_t proc64 = u.data64.dyldImageLoadAddress > 0? tb_true : tb_false;
 #else
 	tb_bool_t proc64 = tb_false;
@@ -387,14 +416,25 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	// check
 	tb_assert_and_check_return_val(pid && path, tb_false);
 
+	// trace
+	tb_trace_d("inject: pid: %lu, path: %s: ..", (tb_size_t)pid, path);
+
 	// pid => task
 	task_t task = 0;
-	if (task_for_pid(mach_task_self(), (tb_int_t)pid, &task)) return tb_false;
+	if (task_for_pid(mach_task_self(), (tb_int_t)pid, &task)) 
+	{
+		tb_trace_i("task_for_pid: %lu failed, errno: %d", (tb_size_t)pid, errno);
+		return tb_false;
+	}
+
+	// trace
 	tb_trace_d("task: %u", task);
 
 	// stuff
 	cpu_type_t cputype; it_addr_bundle_t addrs;
 	if (!it_stuff(task, &cputype, &addrs)) return tb_false;
+
+	// trace
 	tb_trace_d("dlopen: %p", addrs.dlopen);
 	tb_trace_d("syscall: %p", addrs.syscall);
 
@@ -414,6 +454,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	union
 	{
 		it_arm_thread_state_t 		arm;
+		it_arm_thread_state64_t 	arm64;
 		it_x86_thread_state32_t 	x86;
 		it_x86_thread_state64_t 	x64;
 		natural_t 					nat;
@@ -427,8 +468,8 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	case CPU_TYPE_ARM:
 		{
 			tb_trace_i("cputype: arm");
-			memcpy(&state.arm.r[0], args_32 + 1, 4 * 4);
-			if (mach_vm_write(task, stack_end, (vm_offset_t)it_address_cast(args_32 + 5), 2 * 4)) return tb_false;
+			memcpy(&state.arm.r[0], args_32 + 1, 4 * sizeof(tb_uint32_t));
+			if (mach_vm_write(task, stack_end, (vm_offset_t)it_address_cast(args_32 + 5), 2 * sizeof(tb_uint32_t))) return tb_false;
 
 			state.arm.sp 	= (tb_uint32_t) stack_end;
 			state.arm.pc 	= (tb_uint32_t) addrs.syscall;
@@ -436,6 +477,19 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 
 			state_flavor 	= ARM_THREAD_STATE;
 			state_count 	= sizeof(state.arm) / sizeof(state.nat);
+		}
+		break;
+	case (CPU_TYPE_ARM | CPU_ARCH_ABI64):
+		{
+			tb_trace_i("cputype: arm64");
+			memcpy(&state.arm64.x[0], args_64 + 1, 6 * sizeof(tb_uint64_t));
+
+			state.arm64.sp 	= (tb_uint64_t) stack_end;
+			state.arm64.pc 	= (tb_uint64_t) addrs.syscall;
+			state.arm64.lr 	= (tb_uint64_t) args_64[0];
+
+			state_flavor 	= ARM_THREAD_STATE64;
+			state_count 	= sizeof(state.arm64) / sizeof(state.nat);
 		}
 		break;
 	case CPU_TYPE_X86:
@@ -468,6 +522,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 		}
 		break;
 	default:
+		tb_trace_i("cputype: unknown: %lx", (tb_size_t)cputype);
 		return tb_false;
 	}
 
@@ -500,16 +555,22 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 		// recv msg
 		it_exception_message_t msg;
 		if (mach_msg_overwrite(tb_null, MACH_RCV_MSG, 0, sizeof(msg), exc, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL, (tb_pointer_t) &msg, sizeof(msg))) return tb_false;
-		tb_trace_d("msg");
+		tb_trace_d("recv: msg");
 
 		// check
-		tb_assert_and_check_return_val((msg.Head.msgh_bits & MACH_MSGH_BITS_COMPLEX)
-			&& (msg.msgh_body.msgh_descriptor_count != 0)
-			&& (msg.Head.msgh_size >= offsetof(it_exception_message_t, old_state))
-			&& (msg.old_stateCnt == state_count)
-			&& (msg.Head.msgh_size >= offsetof(it_exception_message_t, old_state) + msg.old_stateCnt * sizeof(natural_t)), tb_false);
+		tb_assert_and_check_return_val((msg.Head.msgh_bits & MACH_MSGH_BITS_COMPLEX), tb_false);
+		tb_assert_and_check_return_val((msg.msgh_body.msgh_descriptor_count != 0), tb_false);
+		tb_assert_and_check_return_val((msg.Head.msgh_size >= offsetof(it_exception_message_t, old_state)), tb_false);
+		tb_assert_and_check_return_val((msg.old_stateCnt == state_count), tb_false);
+		tb_assert_and_check_return_val((msg.Head.msgh_size >= offsetof(it_exception_message_t, old_state) + msg.old_stateCnt * sizeof(natural_t)), tb_false);
+
+		// the msg state
 		memcpy(&state, msg.old_state, sizeof(state));
 
+		// dump
+//		tb_dump_data((tb_byte_t const*)&state, sizeof(state));
+
+		// done
 		if (msg.thread.name == thread)
 		{
 			tb_trace_d("terminate");
@@ -521,9 +582,18 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 			tb_bool_t cond = tb_false;
 			switch(cputype)
 			{
-			case CPU_TYPE_ARM: 		cond = ((state.arm.pc & ~1) == 0xdeadbeee)? tb_true : tb_false; break;
-			case CPU_TYPE_X86: 		cond = (state.x86.eip == 0xdeadbeef)? tb_true : tb_false; break;
-			case CPU_TYPE_X86_64: 	cond = (state.x64.rip == 0xdeadbeef)? tb_true : tb_false; break;
+			case CPU_TYPE_ARM: 		
+				cond = ((state.arm.pc & ~1) == 0xdeadbeee)? tb_true : tb_false;
+				break;
+			case (CPU_TYPE_ARM | CPU_ARCH_ABI64):
+				cond = ((state.arm64.pc & ~1) == 0xdeadbeee)? tb_true : tb_false;
+				break;
+			case CPU_TYPE_X86:
+				cond = (state.x86.eip == 0xdeadbeef)? tb_true : tb_false; 
+				break;
+			case CPU_TYPE_X86_64:
+				cond = (state.x64.rip == 0xdeadbeef)? tb_true : tb_false;
+				break;
 			}
 
 			tb_trace_d("cond: %d, started_dlopen: %d", cond, started_dlopen);
@@ -550,6 +620,14 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 						state.arm.r[1] = RTLD_LAZY;
 						state.arm.pc = (tb_uint32_t) addrs.dlopen;
 						state.arm.lr = 0xdeadbeef;
+					}
+					break;
+				case (CPU_TYPE_ARM | CPU_ARCH_ABI64):
+					{
+						state.arm64.x[0] = (tb_uint64_t) stack_address;
+						state.arm64.x[1] = RTLD_LAZY;
+						state.arm64.pc = (tb_uint64_t) addrs.dlopen;
+						state.arm64.lr = 0xdeadbeef;
 					}
 					break;
 				case CPU_TYPE_X86:
@@ -688,6 +766,8 @@ tb_int_t main(tb_int_t argc, tb_char_t const** argv)
 	// the itrace.dylib path
 	tb_char_t path[PATH_MAX] = {0};
 	if (!realpath(argv[2]? argv[2] : "./itrace.dylib", path)) return -1;
+
+	// trace
 	tb_trace_d("path: %s", path);
 
 	// wait pid

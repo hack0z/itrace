@@ -49,7 +49,7 @@ static __tb_inline__ tb_long_t it_etype_subtype_util(tb_char_t const* type, tb_c
 		type += 1;
 	}
 
-	it_assert(0);
+	tb_assert(0);
 	return 0;
 }
 
@@ -285,7 +285,7 @@ static __tb_inline__ tb_char_t const* it_etype_size_struct(it_etype_t* etype, tb
 	tb_char_t const* p = type + 1;
 
 	// check
-	it_assert_and_check_return_val(etype->arrn == 1, p);
+	tb_assert_and_check_return_val(etype->arrn == 1, p);
 
 	// in struct
 	etype->stct = 1;
@@ -316,7 +316,7 @@ static __tb_inline__ tb_char_t const* it_etype_size_array(it_etype_t* etype, tb_
 	tb_char_t const* p = type + 1;
 
 	// check
-	it_assert_and_check_return_val(etype->arrn == 1, p);
+	tb_assert_and_check_return_val(etype->arrn == 1, p);
 
 	// size
 	etype->arrn = tb_atoi(p);
