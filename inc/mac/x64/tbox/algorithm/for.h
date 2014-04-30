@@ -65,7 +65,7 @@
 			if (item##_iterator && item##_head != item##_tail) \
 				for ( 	; \
 						item##_itor != item##_tail && ((item = (type)tb_iterator_item(item##_iterator, item##_itor)), 1); \
-						item##_itor = tb_iterator_next(item##_iterator, item##_itor)) 
+						item##_itor = tb_iterator_next(item##_iterator, item##_itor))
 
 /*! for all items using iterator
  *

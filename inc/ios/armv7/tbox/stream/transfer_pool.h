@@ -28,12 +28,18 @@
  * includes
  */
 #include "prefix.h"
-#include "transfer_stream.h"
+#include "transfer.h"
 #include "../asio/asio.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
+
+/*! the transfer pool instance
+ *
+ * @return 				the transfer pool instance
+ */
+tb_handle_t 			tb_transfer_pool(tb_noarg_t);
 
 /*! init transfer pool
  *
@@ -63,12 +69,6 @@ tb_void_t 				tb_transfer_pool_kill(tb_handle_t pool);
  */
 tb_size_t 				tb_transfer_pool_size(tb_handle_t pool);
 
-/*! the transfer pool instance
- *
- * @return 				the transfer pool instance
- */
-tb_handle_t 			tb_transfer_pool_instance(tb_noarg_t);
-
 /*! done transfer from iurl to ourl
  *
  * @param pool 			the transfer pool 
@@ -80,6 +80,6 @@ tb_handle_t 			tb_transfer_pool_instance(tb_noarg_t);
  *
  * @return 				tb_true or tb_false
  */
-tb_bool_t 				tb_transfer_pool_done(tb_handle_t pool, tb_char_t const* iurl, tb_char_t const* ourl, tb_hize_t offset, tb_transfer_stream_save_func_t func, tb_pointer_t priv);
+tb_bool_t 				tb_transfer_pool_done(tb_handle_t pool, tb_char_t const* iurl, tb_char_t const* ourl, tb_hize_t offset, tb_transfer_save_func_t func, tb_pointer_t priv);
 
 #endif

@@ -190,9 +190,15 @@ typedef struct __tb_aicp_t
  * interfaces
  */
 
+/*! the aicp instance
+ *
+ * @return 			the aicp
+ */
+tb_aicp_t* 			tb_aicp(tb_noarg_t);
+
 /*! init the aicp
  *
- * @param maxn 		the aico maxn
+ * @param maxn 		the aico maxn, using the default maxn if be zero
  *
  * @return 			the aicp
  */

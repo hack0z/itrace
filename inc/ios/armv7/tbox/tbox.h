@@ -35,6 +35,7 @@ extern "C" {
 #include "algorithm/algorithm.h"
 #include "container/container.h"
 #include "platform/platform.h"
+#include "database/database.h"
 #include "network/network.h"
 #include "charset/charset.h"
 #include "memory/memory.h"

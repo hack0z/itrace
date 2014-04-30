@@ -104,6 +104,10 @@ extern kern_return_t mach_vm_write
 );
 #endif
 
+#ifdef TB_ARCH_ARM64
+typedef bool (*it_MSHookProcess_t)(pid_t pid, tb_char_t const* library);
+#endif
+
 /* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
@@ -223,7 +227,10 @@ typedef struct __it_symtab_bundle_t
  */
 static __tb_inline__ tb_void_t it_handle_sym(tb_char_t const* sym, tb_uint32_t size, mach_vm_address_t value, it_addr_bundle_t* bundle)
 {
-//	tb_trace_d("sym: %s", sym);
+	// trace
+//	tb_trace_d("sym: %s, %p", sym, value);
+
+	// save
 	switch (sym[1])
 	{
 	case 'd':
@@ -419,6 +426,40 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	// trace
 	tb_trace_d("inject: pid: %lu, path: %s: ..", (tb_size_t)pid, path);
 
+	// for arm64
+#ifdef TB_ARCH_ARM64
+	{
+		// init library
+		tb_bool_t 	ok = tb_false;
+		tb_handle_t library = tb_dynamic_init("/usr/lib/libsubstrate.dylib");
+		if (library)
+		{
+			// trace
+			tb_trace_d("library: %p", library);
+
+			// the func
+			it_MSHookProcess_t pMSHookProcess = tb_dynamic_func(library, "MSHookProcess");
+			if (pMSHookProcess)
+			{
+				// trace
+				tb_trace_d("MSHookProcess: %p", pMSHookProcess);
+
+				// hook process
+				ok = pMSHookProcess(pid, path)? tb_true : tb_false;
+			}
+
+			// exit library
+			tb_dynamic_exit(library);
+
+			// trace
+			tb_trace_i("%s", ok? "ok" : "no");
+
+			// ok?
+			return ok;
+		}
+	}
+#endif
+
 	// pid => task
 	task_t task = 0;
 	if (task_for_pid(mach_task_self(), (tb_int_t)pid, &task)) 
@@ -446,11 +487,14 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	mach_vm_address_t stack_end = stack_address + it_stack_size - 0x100;
 	if (mach_vm_write(task, stack_address, (vm_offset_t)it_address_cast(path), strlen(path) + 1)) return tb_false;
 
-	// the first one is the return address
+	/* the first one is the return address
+	 *
+	 * syscall(SYS_bsdthread_create, 0xdeadbeef, 0xdeadbeef, 128 * 1024, 0, 0)
+	 */
 	tb_uint32_t args_32[] = {0, 360, 0xdeadbeef, 0xdeadbeef, 128 * 1024, 0, 0};
 	tb_uint64_t args_64[] = {0, 360, 0xdeadbeef, 0xdeadbeef, 128 * 1024, 0, 0};
 
-	// init context: syscall(SYS_bsdthread_create, 0xdeadbeef, 0xdeadbeef, 128 * 1024, 0, 0)
+	// init thread state 
 	union
 	{
 		it_arm_thread_state_t 		arm;
@@ -463,6 +507,8 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	thread_state_flavor_t 			state_flavor;
 	mach_msg_type_number_t 			state_count;
 	memset(&state, 0, sizeof(state));	
+
+	// init thread state for the cpu type
 	switch (cputype)
 	{
 	case CPU_TYPE_ARM:
@@ -477,19 +523,30 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 
 			state_flavor 	= ARM_THREAD_STATE;
 			state_count 	= sizeof(state.arm) / sizeof(state.nat);
+
+			// trace
+			tb_trace_d("init: pc: %x", state.arm.pc);
+			tb_trace_d("init: lr: %x", state.arm.lr);
+			tb_trace_d("init: sp: %x", state.arm.sp);
 		}
 		break;
-	case (CPU_TYPE_ARM | CPU_ARCH_ABI64):
+	case CPU_TYPE_ARM64:
 		{
 			tb_trace_i("cputype: arm64");
 			memcpy(&state.arm64.x[0], args_64 + 1, 6 * sizeof(tb_uint64_t));
 
 			state.arm64.sp 	= (tb_uint64_t) stack_end;
+//			state.arm64.fp 	= (tb_uint64_t) stack_end;
 			state.arm64.pc 	= (tb_uint64_t) addrs.syscall;
 			state.arm64.lr 	= (tb_uint64_t) args_64[0];
 
 			state_flavor 	= ARM_THREAD_STATE64;
 			state_count 	= sizeof(state.arm64) / sizeof(state.nat);
+
+			// trace
+			tb_trace_d("init: pc: %llx", state.arm64.pc);
+			tb_trace_d("init: lr: %llx", state.arm64.lr);
+			tb_trace_d("init: sp: %llx", state.arm64.sp);
 		}
 		break;
 	case CPU_TYPE_X86:
@@ -498,7 +555,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 			if (mach_vm_write(task, stack_end, (vm_offset_t)it_address_cast(args_32), 7 * 4)) return tb_false;
 
 			state.x86.esp 	= state.x86.ebp = (tb_uint32_t) stack_end;
-			state.x86.eip 	= (tb_uint32_t) addrs.syscall;
+			state.x86.eip 	= (tb_uint32_t)addrs.syscall;
 
 			state_flavor 	= x86_THREAD_STATE32;
 			state_count 	= sizeof(state.x86) / sizeof(state.nat);
@@ -530,6 +587,9 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 	thread_act_t thread = 0;
 	if (thread_create(task, &thread)) return tb_false;
 
+	// trace
+	tb_trace_d("init: thread: %x", thread);
+
 	// alloc port
 	mach_port_t exc = 0;
 	mach_port_allocate(mach_task_self(), MACH_PORT_RIGHT_RECEIVE, &exc);
@@ -555,7 +615,9 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 		// recv msg
 		it_exception_message_t msg;
 		if (mach_msg_overwrite(tb_null, MACH_RCV_MSG, 0, sizeof(msg), exc, MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL, (tb_pointer_t) &msg, sizeof(msg))) return tb_false;
-		tb_trace_d("recv: msg");
+
+		// trace
+		tb_trace_d("recv: msg: from thread: %x", msg.thread.name);
 
 		// check
 		tb_assert_and_check_return_val((msg.Head.msgh_bits & MACH_MSGH_BITS_COMPLEX), tb_false);
@@ -583,10 +645,26 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 			switch(cputype)
 			{
 			case CPU_TYPE_ARM: 		
-				cond = ((state.arm.pc & ~1) == 0xdeadbeee)? tb_true : tb_false;
+				{
+					// trace
+					tb_trace_d("recv: pc: %x", state.arm.pc);
+					tb_trace_d("recv: lr: %x", state.arm.lr);
+					tb_trace_d("recv: sp: %x", state.arm.sp);
+
+					// cond
+					cond = ((state.arm.pc & ~1) == 0xdeadbeee)? tb_true : tb_false;
+				}
 				break;
-			case (CPU_TYPE_ARM | CPU_ARCH_ABI64):
-				cond = ((state.arm64.pc & ~1) == 0xdeadbeee)? tb_true : tb_false;
+			case CPU_TYPE_ARM64:
+				{
+					// trace
+					tb_trace_d("recv: pc: %llx", state.arm64.pc);
+					tb_trace_d("recv: lr: %llx", state.arm64.lr);
+					tb_trace_d("recv: sp: %llx", state.arm64.sp);
+
+					// cond
+					cond = ((state.arm64.pc & ~1) == 0xdeadbeee)? tb_true : tb_false;
+				}
 				break;
 			case CPU_TYPE_X86:
 				cond = (state.x86.eip == 0xdeadbeef)? tb_true : tb_false; 
@@ -622,7 +700,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 						state.arm.lr = 0xdeadbeef;
 					}
 					break;
-				case (CPU_TYPE_ARM | CPU_ARCH_ABI64):
+				case CPU_TYPE_ARM64:
 					{
 						state.arm64.x[0] = (tb_uint64_t) stack_address;
 						state.arm64.x[1] = RTLD_LAZY;
@@ -682,6 +760,7 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
 }
 static pid_t it_pid(tb_char_t const* name)
 {
+	// check
 	tb_assert_and_check_return_val(name, 0);
 
 	// is pid?

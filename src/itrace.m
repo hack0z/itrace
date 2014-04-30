@@ -580,8 +580,8 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 	// init method list
 	tb_uint_t 	method_n = 0;
 	Method* 	method_s = class_copyMethodList(objc_getClass(class_name), &method_n);
-//	tb_trace_i("class: %s, method: %u", class_name, method_n);
-	tb_assert_and_check_return_val(method_n && method_s, mmapfunc);
+	tb_trace_d("class: %s, method: %u", class_name, method_n);
+	tb_check_return_val(method_n && method_s, mmapfunc);
 
 	// walk methods
 	tb_size_t i = 0;
@@ -604,6 +604,9 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 			{
 				// hook
 #if defined(TB_ARCH_ARM)
+# 	ifdef TB_ARCH_ARM64
+				tb_used(it_chook_method_trace);
+# 	else
 				tb_uint32_t* p = (tb_uint32_t*)mmapfunc;
 				tb_assert_and_check_break(p + 11 <= (tb_uint32_t*)mmaptail);
 				*p++ = A$push$r0_r9_lr$;
@@ -619,6 +622,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				*p++ = (tb_uint32_t)imp;
 				method_setImplementation(method, (IMP)mmapfunc);
 				mmapfunc = p;
+# 	endif
 #elif defined(TB_ARCH_x86)
 				tb_byte_t* p = (tb_byte_t*)mmapfunc;
 				tb_assert_and_check_break(p + 32 <= (tb_byte_t*)mmaptail);
