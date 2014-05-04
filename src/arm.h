@@ -7,16 +7,46 @@
 #include "prefix.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * macros for arm64
+ */
+
+// stp xt1, xt2, [xn, #im]!
+// 1010100010 im(7) xt2(5) xn(5) xt1(5)
+#define A64$stp_xt1_xt2_$xn_im$(xt1, xt2, xn, im) 		(0xa9800000 | ((((im) >> 3) & 0x7f) << 15) | (((xt2) & 0x1f) << 10) | (((xn) & 0x1f) << 5) | ((xt1) & 0x1f))
+
+// stp xt1, xt2, [xn], #im]
+// 1010100010 im(7) xt2(5) xn(5) xt1(5)
+#define A64$stp_xt1_xt2_$xn$_im(xt1, xt2, xn, im) 		(0xa8800000 | ((((im) >> 3) & 0x7f) << 15) | (((xt2) & 0x1f) << 10) | (((xn) & 0x1f) << 5) | ((xt1) & 0x1f))
+
+// ldp xt1, xt2, [xn], #im
+// 1010100011 im(7) xt2(5) xn(5) xt1(5)
+#define A64$ldp_xt1_xt2_$xn$_im(xt1, xt2, xn, im) 		(0xa8c00000 | ((((im) >> 3) & 0x7f) << 15) | (((xt2) & 0x1f) << 10) | (((xn) & 0x1f) << 5) | ((xt1) & 0x1f))
+
+// movz xd, #im, lsl #shift
+// 110100101 shift(2) im(16) rd(5)
+#define A64$movz_xd_im(xd, im, shift) 					(0xd2800000 | (((shift) >> 4) << 21) | (((im) & 0xffff) << 5) | ((xd) & 0x1f))
+
+// movk xd, #im, lsl #shift
+// 111100101 shift(2) im(16) rd(5)
+#define A64$movk_xd_im(xd, im, shift) 					(0xf2800000 | (((shift) >> 4) << 21) | (((im) & 0xffff) << 5) | ((xd) & 0x1f))
+
+// blr xn
+#define A64$blr(xn) 									(0xd63f0000 | (((xn) & 0x1f) << 5))
+
+// ldur xt, [xn, #im]
+#define A64$ldur_xt_$xn_im$(xt, xn, im) 				(0xf8400000 | (((im) & 0x1ff) << 12) | (((xn) & 0x1f) << 5) | ((xt) & 0x1f))
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros for arm
  */
 
 // ldr rd, [rn, #im]
 #define A$ldr_rd_$rn_im$(rd, rn, im) 	(0xe5100000 | ((im) < 0 ? 0 : 1 << 23) | ((rn) << 16) | ((rd) << 12) | abs(im))
 
-// movw rd, im
+// movw rd, #im
 #define A$movw_rd_im(rd, im) 			(0xe3000000 | (((im) & 0xf000) << 4) | ((rd) << 12) | ((im) & 0x0fff))
 
-// movt rd, im
+// movt rd, #im
 #define A$movt_rd_im(rd, im) 			(0xe3400000 | (((im) & 0xf000) << 4) | ((rd) << 12) | ((im) & 0x0fff))
 
 // push {r0-r9, lr}
@@ -47,6 +77,49 @@
 /* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
+
+// the arm64 register enum
+typedef enum __A64$x_e
+{
+ 	A64$x0 = 0
+, 	A64$x1
+, 	A64$x2
+, 	A64$x3
+, 	A64$x4
+, 	A64$x5
+, 	A64$x6
+, 	A64$x7
+, 	A64$x8
+, 	A64$x9
+, 	A64$x10
+, 	A64$x11
+, 	A64$x12
+, 	A64$x13
+, 	A64$x14
+, 	A64$x15
+, 	A64$x16
+, 	A64$x17
+, 	A64$x18
+, 	A64$x19
+, 	A64$x20
+, 	A64$x21
+, 	A64$x22
+, 	A64$x23
+, 	A64$x24
+, 	A64$x25
+, 	A64$x26
+, 	A64$x27
+, 	A64$x28
+, 	A64$x29
+, 	A64$x30
+, 	A64$x31
+, 	A64$x32
+, 	A64$fp 	= A64$x29
+, 	A64$lr 	= A64$x30
+, 	A64$sp 	= A64$x31
+, 	A64$pc 	= A64$x32
+
+}A64$x_e;
 
 // the arm register enum
 typedef enum __A$r_e

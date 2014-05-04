@@ -2,7 +2,7 @@
 #define IT_CONFIG_H
 
 // build version
-#define IT_CONFIG_VERSION_BUILD 		201404301728
+#define IT_CONFIG_VERSION_BUILD 		201405041800
 
 // debug
 #define IT_CONFIG_DEBUG					(1)

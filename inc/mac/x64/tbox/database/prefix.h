@@ -28,72 +28,9 @@
  * includes
  */
 #include "../prefix.h"
+#include "../libc/libc.h"
 #include "../network/url.h"
 #include "../container/iterator.h"
 
-/* //////////////////////////////////////////////////////////////////////////////////////
- * types
- */
-
-/// the sql database type enum
-typedef enum __tb_database_database_type_e
-{
-	TB_DATABASE_TYPE_NONE 		= 0
-,	TB_DATABASE_TYPE_MYSQL 		= 1
-,	TB_DATABASE_TYPE_SQLITE3 	= 2
-
-}tb_database_database_type_e;
-
-/// the database type
-typedef struct __tb_database_t
-{
-	/// the url
-	tb_url_t 			url;
-
-	/// the type
-	tb_size_t 			type;
-
-	/// the state
-	tb_size_t 			state;
-
-	/// is opened?
-	tb_bool_t 			bopened;
-
-	/// open
-	tb_bool_t 			(*open)(struct __tb_database_t* database);
-
-	/// clos
-	tb_void_t 			(*clos)(struct __tb_database_t* database);
-
-	/// kill
-	tb_void_t 			(*kill)(struct __tb_database_t* database);
-
-	/// exit
-	tb_void_t 			(*exit)(struct __tb_database_t* database);
-
-	/// done
-	tb_bool_t 			(*done)(struct __tb_database_t* database, tb_char_t const* sql);
-
-	/// load results
-	tb_iterator_t* 		(*results_load)(struct __tb_database_t* database);
-
-	/// exit results
-	tb_void_t 			(*results_exit)(struct __tb_database_t* database, tb_iterator_t* results);
-
-}tb_database_t;
-
-/// the database results item type
-typedef struct _tb_database_results_item_t
-{
-	/// the field name
-	tb_char_t const* 	name;
-
-	/// the data
-	tb_byte_t const* 	data;
-
-	/// the data size
-	tb_size_t 			size;
-
-}tb_database_results_item_t;
 
 #endif

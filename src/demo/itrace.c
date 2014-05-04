@@ -53,6 +53,11 @@
 # 	define x86_THREAD_STATE64 		(4)
 #endif
 
+// cpu arm64
+#ifndef CPU_TYPE_ARM64
+# 	define CPU_TYPE_ARM64 			(CPU_TYPE_ARM | CPU_ARCH_ABI64)
+#endif
+
 /* //////////////////////////////////////////////////////////////////////////////////////
  * declaration
  */
