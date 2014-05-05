@@ -2,7 +2,7 @@
 #define TB_CONFIG_H
 
 // build version
-#define TB_CONFIG_VERSION_BUILD 		201405041039
+#define TB_CONFIG_VERSION_BUILD 		201405051331
 
 // debug
 #define TB_CONFIG_DEBUG					(1)
@@ -12,8 +12,6 @@
 
 // os
 #define TB_CONFIG_OS_MAC
-#define TB_CONFIG_OS_MAC_VERSION_MAJOR 	(10)
-#define TB_CONFIG_OS_MAC_VERSION_MINOR 	(7)
 
 // assembler
 #define TB_CONFIG_ASSEMBLER_GAS
@@ -88,19 +86,19 @@
 #define TB_CONFIG_LIBM_HAVE_LOG2
 #define TB_CONFIG_LIBM_HAVE_LOG2F
 
-// zlib
-//#define TB_CONFIG_HAVE_ZLIB					
+// module
+#define TB_CONFIG_MODULE_HAVE_XML
+#define TB_CONFIG_MODULE_HAVE_ZIP
+#define TB_CONFIG_MODULE_HAVE_ASIO
+#define TB_CONFIG_MODULE_HAVE_OBJECT
+#define TB_CONFIG_MODULE_HAVE_CHARSET
+#define TB_CONFIG_MODULE_HAVE_DATABASE
 
-// openssl
-//#define TB_CONFIG_HAVE_OPENSSL	
-
-// polarssl
-//#define TB_CONFIG_HAVE_POLARSSL	
-
-// mysql
-#define TB_CONFIG_HAVE_MYSQL
-
-// sqlite3
-#define TB_CONFIG_HAVE_SQLITE3
+// third party
+//#define TB_CONFIG_THIRD_HAVE_ZLIB					
+//#define TB_CONFIG_THIRD_HAVE_OPENSSL	
+//#define TB_CONFIG_THIRD_HAVE_POLARSSL	
+#define TB_CONFIG_THIRD_HAVE_MYSQL
+#define TB_CONFIG_THIRD_HAVE_SQLITE3
 
 #endif

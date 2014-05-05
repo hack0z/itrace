@@ -1,4 +1,10 @@
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * trace
+ */
+#define TB_TRACE_MODULE_NAME 			"itrace"
+#define TB_TRACE_MODULE_DEBUG 			(1)
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
 #include "prefix.h"
@@ -597,7 +603,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 			IMP imp = method_getImplementation(method);
 
 			// trace
-//			tb_trace_i("[%s %s]: %p", class_name, sel_getName(sel), imp);
+//			tb_trace_d("[%s %s]: %p", class_name, sel_getName(sel), imp);
 
 			// ok?
 			if (imp)
@@ -606,7 +612,8 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 #if defined(TB_ARCH_ARM)
 # 	ifdef TB_ARCH_ARM64
 				tb_uint32_t* p = (tb_uint32_t*)mmapfunc;
-				tb_assert_and_check_break(p + 46 <= (tb_uint32_t*)mmaptail);
+				tb_assert_and_check_break(p + (46 + 10) <= (tb_uint32_t*)mmaptail);
+#if 0
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x2, A64$x3, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x4, A64$x5, A64$sp, -16);
@@ -621,7 +628,8 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x22, A64$x23, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x24, A64$x25, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x26, A64$x27, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x28, A64$lr, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x28, A64$x29, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x30, A64$x30, A64$sp, -16);
 				*p++ = A64$movz_xd_im(A64$x0, ((tb_uint64_t)node), 0);
 				*p++ = A64$movk_xd_im(A64$x0, ((tb_uint64_t)node) >> 16, 16);
 				*p++ = A64$movk_xd_im(A64$x0, ((tb_uint64_t)node) >> 32, 32);
@@ -649,10 +657,63 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x22, A64$x23, A64$sp, 16);
 				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x24, A64$x25, A64$sp, 16);
 				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x26, A64$x27, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x28, A64$lr, A64$sp, 16);
-				*p++ = A64$ldur_xt_$xn_im$(A64$pc, A64$pc, 4 - 8);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x28, A64$x29, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x30, A64$x30, A64$sp, 16);
+				*p++ = A64$ldr_xt_$xn_im$(A64$pc, A64$pc, 4 - 8);
 				*p++ = (tb_uint32_t)imp;
 				*p++ = (tb_uint32_t)((tb_uint64_t)imp >> 32);
+#endif
+				tb_used(it_chook_method_trace);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x2, A64$x3, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x4, A64$x5, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x6, A64$x7, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x8, A64$x9, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x10, A64$x11, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x12, A64$x13, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x14, A64$x15, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x16, A64$x17, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x18, A64$x19, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x20, A64$x21, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x22, A64$x23, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x24, A64$x25, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x26, A64$x27, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x28, A64$x29, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x30, A64$x30, A64$sp, -16);
+				*p++ = A64$movz_xd_im(A64$x0, ((tb_uint64_t)node), 0);
+				*p++ = A64$movk_xd_im(A64$x0, ((tb_uint64_t)node) >> 16, 16);
+				*p++ = A64$movk_xd_im(A64$x0, ((tb_uint64_t)node) >> 32, 32);
+				*p++ = A64$movk_xd_im(A64$x0, ((tb_uint64_t)node) >> 48, 48);
+				*p++ = A64$movz_xd_im(A64$x1, ((tb_uint64_t)method), 0);
+				*p++ = A64$movk_xd_im(A64$x1, ((tb_uint64_t)method) >> 16, 16);
+				*p++ = A64$movk_xd_im(A64$x1, ((tb_uint64_t)method) >> 32, 32);
+				*p++ = A64$movk_xd_im(A64$x1, ((tb_uint64_t)method) >> 48, 48);
+				*p++ = A64$movz_xd_im(A64$x19, ((tb_uint64_t)&it_chook_method_trace), 0);
+				*p++ = A64$movk_xd_im(A64$x19, ((tb_uint64_t)&it_chook_method_trace) >> 16, 16);
+				*p++ = A64$movk_xd_im(A64$x19, ((tb_uint64_t)&it_chook_method_trace) >> 32, 32);
+				*p++ = A64$movk_xd_im(A64$x19, ((tb_uint64_t)&it_chook_method_trace) >> 48, 48);
+				*p++ = A64$blr(A64$x19);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x0, A64$x1, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x2, A64$x3, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x4, A64$x5, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x6, A64$x7, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x8, A64$x9, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x10, A64$x11, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x12, A64$x13, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x14, A64$x15, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x16, A64$x17, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x18, A64$x19, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x20, A64$x21, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x22, A64$x23, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x24, A64$x25, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x26, A64$x27, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x28, A64$x29, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x30, A64$x30, A64$sp, 16);
+//				*p++ = A64$movz_xd_im(A64$x9, ((tb_uint64_t)imp), 0);
+//				*p++ = A64$movk_xd_im(A64$x9, ((tb_uint64_t)imp) >> 16, 16);
+//				*p++ = A64$movk_xd_im(A64$x9, ((tb_uint64_t)imp) >> 32, 32);
+//				*p++ = A64$movk_xd_im(A64$x9, ((tb_uint64_t)imp) >> 48, 48);
+//				*p++ = A64$ret(A64$lr);
 				method_setImplementation(method, (IMP)mmapfunc);
 				mmapfunc = p;
 # 	else
@@ -880,10 +941,10 @@ static __tb_inline__ tb_bool_t it_chook_init()
 	// init mmap base
 #if defined(TB_ARCH_ARM)
 # 	ifdef TB_ARCH_ARM64
-	tb_size_t 		mmapmaxn = method_size * 11;
+	tb_size_t 		mmapmaxn = method_size * (46 + 10);
 	tb_size_t 		mmapsize = mmapmaxn * sizeof(tb_uint32_t);
 # 	else
-	tb_size_t 		mmapmaxn = method_size * 46;
+	tb_size_t 		mmapmaxn = method_size * 11;
 	tb_size_t 		mmapsize = mmapmaxn * sizeof(tb_uint32_t);
 # 	endif
 #elif defined(TB_ARCH_x86)

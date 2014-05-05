@@ -35,10 +35,10 @@ extern "C" {
 #include "algorithm/algorithm.h"
 #include "container/container.h"
 #include "platform/platform.h"
+#include "database/database.h"
 #include "network/network.h"
 #include "charset/charset.h"
 #include "memory/memory.h"
-#include "filter/filter.h"
 #include "stream/stream.h"
 #include "string/string.h"
 #include "object/object.h"
@@ -49,7 +49,6 @@ extern "C" {
 #include "asio/asio.h"
 #include "xml/xml.h"
 #include "zip/zip.h"
-#include "sql/sql.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * macros

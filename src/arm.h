@@ -30,11 +30,18 @@
 // 111100101 shift(2) im(16) rd(5)
 #define A64$movk_xd_im(xd, im, shift) 					(0xf2800000 | (((shift) >> 4) << 21) | (((im) & 0xffff) << 5) | ((xd) & 0x1f))
 
+// br xn
+#define A64$br(xn) 										(0xd61f0000 | (((xn) & 0x1f) << 5))
+
 // blr xn
 #define A64$blr(xn) 									(0xd63f0000 | (((xn) & 0x1f) << 5))
 
-// ldur xt, [xn, #im]
-#define A64$ldur_xt_$xn_im$(xt, xn, im) 				(0xf8400000 | (((im) & 0x1ff) << 12) | (((xn) & 0x1f) << 5) | ((xt) & 0x1f))
+// ret xn
+#define A64$ret(xn) 									(0xd65f0000 | (((xn) & 0x1f) << 5))
+
+// ldr xt, [xn, #im]
+#define A64$ldr_xt_$xn_im$(xt, xn, im) 					(0xf9400000 | (((im) & 0xfff) << 10) | (((xn) & 0x1f) << 5) | ((xt) & 0x1f))
+//#define A64$ldr_xt_$xn_im$(xt, xn, im) 					(0xb9400000 | (((im) & 0xfff) << 10) | (((xn) & 0x1f) << 5) | ((xt) & 0x1f))
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * macros for arm
@@ -117,7 +124,6 @@ typedef enum __A64$x_e
 , 	A64$fp 	= A64$x29
 , 	A64$lr 	= A64$x30
 , 	A64$sp 	= A64$x31
-, 	A64$pc 	= A64$x32
 
 }A64$x_e;
 

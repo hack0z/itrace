@@ -128,6 +128,7 @@ tb_int_t main(tb_int_t argc, tb_char_t const** argv)
 	__tb_asm__ __tb_volatile__("nop");
 	__tb_asm__ __tb_volatile__("push {r0-r9, lr}");
 	__tb_asm__ __tb_volatile__("bx r1");
+	__tb_asm__ __tb_volatile__("ldr pc, [pc, #4]");
 	__tb_asm__ __tb_volatile__("pop {r0-r9, lr}");
 #endif
 
