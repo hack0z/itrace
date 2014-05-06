@@ -202,7 +202,6 @@ static __tb_inline__ tb_size_t it_etype_argument_info(tb_char_t const* typedesc,
 		{
 			*offset = 0;
 		}
-
 		else
 		{
 			// Skip GNU register parameter hint

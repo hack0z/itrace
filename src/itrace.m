@@ -22,6 +22,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include <asl.h>
 #include "etype.h"
+#include <libkern/OSCacheControl.h>
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * macros
@@ -33,28 +34,75 @@
 
 // the argument
 #if defined(TB_ARCH_ARM)
-# 	define it_chook_method_trace_args_begn 			(2 * sizeof(tb_pointer_t))
-# 	define it_chook_method_trace_args_skip(trace) 	\
- 	do \
-	{ \
-		if (trace->args_size >= trace->args_begn && !trace->args_skip) \
+# 	ifdef TB_ARCH_ARM64
+# 		define it_chook_method_trace_args_begn 			(6 * sizeof(tb_size_t))
+# 		define it_chook_method_trace_args_skip(trace) 	\
+		do \
 		{ \
-			trace->args_size += 44; \
-			trace->args_skip = 1; \
-			__tb_volatile__ tb_size_t r0 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r0); \
-			__tb_volatile__ tb_size_t r1 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r1); \
-			__tb_volatile__ tb_size_t r2 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r2); \
-			__tb_volatile__ tb_size_t r3 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r3); \
-			__tb_volatile__ tb_size_t r4 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r4); \
-			__tb_volatile__ tb_size_t r5 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r5); \
-			__tb_volatile__ tb_size_t r6 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r6); \
-			__tb_volatile__ tb_size_t r7 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r7); \
-			__tb_volatile__ tb_size_t r8 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r8); \
-			__tb_volatile__ tb_size_t r9 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r9); \
-			__tb_volatile__ tb_size_t lr = tb_va_arg(trace->args_list, tb_size_t); tb_used(lr); \
-		} \
+			if (trace->args_size >= trace->args_begn && !trace->args_skip) \
+			{ \
+				tb_trace_d("skip"); \
+				trace->args_size += 31 * sizeof(tb_size_t); \
+				trace->args_skip = 1; \
+				__tb_volatile__ tb_size_t x0 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x0); \
+				__tb_volatile__ tb_size_t x1 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x1); \
+				__tb_volatile__ tb_size_t x2 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x2); \
+				__tb_volatile__ tb_size_t x3 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x3); \
+				__tb_volatile__ tb_size_t x4 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x4); \
+				__tb_volatile__ tb_size_t x5 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x5); \
+				__tb_volatile__ tb_size_t x6 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x6); \
+				__tb_volatile__ tb_size_t x7 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x7); \
+				__tb_volatile__ tb_size_t x8 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x8); \
+				__tb_volatile__ tb_size_t x9 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x9); \
+				__tb_volatile__ tb_size_t x10 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x10); \
+				__tb_volatile__ tb_size_t x11 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x11); \
+				__tb_volatile__ tb_size_t x12 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x12); \
+				__tb_volatile__ tb_size_t x13 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x13); \
+				__tb_volatile__ tb_size_t x14 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x14); \
+				__tb_volatile__ tb_size_t x15 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x15); \
+				__tb_volatile__ tb_size_t x16 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x16); \
+				__tb_volatile__ tb_size_t x17 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x17); \
+				__tb_volatile__ tb_size_t x18 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x18); \
+				__tb_volatile__ tb_size_t x19 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x19); \
+				__tb_volatile__ tb_size_t x20 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x20); \
+				__tb_volatile__ tb_size_t x21 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x21); \
+				__tb_volatile__ tb_size_t x22 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x22); \
+				__tb_volatile__ tb_size_t x23 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x23); \
+				__tb_volatile__ tb_size_t x24 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x24); \
+				__tb_volatile__ tb_size_t x25 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x25); \
+				__tb_volatile__ tb_size_t x26 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x26); \
+				__tb_volatile__ tb_size_t x27 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x27); \
+				__tb_volatile__ tb_size_t x28 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x28); \
+				__tb_volatile__ tb_size_t x29 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x29); \
+				__tb_volatile__ tb_size_t x30 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x30); \
+			} \
  \
-	} while (0); 
+		} while (0); 
+# 	else
+# 		define it_chook_method_trace_args_begn 			(2 * sizeof(tb_size_t))
+# 		define it_chook_method_trace_args_skip(trace) 	\
+		do \
+		{ \
+			if (trace->args_size >= trace->args_begn && !trace->args_skip) \
+			{ \
+				tb_trace_d("skip"); \
+				trace->args_size += 11 * sizeof(tb_size_t); \
+				trace->args_skip = 1; \
+				__tb_volatile__ tb_size_t r0 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r0); \
+				__tb_volatile__ tb_size_t r1 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r1); \
+				__tb_volatile__ tb_size_t r2 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r2); \
+				__tb_volatile__ tb_size_t r3 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r3); \
+				__tb_volatile__ tb_size_t r4 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r4); \
+				__tb_volatile__ tb_size_t r5 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r5); \
+				__tb_volatile__ tb_size_t r6 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r6); \
+				__tb_volatile__ tb_size_t r7 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r7); \
+				__tb_volatile__ tb_size_t r8 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r8); \
+				__tb_volatile__ tb_size_t r9 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r9); \
+				__tb_volatile__ tb_size_t lr = tb_va_arg(trace->args_list, tb_size_t); tb_used(lr); \
+			} \
+\
+		} while (0); 
+# 	endif
 #elif defined(TB_ARCH_x86)
 # 	define it_chook_method_trace_args_begn 			(0)
 # 	define it_chook_method_trace_args_skip(trace) 	\
@@ -62,7 +110,8 @@
 	{ \
 		if (trace->args_size >= trace->args_begn && !trace->args_skip) \
 		{ \
-			trace->args_size += 48; \
+			tb_trace_d("skip"); \
+			trace->args_size += 12 * sizeof(tb_size_t); \
 			trace->args_skip = 1; \
 			__tb_volatile__ tb_size_t edi = tb_va_arg(trace->args_list, tb_size_t); tb_used(edi); \
 			__tb_volatile__ tb_size_t esi = tb_va_arg(trace->args_list, tb_size_t); tb_used(esi); \
@@ -80,13 +129,14 @@
  \
 	} while (0); 
 #elif defined(TB_ARCH_x64)		
-# 	define it_chook_method_trace_args_begn 			(4 * sizeof(tb_pointer_t))
+# 	define it_chook_method_trace_args_begn 			(4 * sizeof(tb_size_t))
 # 	define it_chook_method_trace_args_skip(trace) 	\
  	do \
 	{ \
 		if (trace->args_size >= trace->args_begn && !trace->args_skip) \
 		{ \
-			trace->args_size += 128; \
+			tb_trace_d("skip"); \
+			trace->args_size += 16 * sizeof(tb_size_t); \
 			trace->args_skip = 1; \
 			__tb_volatile__ tb_size_t r15 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r15); \
 			__tb_volatile__ tb_size_t r14 = tb_va_arg(trace->args_list, tb_size_t); tb_used(r14); \
@@ -182,8 +232,8 @@ static IMP 					g_NSString_UTF8String 			= tb_null;
  */
 static __tb_inline__ tb_void_t tb_clear_cache(tb_pointer_t start, tb_pointer_t end)
 {
-	// for ios
-// 	sys_icache_invalidate(start, (tb_char_t*)end - (tb_char_t*)start);
+	// for apple
+ 	sys_icache_invalidate(start, (tb_char_t*)end - (tb_char_t*)start);
 
 	// for gcc
 // 	__clear_cache(start, end);
@@ -196,8 +246,8 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_objc(it_chook_meth
 
 	// init
 #if 0
-	tb_pointer_t 		o = tb_va_arg(trace->args_list, tb_pointer_t);
-	tb_pointer_t 		d = o && [o respondsToSelector:@selector(description)]? [o description] : tb_null;
+	id 					o = tb_va_arg(trace->args_list, id);
+	id 					d = o && [o respondsToSelector:@selector(description)]? [o description] : tb_null;
 	tb_char_t const* 	s = d? [d UTF8String] : tb_null;
 #else
 	tb_pointer_t 		o = tb_va_arg(trace->args_list, tb_pointer_t);
@@ -612,8 +662,9 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 #if defined(TB_ARCH_ARM)
 # 	ifdef TB_ARCH_ARM64
 				tb_uint32_t* p = (tb_uint32_t*)mmapfunc;
-				tb_assert_and_check_break(p + (46 + 10) <= (tb_uint32_t*)mmaptail);
-#if 0
+				tb_assert_and_check_break(p + 48 <= (tb_uint32_t*)mmaptail);
+
+				// push
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x2, A64$x3, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x4, A64$x5, A64$sp, -16);
@@ -629,7 +680,9 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x24, A64$x25, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x26, A64$x27, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x28, A64$x29, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x30, A64$x30, A64$sp, -16);
+				*p++ = A64$str_xt_$xn_im$(A64$x30, A64$sp, -16);
+
+				// trace
 				*p++ = A64$movz_xd_im(A64$x0, ((tb_uint64_t)node), 0);
 				*p++ = A64$movk_xd_im(A64$x0, ((tb_uint64_t)node) >> 16, 16);
 				*p++ = A64$movk_xd_im(A64$x0, ((tb_uint64_t)node) >> 32, 32);
@@ -638,82 +691,39 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				*p++ = A64$movk_xd_im(A64$x1, ((tb_uint64_t)method) >> 16, 16);
 				*p++ = A64$movk_xd_im(A64$x1, ((tb_uint64_t)method) >> 32, 32);
 				*p++ = A64$movk_xd_im(A64$x1, ((tb_uint64_t)method) >> 48, 48);
-				*p++ = A64$movz_xd_im(A64$x19, ((tb_uint64_t)&it_chook_method_trace), 0);
-				*p++ = A64$movk_xd_im(A64$x19, ((tb_uint64_t)&it_chook_method_trace) >> 16, 16);
-				*p++ = A64$movk_xd_im(A64$x19, ((tb_uint64_t)&it_chook_method_trace) >> 32, 32);
-				*p++ = A64$movk_xd_im(A64$x19, ((tb_uint64_t)&it_chook_method_trace) >> 48, 48);
-				*p++ = A64$blr(A64$x19);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x0, A64$x1, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x2, A64$x3, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x4, A64$x5, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x6, A64$x7, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x8, A64$x9, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x10, A64$x11, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x12, A64$x13, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x14, A64$x15, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x16, A64$x17, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x18, A64$x19, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x20, A64$x21, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x22, A64$x23, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x24, A64$x25, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x26, A64$x27, A64$sp, 16);
+				*p++ = A64$ldr_xt_im(A64$x16, 88);
+				*p++ = A64$blr(A64$x16);
+
+				// pop
+				*p++ = A64$ldr_xt_$xn$_im(A64$x30, A64$sp, 16);
 				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x28, A64$x29, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x30, A64$x30, A64$sp, 16);
-				*p++ = A64$ldr_xt_$xn_im$(A64$pc, A64$pc, 4 - 8);
-				*p++ = (tb_uint32_t)imp;
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x26, A64$x27, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x24, A64$x25, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x22, A64$x23, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x20, A64$x21, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x18, A64$x19, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x16, A64$x17, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x14, A64$x15, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x12, A64$x13, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x10, A64$x11, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x8, A64$x9, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x6, A64$x7, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x4, A64$x5, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x2, A64$x3, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x0, A64$x1, A64$sp, 16);
+
+				// goto native function
+				*p++ = A64$ldr_xt_im(A64$x16, 8);
+				*p++ = A64$br(A64$x16);
+				*p++ = ((tb_uint32_t)imp);
 				*p++ = (tb_uint32_t)((tb_uint64_t)imp >> 32);
-#endif
-				tb_used(it_chook_method_trace);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x2, A64$x3, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x4, A64$x5, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x6, A64$x7, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x8, A64$x9, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x10, A64$x11, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x12, A64$x13, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x14, A64$x15, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x16, A64$x17, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x18, A64$x19, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x20, A64$x21, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x22, A64$x23, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x24, A64$x25, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x26, A64$x27, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x28, A64$x29, A64$sp, -16);
-				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x30, A64$x30, A64$sp, -16);
-				*p++ = A64$movz_xd_im(A64$x0, ((tb_uint64_t)node), 0);
-				*p++ = A64$movk_xd_im(A64$x0, ((tb_uint64_t)node) >> 16, 16);
-				*p++ = A64$movk_xd_im(A64$x0, ((tb_uint64_t)node) >> 32, 32);
-				*p++ = A64$movk_xd_im(A64$x0, ((tb_uint64_t)node) >> 48, 48);
-				*p++ = A64$movz_xd_im(A64$x1, ((tb_uint64_t)method), 0);
-				*p++ = A64$movk_xd_im(A64$x1, ((tb_uint64_t)method) >> 16, 16);
-				*p++ = A64$movk_xd_im(A64$x1, ((tb_uint64_t)method) >> 32, 32);
-				*p++ = A64$movk_xd_im(A64$x1, ((tb_uint64_t)method) >> 48, 48);
-				*p++ = A64$movz_xd_im(A64$x19, ((tb_uint64_t)&it_chook_method_trace), 0);
-				*p++ = A64$movk_xd_im(A64$x19, ((tb_uint64_t)&it_chook_method_trace) >> 16, 16);
-				*p++ = A64$movk_xd_im(A64$x19, ((tb_uint64_t)&it_chook_method_trace) >> 32, 32);
-				*p++ = A64$movk_xd_im(A64$x19, ((tb_uint64_t)&it_chook_method_trace) >> 48, 48);
-				*p++ = A64$blr(A64$x19);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x0, A64$x1, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x2, A64$x3, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x4, A64$x5, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x6, A64$x7, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x8, A64$x9, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x10, A64$x11, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x12, A64$x13, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x14, A64$x15, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x16, A64$x17, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x18, A64$x19, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x20, A64$x21, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x22, A64$x23, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x24, A64$x25, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x26, A64$x27, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x28, A64$x29, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x30, A64$x30, A64$sp, 16);
-//				*p++ = A64$movz_xd_im(A64$x9, ((tb_uint64_t)imp), 0);
-//				*p++ = A64$movk_xd_im(A64$x9, ((tb_uint64_t)imp) >> 16, 16);
-//				*p++ = A64$movk_xd_im(A64$x9, ((tb_uint64_t)imp) >> 32, 32);
-//				*p++ = A64$movk_xd_im(A64$x9, ((tb_uint64_t)imp) >> 48, 48);
-//				*p++ = A64$ret(A64$lr);
+				*p++ = ((tb_uint32_t)&it_chook_method_trace);
+				*p++ = (tb_uint32_t)((tb_uint64_t)&it_chook_method_trace >> 32);
+
+				// trace
+//				tb_trace_d("bytes: %lu x4", p - (tb_uint32_t const*)mmapfunc);
+
+				// hook
 				method_setImplementation(method, (IMP)mmapfunc);
 				mmapfunc = p;
 # 	else
@@ -941,7 +951,7 @@ static __tb_inline__ tb_bool_t it_chook_init()
 	// init mmap base
 #if defined(TB_ARCH_ARM)
 # 	ifdef TB_ARCH_ARM64
-	tb_size_t 		mmapmaxn = method_size * (46 + 10);
+	tb_size_t 		mmapmaxn = method_size * 48;
 	tb_size_t 		mmapsize = mmapmaxn * sizeof(tb_uint32_t);
 # 	else
 	tb_size_t 		mmapmaxn = method_size * 11;
@@ -974,10 +984,66 @@ static __tb_inline__ tb_bool_t it_chook_init()
 	// ok
 	return tb_true;
 }
+static tb_pointer_t fopen_new(tb_char_t const* path, tb_char_t const* mode)
+{
+	return fopen(path, mode);
+}
 static tb_void_t __attribute__((constructor)) it_init()
 {
 	// trace
 	tb_trace_i("init: ..");
+
+#if 0
+	{
+		// init library
+		tb_handle_t library = tb_dynamic_init("/usr/lib/libsubstrate.dylib");
+		if (library)
+		{
+			// trace
+			tb_trace_d("library: %p", library);
+
+			// the func
+			typedef bool (*it_MSHookFunction_t)(tb_pointer_t func, tb_pointer_t nfunc, tb_pointer_t* ofunc);
+			it_MSHookFunction_t pMSHookFunction = tb_dynamic_func(library, "MSHookFunction");
+			if (pMSHookFunction)
+			{
+				// trace
+				tb_trace_d("pMSHookFunction: %p", pMSHookFunction);
+
+				// hook function
+				tb_pointer_t fopen_old = tb_null;
+				if (pMSHookFunction(fopen, &fopen_new, &fopen_old))
+				{
+					// trace
+					tb_trace_d("pMSHookFunction: new: %p, old: %p", fopen_new, fopen_old);
+
+					// dump
+					tb_byte_t const* p = (tb_byte_t const*)fopen;
+					tb_byte_t const* e = (tb_byte_t const*)fopen + 64;
+					while (p < e)
+					{
+						tb_trace_d("__tb_asm__ __tb_volatile__(\".byte %#x\");", *p++);
+					}
+
+					tb_trace_d("");
+
+					p = (tb_byte_t const*)fopen_old;
+					e = (tb_byte_t const*)fopen_old + 64;
+					while (p < e)
+					{
+						tb_trace_d("__tb_asm__ __tb_volatile__(\".byte %#x\");", *p++);
+					}
+				}
+			}
+
+			// exit library
+			tb_dynamic_exit(library);
+			return ;
+		}
+	}
+#else
+	tb_used(&fopen_new);
+#endif
 
 	// init cfg
 	if (!it_cfg_init()) return ;

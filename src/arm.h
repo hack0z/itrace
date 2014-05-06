@@ -10,24 +10,22 @@
  * macros for arm64
  */
 
+// str xt, [xn, #im]!
+#define A64$str_xt_$xn_im$(xt, xn, im) 					(0xf8000c00 | (((im) & 0x1ff) << 12) | (((xn) & 0x1f) << 5) | ((xt) & 0x1f))
+
+// ldr xt, [xn], #im
+#define A64$ldr_xt_$xn$_im(xt, xn, im) 					(0xf8400400 | (((im) & 0x1ff) << 12) | (((xn) & 0x1f) << 5) | ((xt) & 0x1f))
+
 // stp xt1, xt2, [xn, #im]!
-// 1010100010 im(7) xt2(5) xn(5) xt1(5)
 #define A64$stp_xt1_xt2_$xn_im$(xt1, xt2, xn, im) 		(0xa9800000 | ((((im) >> 3) & 0x7f) << 15) | (((xt2) & 0x1f) << 10) | (((xn) & 0x1f) << 5) | ((xt1) & 0x1f))
 
-// stp xt1, xt2, [xn], #im]
-// 1010100010 im(7) xt2(5) xn(5) xt1(5)
-#define A64$stp_xt1_xt2_$xn$_im(xt1, xt2, xn, im) 		(0xa8800000 | ((((im) >> 3) & 0x7f) << 15) | (((xt2) & 0x1f) << 10) | (((xn) & 0x1f) << 5) | ((xt1) & 0x1f))
-
 // ldp xt1, xt2, [xn], #im
-// 1010100011 im(7) xt2(5) xn(5) xt1(5)
 #define A64$ldp_xt1_xt2_$xn$_im(xt1, xt2, xn, im) 		(0xa8c00000 | ((((im) >> 3) & 0x7f) << 15) | (((xt2) & 0x1f) << 10) | (((xn) & 0x1f) << 5) | ((xt1) & 0x1f))
 
 // movz xd, #im, lsl #shift
-// 110100101 shift(2) im(16) rd(5)
 #define A64$movz_xd_im(xd, im, shift) 					(0xd2800000 | (((shift) >> 4) << 21) | (((im) & 0xffff) << 5) | ((xd) & 0x1f))
 
 // movk xd, #im, lsl #shift
-// 111100101 shift(2) im(16) rd(5)
 #define A64$movk_xd_im(xd, im, shift) 					(0xf2800000 | (((shift) >> 4) << 21) | (((im) & 0xffff) << 5) | ((xd) & 0x1f))
 
 // br xn
@@ -39,9 +37,8 @@
 // ret xn
 #define A64$ret(xn) 									(0xd65f0000 | (((xn) & 0x1f) << 5))
 
-// ldr xt, [xn, #im]
-#define A64$ldr_xt_$xn_im$(xt, xn, im) 					(0xf9400000 | (((im) & 0xfff) << 10) | (((xn) & 0x1f) << 5) | ((xt) & 0x1f))
-//#define A64$ldr_xt_$xn_im$(xt, xn, im) 					(0xb9400000 | (((im) & 0xfff) << 10) | (((xn) & 0x1f) << 5) | ((xt) & 0x1f))
+// ldr xt, #im
+#define A64$ldr_xt_im(xt, im) 							(0x58000000 | ((((im) >> 2) & 0xfffff) << 5) | ((xt) & 0x1f))
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * macros for arm
