@@ -7,6 +7,23 @@
 /* //////////////////////////////////////////////////////////////////////////////////////
  * test
  */
+static tb_void_t test4(tb_size_t x0, tb_size_t x1, ...)
+{
+	tb_va_list_t va;
+	tb_va_start(va, x1);
+	tb_trace_i("%lx", x0);
+	tb_trace_i("%lx", x1);
+	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
+	tb_va_end(va);
+}
 static tb_void_t test3(int x0, int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8, long long x9, long long x10)
 {
 }
@@ -24,13 +41,16 @@ static tb_void_t test(int a, int b)
  */
 tb_int_t main(tb_int_t argc, tb_char_t const** argv)
 {
+	test4(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+
 	// done test3
 	test3(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
 #if defined(TB_ARCH_ARM)
 #ifdef TB_ARCH_ARM64
 	__tb_asm__ __tb_volatile__("nop");
-	__tb_asm__ __tb_volatile__("str x0, [sp, #8]!");
+	__tb_asm__ __tb_volatile__("str x0, [sp, #-8]!");
+	__tb_asm__ __tb_volatile__("stp x0, x1, [sp, #-16]!");
 
 	// substrate
 #if 1

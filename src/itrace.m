@@ -480,9 +480,22 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_skip(it_chook_meth
 }
 static __tb_inline__ tb_void_t it_chook_method_trace_arguments(it_chook_method_trace_t* trace)
 {	
-	// init the method type encoding
+	/* init the method type encoding
+	 * 
+	 * .e.g for arm64
+	 *
+	 * @40@0:8@16@24@32 
+	 *     return: @, arg0: @(self), arg1: selector(method), arg2: @, arg3: @, arg4: @
+	 *
+	 * ^{__CFBundle=}16@0:8
+	 *     return: ^{__CFBundle=}, arg0: @(self), arg1: selector(method)
+	 *
+	 * @16: the number 16 is the bytes offset
+	 */
 	tb_char_t const* type = method_getTypeEncoding(trace->meth);
 	tb_assert_and_check_return(type);
+
+	// trace
 	tb_trace_d("type: %s", type);
 
 	// walk arguments
@@ -501,8 +514,93 @@ static __tb_inline__ tb_void_t it_chook_method_trace_arguments(it_chook_method_t
 		// trace
 		tb_trace_d("argt: %s, argb: %lu", argt, argb);
 
+#if 1
+		tb_trace_d("x1: %p", trace->meth);
+		tb_trace_d("x2: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("x3: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("x4: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("x5: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("x6: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("x7: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("x8: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+
+		tb_trace_d("s30: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s29: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s28: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s27: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s26: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s25: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s24: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s23: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s22: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s21: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s20: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s19: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s18: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s17: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s16: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s15: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s14: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s13: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s12: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s11: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s10: %p", tb_va_arg(trace->args_list, tb_pointer_t));;
+		tb_trace_d("s9: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s8: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s7: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s6: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s5: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s4: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s3: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s2: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s1: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+		tb_trace_d("s0: %p", tb_va_arg(trace->args_list, tb_pointer_t));
+#endif
+
 		// skip
 		it_chook_method_trace_args_skip(trace);
+
+#if 0
+		// trace argument
+		tb_char_t const* p = argt; if (*p == 'r') p++;
+		if (!strcmp(p, "@")) it_chook_method_trace_argument_objc(trace, argb);
+		else if (!strcmp(p, ":")) it_chook_method_trace_argument_selector(trace, argb);
+		else if (!strcmp(p, "f")) it_chook_method_trace_argument_float(trace, argb);
+		else if (!strcmp(p, "d")) it_chook_method_trace_argument_double(trace, argb);
+		else if (!strcmp(p, "q")) it_chook_method_trace_argument_sint64(trace, argb);
+		else if (!strcmp(p, "Q")) it_chook_method_trace_argument_uint64(trace, argb);
+		else if (!strcmp(p, "i")) it_chook_method_trace_argument_sint32(trace, argb);
+		else if (!strcmp(p, "I")) it_chook_method_trace_argument_uint32(trace, argb);
+		else if (!strcmp(p, "s")) it_chook_method_trace_argument_sint16(trace, argb);
+		else if (!strcmp(p, "S")) it_chook_method_trace_argument_uint16(trace, argb);
+		else if (!strcmp(p, "c")) it_chook_method_trace_argument_sint8(trace, argb);
+		else if (!strcmp(p, "C")) it_chook_method_trace_argument_uint8(trace, argb);
+		else if (!strcmp(p, "l")) it_chook_method_trace_argument_long(trace, argb);
+		else if (!strcmp(p, "L")) it_chook_method_trace_argument_size(trace, argb);
+		else if (!strcmp(p, "*")) it_chook_method_trace_argument_data(trace, argb);
+		else if (!strcmp(p, "v")) it_chook_method_trace_argument_void(trace, argb);
+		else if (*p == '^') it_chook_method_trace_argument_pointer(trace, argb);
+		else it_chook_method_trace_argument_skip(trace, argb, argt);
+#else
+
+		// used
+		tb_used(it_chook_method_trace_argument_objc);
+		tb_used(it_chook_method_trace_argument_selector);
+		tb_used(it_chook_method_trace_argument_float);
+		tb_used(it_chook_method_trace_argument_double);
+		tb_used(it_chook_method_trace_argument_sint64);
+		tb_used(it_chook_method_trace_argument_uint64);
+		tb_used(it_chook_method_trace_argument_sint32);
+		tb_used(it_chook_method_trace_argument_uint32);
+		tb_used(it_chook_method_trace_argument_sint16);
+		tb_used(it_chook_method_trace_argument_uint16);
+		tb_used(it_chook_method_trace_argument_sint8);
+		tb_used(it_chook_method_trace_argument_uint8);
+		tb_used(it_chook_method_trace_argument_long);
+		tb_used(it_chook_method_trace_argument_size);
+		tb_used(it_chook_method_trace_argument_data);
+		tb_used(it_chook_method_trace_argument_void);
+		tb_used(it_chook_method_trace_argument_pointer);
 
 		// trace argument
 		tb_char_t const* p = argt; if (*p == 'r') p++;
@@ -524,6 +622,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_arguments(it_chook_method_t
 		else if (!strcmp(p, "v")) it_chook_method_trace_argument_void(trace, argb);
 		else if (*p == '^') it_chook_method_trace_argument_pointer(trace, argb);
 		else it_chook_method_trace_argument_skip(trace, argb, argt);
+#endif
 	}
 }
 static __tb_inline__ tb_void_t it_chook_method_trace_skip_return(it_chook_method_trace_t* trace)
@@ -556,6 +655,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_skip_return(it_chook_method
 }
 static tb_void_t it_chook_method_trace(tb_xml_node_t const* node, Method method, ...)
 {
+	// check
 	tb_assert_and_check_return(node && method);
 
 	// the class name
@@ -624,6 +724,28 @@ static __tb_inline__ tb_size_t it_chook_method_size_for_class(tb_char_t const* c
 
 	return method_n;
 }
+static tb_void_t test4(tb_size_t x0, tb_size_t x1, ...)
+{
+	tb_va_list_t va;
+	tb_va_start(va, x1);
+	tb_trace_i("x0:%lx", x0);
+	tb_trace_i("x1:%lx", x1);
+	tb_trace_i("x2:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("x3:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("x4:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("x5:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("x6:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("x7:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("x8:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s9:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s10:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s11:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s12:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s13:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s14:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s15:%p", tb_va_arg(va, tb_size_t));
+	tb_va_end(va);
+}
 static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t const* node, tb_pointer_t mmapfunc, tb_cpointer_t mmaptail)
 {
 	// check
@@ -662,8 +784,9 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 #if defined(TB_ARCH_ARM)
 # 	ifdef TB_ARCH_ARM64
 				tb_uint32_t* p = (tb_uint32_t*)mmapfunc;
-				tb_assert_and_check_break(p + 48 <= (tb_uint32_t*)mmaptail);
+				tb_assert_and_check_break(p + (48 + 20) <= (tb_uint32_t*)mmaptail);
 
+#if 0
 				// push
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x2, A64$x3, A64$sp, -16);
@@ -680,7 +803,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x24, A64$x25, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x26, A64$x27, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x28, A64$x29, A64$sp, -16);
-				*p++ = A64$str_xt_$xn_im$(A64$x30, A64$sp, -16);
+				*p++ = A64$str_xt_$xn_im$(A64$x30, A64$sp, -8);
 
 				// trace
 				*p++ = A64$movz_xd_im(A64$x0, ((tb_uint64_t)node), 0);
@@ -695,7 +818,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				*p++ = A64$blr(A64$x16);
 
 				// pop
-				*p++ = A64$ldr_xt_$xn$_im(A64$x30, A64$sp, 16);
+				*p++ = A64$ldr_xt_$xn$_im(A64$x30, A64$sp, 8);
 				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x28, A64$x29, A64$sp, 16);
 				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x26, A64$x27, A64$sp, 16);
 				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x24, A64$x25, A64$sp, 16);
@@ -719,6 +842,31 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				*p++ = (tb_uint32_t)((tb_uint64_t)imp >> 32);
 				*p++ = ((tb_uint32_t)&it_chook_method_trace);
 				*p++ = (tb_uint32_t)((tb_uint64_t)&it_chook_method_trace >> 32);
+#else	
+				// push
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
+				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
+
+				*p++ = A64$ldr_xt_im(A64$x16, 40);
+				*p++ = A64$blr(A64$x16);
+
+				// pop
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x0, A64$x1, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x0, A64$x1, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x0, A64$x1, A64$sp, 16);
+				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x0, A64$x1, A64$sp, 16);
+
+				// goto native function
+				*p++ = A64$ldr_xt_im(A64$x16, 8);
+				*p++ = A64$br(A64$x16);
+				*p++ = ((tb_uint32_t)imp);
+				*p++ = (tb_uint32_t)((tb_uint64_t)imp >> 32);
+				*p++ = ((tb_uint32_t)&test4);
+				*p++ = (tb_uint32_t)((tb_uint64_t)&test4 >> 32);
+				tb_used(it_chook_method_trace);
+#endif
 
 				// trace
 //				tb_trace_d("bytes: %lu x4", p - (tb_uint32_t const*)mmapfunc);
@@ -951,7 +1099,7 @@ static __tb_inline__ tb_bool_t it_chook_init()
 	// init mmap base
 #if defined(TB_ARCH_ARM)
 # 	ifdef TB_ARCH_ARM64
-	tb_size_t 		mmapmaxn = method_size * 48;
+	tb_size_t 		mmapmaxn = method_size * (48 + 20);
 	tb_size_t 		mmapsize = mmapmaxn * sizeof(tb_uint32_t);
 # 	else
 	tb_size_t 		mmapmaxn = method_size * 11;
@@ -1044,6 +1192,10 @@ static tb_void_t __attribute__((constructor)) it_init()
 #else
 	tb_used(&fopen_new);
 #endif
+
+	// init log
+//	tb_trace_mode_set(TB_TRACE_MODE_FILE | TB_TRACE_MODE_PRINT);
+//	tb_trace_file_set_path("/tmp/log", tb_false);
 
 	// init cfg
 	if (!it_cfg_init()) return ;
