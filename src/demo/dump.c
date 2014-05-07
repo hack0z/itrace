@@ -7,26 +7,6 @@
 /* //////////////////////////////////////////////////////////////////////////////////////
  * test
  */
-static tb_void_t test4(tb_size_t x0, tb_size_t x1, ...)
-{
-	tb_va_list_t va;
-	tb_va_start(va, x1);
-	tb_trace_i("%lx", x0);
-	tb_trace_i("%lx", x1);
-	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
-	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
-	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
-	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
-	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
-	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
-	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
-	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
-	tb_trace_i("%p", tb_va_arg(va, tb_size_t));
-	tb_va_end(va);
-}
-static tb_void_t test3(int x0, int x1, int x2, int x3, int x4, int x5, int x6, int x7, int x8, long long x9, long long x10)
-{
-}
 static tb_void_t test2(int a, int b)
 {
 }
@@ -35,22 +15,111 @@ static tb_void_t test(int a, int b)
 	tb_void_t (*f)(int, int) = &test2;
 	f(a, b);
 }
-
+#if 0
+static tb_void_t test3(tb_size_t x0, tb_size_t x1, tb_size_t x2, tb_size_t x3, tb_size_t x4, tb_size_t x5, tb_size_t x6, tb_size_t x7, tb_size_t x8, tb_size_t x9, tb_size_t x10, tb_size_t x11, tb_size_t x12, tb_size_t x13, tb_size_t x14, tb_size_t x15, tb_size_t x16)
+{
+}
+#endif
+static tb_void_t test4(tb_size_t x0, tb_size_t x1, tb_size_t x2, tb_size_t x3, tb_size_t x4, tb_size_t x5, tb_size_t x6, tb_size_t x7, tb_size_t x8, tb_size_t x9, ...)
+{
+	tb_va_list_t va;
+	tb_va_start(va, x9);
+	tb_trace_i("x0:%lx", x0);
+	tb_trace_i("x1:%lx", x1);
+	tb_trace_i("x2:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("x3:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("x4:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("x5:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("x6:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("x7:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("x8:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s9:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s10:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s11:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s12:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s13:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s14:%p", tb_va_arg(va, tb_size_t));
+	tb_trace_i("s15:%p", tb_va_arg(va, tb_size_t));
+	tb_va_end(va);
+}
 /* //////////////////////////////////////////////////////////////////////////////////////
  * main
  */
 tb_int_t main(tb_int_t argc, tb_char_t const** argv)
 {
-	test4(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
-	// done test3
-	test3(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
-
+//test3(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
+test4(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16);
 #if defined(TB_ARCH_ARM)
 #ifdef TB_ARCH_ARM64
 	__tb_asm__ __tb_volatile__("nop");
 	__tb_asm__ __tb_volatile__("str x0, [sp, #-8]!");
 	__tb_asm__ __tb_volatile__("stp x0, x1, [sp, #-16]!");
+
+	__tb_asm__ __tb_volatile__("nop");
+__tb_asm__ __tb_volatile__(".byte 0xe0");
+__tb_asm__ __tb_volatile__(".byte 0x7");
+__tb_asm__ __tb_volatile__(".byte 0xbf");
+__tb_asm__ __tb_volatile__(".byte 0xa9");
+__tb_asm__ __tb_volatile__(".byte 0xfe");
+__tb_asm__ __tb_volatile__(".byte 0x8f");
+__tb_asm__ __tb_volatile__(".byte 0x1f");
+__tb_asm__ __tb_volatile__(".byte 0xf8");
+__tb_asm__ __tb_volatile__(".byte 0x50");
+__tb_asm__ __tb_volatile__(".byte 0x1");
+__tb_asm__ __tb_volatile__(".byte 0x0");
+__tb_asm__ __tb_volatile__(".byte 0x58");
+__tb_asm__ __tb_volatile__(".byte 0x0");
+__tb_asm__ __tb_volatile__(".byte 0x2");
+__tb_asm__ __tb_volatile__(".byte 0x3f");
+__tb_asm__ __tb_volatile__(".byte 0xd6");
+__tb_asm__ __tb_volatile__(".byte 0xe0");
+__tb_asm__ __tb_volatile__(".byte 0x7");
+__tb_asm__ __tb_volatile__(".byte 0xc1");
+__tb_asm__ __tb_volatile__(".byte 0xa8");
+__tb_asm__ __tb_volatile__(".byte 0xe0");
+__tb_asm__ __tb_volatile__(".byte 0x7");
+__tb_asm__ __tb_volatile__(".byte 0xc1");
+__tb_asm__ __tb_volatile__(".byte 0xa8");
+__tb_asm__ __tb_volatile__(".byte 0xe0");
+__tb_asm__ __tb_volatile__(".byte 0x7");
+__tb_asm__ __tb_volatile__(".byte 0xc1");
+__tb_asm__ __tb_volatile__(".byte 0xa8");
+__tb_asm__ __tb_volatile__(".byte 0xe0");
+__tb_asm__ __tb_volatile__(".byte 0x7");
+__tb_asm__ __tb_volatile__(".byte 0xc1");
+__tb_asm__ __tb_volatile__(".byte 0xa8");
+__tb_asm__ __tb_volatile__(".byte 0x50");
+__tb_asm__ __tb_volatile__(".byte 0x0");
+__tb_asm__ __tb_volatile__(".byte 0x0");
+__tb_asm__ __tb_volatile__(".byte 0x58");
+__tb_asm__ __tb_volatile__(".byte 0x0");
+__tb_asm__ __tb_volatile__(".byte 0x2");
+__tb_asm__ __tb_volatile__(".byte 0x1f");
+__tb_asm__ __tb_volatile__(".byte 0xd6");
+__tb_asm__ __tb_volatile__(".byte 0xb4");
+__tb_asm__ __tb_volatile__(".byte 0x50");
+__tb_asm__ __tb_volatile__(".byte 0x2d");
+__tb_asm__ __tb_volatile__(".byte 0x96");
+__tb_asm__ __tb_volatile__(".byte 0x1");
+__tb_asm__ __tb_volatile__(".byte 0x0");
+__tb_asm__ __tb_volatile__(".byte 0x0");
+__tb_asm__ __tb_volatile__(".byte 0x0");
+__tb_asm__ __tb_volatile__(".byte 0xb8");
+__tb_asm__ __tb_volatile__(".byte 0xdb");
+__tb_asm__ __tb_volatile__(".byte 0x5b");
+__tb_asm__ __tb_volatile__(".byte 0x5");
+__tb_asm__ __tb_volatile__(".byte 0x1");
+__tb_asm__ __tb_volatile__(".byte 0x0");
+__tb_asm__ __tb_volatile__(".byte 0x0");
+__tb_asm__ __tb_volatile__(".byte 0x0");
+__tb_asm__ __tb_volatile__(".byte 0xe0");
+__tb_asm__ __tb_volatile__(".byte 0x7");
+__tb_asm__ __tb_volatile__(".byte 0xbf");
+__tb_asm__ __tb_volatile__(".byte 0xa9");
+__tb_asm__ __tb_volatile__(".byte 0xfe");
+__tb_asm__ __tb_volatile__(".byte 0x8f");
+__tb_asm__ __tb_volatile__(".byte 0x1f");
+__tb_asm__ __tb_volatile__(".byte 0xf8");
 
 	// substrate
 #if 1
