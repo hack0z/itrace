@@ -136,7 +136,8 @@ ASFLAGS-o 			= -o
 # arflags
 ARFLAGS 			= -cr
 
-# share ldflags
+# shflags
+SHFLAGS_RELEASE 	= -s
 SHFLAGS 			= $(ARCH_LDFLAGS) -dynamiclib
 
 # config

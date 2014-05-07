@@ -75,7 +75,7 @@
 				__tb_volatile__ tb_size_t x28 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x28); \
 				__tb_volatile__ tb_size_t x29 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x29); \
 				__tb_volatile__ tb_size_t x30 = tb_va_arg(trace->args_list, tb_size_t); tb_used(x30); \
-				__tb_volatile__ tb_size_t x30_ = tb_va_arg(trace->args_list, tb_size_t); tb_used(x30_); \
+				__tb_volatile__ tb_size_t x29_ = tb_va_arg(trace->args_list, tb_size_t); tb_used(x29_); \
 			} \
  \
 		} while (0); 
@@ -814,9 +814,8 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 #if defined(TB_ARCH_ARM)
 # 	ifdef TB_ARCH_ARM64
 				tb_uint32_t* p = (tb_uint32_t*)mmapfunc;
-				tb_assert_and_check_break(p + (48 + 20) <= (tb_uint32_t*)mmaptail);
+				tb_assert_and_check_break(p + (48 + 1) <= (tb_uint32_t*)mmaptail);
 
-#if 1
 				// push
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x2, A64$x3, A64$sp, -16);
@@ -833,7 +832,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x24, A64$x25, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x26, A64$x27, A64$sp, -16);
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x28, A64$x29, A64$sp, -16);
-//				*p++ = A64$str_xt_$xn_im$(A64$x30, A64$sp, -8);
+//				*p++ = A64$str_xt_$xn_im$(A64$x30, A64$sp, -8); // FIXME: oops! why?
 				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x30, A64$x29, A64$sp, -16);
 
 				// trace
@@ -874,37 +873,6 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
 				*p++ = (tb_uint32_t)((tb_uint64_t)imp >> 32);
 				*p++ = ((tb_uint32_t)&it_chook_method_trace);
 				*p++ = (tb_uint32_t)((tb_uint64_t)&it_chook_method_trace >> 32);
-#else	
-				// push
-//				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
-//				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
-//				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
-//				*p++ = A64$stp_xt1_xt2_$xn_im$(A64$x0, A64$x1, A64$sp, -16);
-
-//				*p++ = A64$str_xt_$xn_im$(A64$x30, A64$sp, -8);
-//				*p++ = A64$str_xt_$xn_im$(A64$x30, A64$sp, -8);
-//				*p++ = A64$str_xt_$xn_im$(A64$x30, A64$sp, -8);
-//				*p++ = A64$str_xt_$xn_im$(A64$x30, A64$sp, -8);
-
-				*p++ = A64$ldr_xt_im(A64$x16, 40);
-				*p++ = A64$blr(A64$x16);
-
-				// pop
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x0, A64$x1, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x0, A64$x1, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x0, A64$x1, A64$sp, 16);
-				*p++ = A64$ldp_xt1_xt2_$xn$_im(A64$x0, A64$x1, A64$sp, 16);
-
-				// goto native function
-				*p++ = A64$ldr_xt_im(A64$x16, 8);
-				*p++ = A64$br(A64$x16);
-				*p++ = ((tb_uint32_t)imp);
-				*p++ = (tb_uint32_t)((tb_uint64_t)imp >> 32);
-				*p++ = ((tb_uint32_t)&test4);
-				*p++ = (tb_uint32_t)((tb_uint64_t)&test4 >> 32);
-				tb_used(it_chook_method_trace);
-
-#endif
 
 				// trace
 //				tb_trace_d("bytes: %lu x4", p - (tb_uint32_t const*)mmapfunc);
@@ -1137,7 +1105,7 @@ static __tb_inline__ tb_bool_t it_chook_init()
 	// init mmap base
 #if defined(TB_ARCH_ARM)
 # 	ifdef TB_ARCH_ARM64
-	tb_size_t 		mmapmaxn = method_size * (48 + 20);
+	tb_size_t 		mmapmaxn = method_size * (48 + 1);
 	tb_size_t 		mmapsize = mmapmaxn * sizeof(tb_uint32_t);
 # 	else
 	tb_size_t 		mmapmaxn = method_size * 11;

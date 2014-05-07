@@ -2,10 +2,10 @@
 #define TB_CONFIG_H
 
 // build version
-#define TB_CONFIG_VERSION_BUILD 		201405051328
+#define TB_CONFIG_VERSION_BUILD 		201405071450
 
 // debug
-#define TB_CONFIG_DEBUG					(1)
+#define TB_CONFIG_DEBUG					(0)
 
 // small
 #define TB_CONFIG_SMALL					(1)
