@@ -16,14 +16,13 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		mutex.h
- * @ingroup 	dynamic
+ * @author      ruki
+ * @file        mutex.h
+ * @ingroup     dynamic
  *
  */
 #ifndef TB_PLATFORM_DYNAMIC_H
 #define TB_PLATFORM_DYNAMIC_H
-
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * includes
@@ -31,39 +30,56 @@
 #include "prefix.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+/// the dynamic ref type
+typedef struct{}*   tb_dynamic_ref_t;
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 /*! init dynamic library
  * 
- * @param name 		the library name
+ * @param name      the library name
  *
- * @return 			the library handle
+ * @return          the dynamic library 
  */
-tb_handle_t 		tb_dynamic_init(tb_char_t const* name);
+tb_dynamic_ref_t    tb_dynamic_init(tb_char_t const* name);
 
 /*! exit dynamic library
  * 
- * @param dynamic 	the library handle
+ * @param dynamic   the dynamic library 
  */
-tb_void_t 			tb_dynamic_exit(tb_handle_t handle);
+tb_void_t           tb_dynamic_exit(tb_dynamic_ref_t dynamic);
 
 /*! the dynamic library function
  * 
- * @param handle 	the library handle
- * @param name 		the function name
+ * @param dynamic   the dynamic library 
+ * @param name      the function name
  *
- * @return 			the function address
+ * @return          the function address
  */
-tb_pointer_t 		tb_dynamic_func(tb_handle_t handle, tb_char_t const* name);
+tb_pointer_t        tb_dynamic_func(tb_dynamic_ref_t dynamic, tb_char_t const* name);
 
 /*! the dynamic library variable
  * 
- * @param handle 	the library handle
- * @param name 		the variable name
+ * @param dynamic   the dynamic library 
+ * @param name      the variable name
  *
- * @return 			the variable address
+ * @return          the variable address
  */
-tb_pointer_t 		tb_dynamic_pvar(tb_handle_t handle, tb_char_t const* name);
+tb_pointer_t        tb_dynamic_pvar(tb_dynamic_ref_t dynamic, tb_char_t const* name);
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 
 #endif

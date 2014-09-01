@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		bin.h
- * @ingroup 	object
+ * @author      ruki
+ * @file        bin.h
+ * @ingroup     object
  *
  */
 #ifndef TB_OBJECT_WRITER_BIN_H
@@ -30,34 +30,39 @@
 #include "prefix.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
 
 /// the object bin writer type
 typedef struct __tb_object_bin_writer_t
 {
-	/// the stream
-	tb_basic_stream_t* 				stream;
+    /// the stream
+    tb_stream_ref_t              stream;
 
-	/// the object hash
-	tb_hash_t* 					ohash;
+    /// the object hash
+    tb_hash_ref_t                  ohash;
 
-	/// the string hash
-	tb_hash_t* 					shash;
+    /// the string hash
+    tb_hash_ref_t                  shash;
 
-	/// the object index
-	tb_size_t 					index;
+    /// the object index
+    tb_size_t                   index;
 
-	/// the encoder data
-	tb_byte_t* 					data;
+    /// the encoder data
+    tb_byte_t*                  data;
 
-	/// the encoder maxn
-	tb_size_t 					maxn;
+    /// the encoder maxn
+    tb_size_t                   maxn;
 
 }tb_object_bin_writer_t;
 
 /// the bin writer func type
-typedef tb_bool_t 				(*tb_object_bin_writer_func_t)(tb_object_bin_writer_t* writer, tb_object_t* object);
+typedef tb_bool_t               (*tb_object_bin_writer_func_t)(tb_object_bin_writer_t* writer, tb_object_ref_t object);
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
@@ -65,26 +70,31 @@ typedef tb_bool_t 				(*tb_object_bin_writer_func_t)(tb_object_bin_writer_t* wri
 
 /*! the bin object writer
  *
- * @return 						the bin object writer
+ * @return                      the bin object writer
  */
-tb_object_writer_t* 			tb_object_bin_writer(tb_noarg_t);
+tb_object_writer_t*             tb_object_bin_writer(tb_noarg_t);
 
 /*! hook the bin writer
  *
- * @param type 					the object type 
- * @param func 					the writer func
+ * @param type                  the object type 
+ * @param func                  the writer func
  *
- * @return 						tb_true or tb_false
+ * @return                      tb_true or tb_false
  */
-tb_bool_t 						tb_object_bin_writer_hook(tb_size_t type, tb_object_bin_writer_func_t func);
+tb_bool_t                       tb_object_bin_writer_hook(tb_size_t type, tb_object_bin_writer_func_t func);
 
 /*! the bin writer func
  *
- * @param type 					the object type 
+ * @param type                  the object type 
  *
- * @return 						the object writer func
+ * @return                      the object writer func
  */
-tb_object_bin_writer_func_t 	tb_object_bin_writer_func(tb_size_t type);
+tb_object_bin_writer_func_t     tb_object_bin_writer_func(tb_size_t type);
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 
 #endif
 

@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		dns.h
- * @ingroup 	asio
+ * @author      ruki
+ * @file        dns.h
+ * @ingroup     asio
  *
  */
 #ifndef TB_ASIO_DNS_H
@@ -31,11 +31,19 @@
 #include "../network/ipv4.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
 
-/// the aicp dns func type
-typedef tb_void_t 	(*tb_aicp_dns_func_t)(tb_handle_t handle, tb_char_t const* host, tb_ipv4_t const* dns, tb_pointer_t data);
+/// the aicp dns ref type
+typedef struct{}*   tb_aicp_dns_ref_t;
+
+/// the aicp dns done func type
+typedef tb_void_t   (*tb_aicp_dns_done_func_t)(tb_aicp_dns_ref_t dns, tb_char_t const* host, tb_ipv4_t const* addr, tb_cpointer_t priv);
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
@@ -43,43 +51,47 @@ typedef tb_void_t 	(*tb_aicp_dns_func_t)(tb_handle_t handle, tb_char_t const* ho
 
 /*! init the dns 
  *
- * @param aicp 		the aicp
- * @param timeout 	the timeout, ms
- * @param func 		the func
- * @param data 		the func data
+ * @param aicp      the aicp
  *
- * @return 			the dns handle
+ * @return          the dns 
  */
-tb_handle_t 		tb_aicp_dns_init(tb_aicp_t* aicp, tb_long_t timeout, tb_aicp_dns_func_t func, tb_pointer_t data);
+tb_aicp_dns_ref_t   tb_aicp_dns_init(tb_aicp_ref_t aicp);
 
 /*! kill the dns
  *
- * @param handle 	the dns handle
+ * @param dns       the dns 
  */
-tb_void_t 			tb_aicp_dns_kill(tb_handle_t handle);
+tb_void_t           tb_aicp_dns_kill(tb_aicp_dns_ref_t dns);
 
 /*! exit the dns
  *
- * @param handle 	the dns handle
- * @param bcalling 	exit it at the self callback?
+ * @param dns       the dns 
  */
-tb_void_t 			tb_aicp_dns_exit(tb_handle_t handle, tb_bool_t bcalling);
+tb_void_t           tb_aicp_dns_exit(tb_aicp_dns_ref_t dns);
 
 /*! done the dns
  *
- * @param handle 	the dns handle
- * @param host 		the host
+ * @param dns       the dns 
+ * @param host      the host
+ * @param timeout   the timeout, ms
+ * @param func      the done func
+ * @param priv      the func private data
  *
- * @return 			tb_true or tb_false
+ * @return          tb_true or tb_false
  */
-tb_bool_t 			tb_aicp_dns_done(tb_handle_t handle, tb_char_t const* host);
+tb_bool_t           tb_aicp_dns_done(tb_aicp_dns_ref_t dns, tb_char_t const* host, tb_long_t timeout, tb_aicp_dns_done_func_t func, tb_cpointer_t priv);
 
 /*! the dns aicp
  *
- * @param handle 	the dns handle
+ * @param handle    the dns handle
  *
- * @return 			the aicp
+ * @return          the aicp
  */
-tb_aicp_t* 			tb_aicp_dns_aicp(tb_handle_t handle);
+tb_aicp_ref_t       tb_aicp_dns_aicp(tb_aicp_dns_ref_t dns);
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 
 #endif

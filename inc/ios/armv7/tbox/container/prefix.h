@@ -16,8 +16,8 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		prefix.h
+ * @author      ruki
+ * @file        prefix.h
  *
  */
 #ifndef TB_CONTAINER_PREFIX_H
@@ -27,5 +27,12 @@
  * includes
  */
 #include "../prefix.h"
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * types
+ */
+
+/// the entry copy func type
+typedef tb_void_t               (*tb_entry_copy_t)(tb_pointer_t ltem, tb_pointer_t rtem);
 
 #endif

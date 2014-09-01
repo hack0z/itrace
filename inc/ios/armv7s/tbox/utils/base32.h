@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		base32.h
- * @ingroup 	utils
+ * @author      ruki
+ * @file        base32.h
+ * @ingroup     utils
  *
  */
 #ifndef TB_UTILS_BASE32_H
@@ -30,30 +30,40 @@
 #include "prefix.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 /*! encode base32
  *
- * @param ib 		the input data
- * @param in 		the input size
- * @param ob 		the output data
- * @param on 		the output size
+ * @param ib        the input data
+ * @param in        the input size
+ * @param ob        the output data
+ * @param on        the output size
  *
- * @return 			the real size
+ * @return          the real size
  */
-tb_size_t 			tb_base32_encode(tb_byte_t const* ib, tb_size_t in, tb_char_t* ob, tb_size_t on);
+tb_size_t           tb_base32_encode(tb_byte_t const* ib, tb_size_t in, tb_char_t* ob, tb_size_t on);
 
 /*! decode base32
  *
- * @param ib 		the input data
- * @param in 		the input size
- * @param ob 		the output data
- * @param on 		the output size
+ * @param ib        the input data
+ * @param in        the input size
+ * @param ob        the output data
+ * @param on        the output size
  *
- * @return 			the real size
+ * @return          the real size
  */
-tb_size_t 			tb_base32_decode(tb_byte_t const* ib, tb_size_t in, tb_char_t* ob, tb_size_t on);
+tb_size_t           tb_base32_decode(tb_byte_t const* ib, tb_size_t in, tb_char_t* ob, tb_size_t on);
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 
 #endif
 

@@ -16,14 +16,13 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		utils.h
- * @defgroup 	utils
+ * @author      ruki
+ * @file        utils.h
+ * @defgroup    utils
  *
  */
 #ifndef TB_UTILS_H
 #define TB_UTILS_H
-
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * includes
@@ -41,5 +40,6 @@
 #include "base64.h"
 #include "option.h"
 #include "singleton.h"
+#include "lock_profiler.h"
 
 #endif

@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		used.h
- * @ingroup 	utils
+ * @author      ruki
+ * @file        used.h
+ * @ingroup     utils
  *
  */
 #ifndef TB_UTILS_USED_H
@@ -30,9 +30,14 @@
 #include "prefix.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macors
  */
-#define tb_used(ptr) 	tb_used_ptr((tb_cpointer_t)(tb_size_t)(ptr))
+#define tb_used(ptr)    tb_used_ptr((tb_cpointer_t)(tb_size_t)(ptr))
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
@@ -40,9 +45,14 @@
 
 /*! this variable have been used
  *
- * @param variable 		the variable
+ * @param variable      the variable
  */
-tb_void_t 				tb_used_ptr(tb_cpointer_t variable);
+tb_void_t               tb_used_ptr(tb_cpointer_t variable);
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 
 #endif
 

@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		stack.h
- * @ingroup 	container
+ * @author      ruki
+ * @file        stack.h
+ * @ingroup     container
  *
  */
 #ifndef TB_CONTAINER_STACK_H
@@ -27,15 +27,19 @@
 /* //////////////////////////////////////////////////////////////////////////////////////
  * includes
  */
-#include "prefix.h"
 #include "vector.h"
 #include "item.h"
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
 
-/*!the stack type
+/*! the stack ref type 
  *
  * <pre>
  * stack: |||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||------|
@@ -44,24 +48,20 @@
  * stack: |||||||||||||||||||||||||||||||||||||||||------|
  *       head                                   last    tail
  *
- * head: => the first item
- * last: => the last item
- * tail: => behind the last item, no item
-
  * performance: 
  *
- * push: 	fast
- * pop: 	fast
+ * push:    fast
+ * pop:     fast
  *
  * iterator:
- * next: 	fast
- * prev: 	fast
+ * next:    fast
+ * prev:    fast
  * </pre>
  *
  * @note the itor of the same item is fixed
  *
  */
-typedef tb_vector_t 			tb_stack_t;
+typedef tb_vector_ref_t tb_stack_ref_t;
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
@@ -69,110 +69,107 @@ typedef tb_vector_t 			tb_stack_t;
 
 /*! init stack
  *
- * @param grow 		the item grow
- * @param func 		the item func
+ * @param grow      the item grow
+ * @param func      the item func
  *
- * @return 			the stack
+ * @return          the stack
  */
-tb_stack_t* 		tb_stack_init(tb_size_t grow, tb_item_func_t func);
+tb_stack_ref_t      tb_stack_init(tb_size_t grow, tb_item_func_t func);
 
 /*! exit stack
  *
- * @param stack 	the stack
+ * @param stack     the stack
  */
-tb_void_t 			tb_stack_exit(tb_stack_t* stack);
+tb_void_t           tb_stack_exit(tb_stack_ref_t stack);
 
 /*! the stack head item
  *
- * @param stack 	the stack
+ * @param stack     the stack
  *
- * @return 			the head item
+ * @return          the head item
  */
-tb_pointer_t 		tb_stack_head(tb_stack_t* stack);
+tb_pointer_t        tb_stack_head(tb_stack_ref_t stack);
 
 /*! the stack last item
  *
- * @param stack 	the stack
+ * @param stack     the stack
  *
- * @return 			the last item
+ * @return          the last item
  */
-tb_pointer_t 		tb_stack_last(tb_stack_t* stack);
+tb_pointer_t        tb_stack_last(tb_stack_ref_t stack);
 
 /*! clear the stack
  *
- * @param stack 	the stack
+ * @param stack     the stack
  */
-tb_void_t 			tb_stack_clear(tb_stack_t* stack);
+tb_void_t           tb_stack_clear(tb_stack_ref_t stack);
 
 /*! copy the stack
  *
- * @param stack 	the stack
- * @param copy 		the copied stack
+ * @param stack     the stack
+ * @param copy      the copied stack
  */
-tb_void_t 			tb_stack_copy(tb_stack_t* stack, tb_stack_t* copy);
+tb_void_t           tb_stack_copy(tb_stack_ref_t stack, tb_stack_ref_t copy);
 
 /*! put the stack item
  *
- * @param stack 	the stack
- * @param data 		the item data
+ * @param stack     the stack
+ * @param data      the item data
  */
-tb_void_t 	 		tb_stack_put(tb_stack_t* stack, tb_cpointer_t data);
+tb_void_t           tb_stack_put(tb_stack_ref_t stack, tb_cpointer_t data);
 
 /*! pop the stack item
  *
- * @param stack 	the stack
+ * @param stack     the stack
  */
-tb_void_t 	 		tb_stack_pop(tb_stack_t* stack);
+tb_void_t           tb_stack_pop(tb_stack_ref_t stack);
 
 /*! the stack top item
  *
- * @param stack 	the stack
+ * @param stack     the stack
  *
- * @return 			the stack top item
+ * @return          the stack top item
  */
-tb_pointer_t 	 	tb_stack_top(tb_stack_t* stack);
+tb_pointer_t        tb_stack_top(tb_stack_ref_t stack);
+
+/*! load stack from the stream
+ *
+ * @param stack     the stack
+ * @param stream    the stream
+ *
+ * @return          tb_true or tb_false
+ */
+tb_bool_t           tb_stack_load(tb_stack_ref_t stack, tb_stream_ref_t stream);
+
+/*! save stack to the stream
+ *
+ * @param stack     the stack
+ * @param stream    the stream
+ *
+ * @return          tb_true or tb_false
+ */
+tb_bool_t           tb_stack_save(tb_stack_ref_t stack, tb_stream_ref_t stream);
 
 /*! the stack size
  *
- * @param stack 	the stack
+ * @param stack     the stack
  *
- * @return 			the stack size
+ * @return          the stack size
  */
-tb_size_t 			tb_stack_size(tb_stack_t const* stack);
+tb_size_t           tb_stack_size(tb_stack_ref_t stack);
 
 /*! the stack maxn
  *
- * @param stack 	the stack
+ * @param stack     the stack
  *
- * @return 			the stack maxn
+ * @return          the stack maxn
  */
-tb_size_t 			tb_stack_maxn(tb_stack_t const* stack);
+tb_size_t           tb_stack_maxn(tb_stack_ref_t stack);
 
-/*! walk the stack
- *
- * be faster than the iterator mode, optimizate to remove items for walking
- *
- * @code
- * tb_bool_t tb_stack_item_func(tb_stack_t* stack, tb_pointer_t item, tb_bool_t* bdel, tb_pointer_t priv)
- * {
- * 		// check
- * 		tb_assert_and_check_return_val(stack && bdel, tb_false);
- *
- * 		// delete it?
- * 		// *bdel = tb_true;
- *
- * 		// continue or break
- * 		return tb_true;
- * }
- * @endcode
- *
- * @param stack 	the stack
- * @param func 		the walk func
- * @param data 		the walk data
- *
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
  */
-tb_void_t 			tb_stack_walk(tb_stack_t* stack, tb_bool_t (*func)(tb_stack_t* stack, tb_pointer_t item, tb_bool_t* bdel, tb_pointer_t priv), tb_pointer_t priv);
-
+__tb_extern_c_leave__
 
 #endif
 

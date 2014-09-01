@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		memory.h
- * @defgroup 	memory
+ * @author      ruki
+ * @file        memory.h
+ * @defgroup    memory
  *
  */
 #ifndef TB_MEMORY_H
@@ -28,15 +28,19 @@
  * includes
  */
 #include "prefix.h"
-#include "static_block_pool.h"
-#include "static_fixed_pool.h"
-#include "static_tiny_pool.h"
-#include "global_pool.h"
-#include "block_pool.h"
+#include "pool.h"
 #include "fixed_pool.h"
-#include "scoped_buffer.h"
-#include "static_buffer.h"
+#include "large_pool.h"
+#include "small_pool.h"
+#include "string_pool.h"
+#include "buffer.h"
 #include "queue_buffer.h"
+#include "static_buffer.h"
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * description
@@ -45,12 +49,58 @@
 /*!architecture
  *
  * <pre>
- * block_pool --------------------- static_block_pool --
- *                |                     |              |
- *             global_pool -------------|              | 
- *                |                 static_tiny_pool --|- data: |-------------------------------|
- *                |                                    |
- * fixed_pool --------------------- static_fixed_pool --
+ *
+ *  ----------------      ------------------------------------------------------- 
+ * | native memory  | or |                         data                          |
+ *  ----------------      ------------------------------------------------------- 
+ *         |             if data be null             |
+ *         `---------------------------------------> |
+ *                                                   |
+ *  -----------------------------------------------------------------------------      ----------------------      ------      ------
+ * |                                large pool[lock]                             | -> |    fixed pool:NB     | -> | slot | -> | slot | -> ...
+ *  -----------------------------------------------------------------------------      ----------------------      ------      ------
+ *                             |                     |                                 
+ *                             |          ---------------------------------------      ----------------------      ------      ------
+ *                             |         |               small pool              | -> |    fixed pool:16B    | -> | slot | -> | slot | -> ...
+ *                             |          ---------------------------------------     |----------------------|     ------      ------
+ *                             |                              |                       |    fixed pool:32B    | -> ...
+ *                             |                              |                       |----------------------|
+ *                             |                              |                       |    fixed pool:64B    | -> ...
+ *                             |                              |                       |----------------------|
+ *                             |                              |                       |    fixed pool:96B*   | -> ...
+ *                             |                              |                       |----------------------|
+ *                             |                              |                       |    fixed pool:128B   | -> ...
+ *                             |                              |                       |----------------------|
+ *                             |                              |                       |    fixed pool:192B*  | -> ...
+ *                             |                              |                       |----------------------|
+ *                             |                              |                       |    fixed pool:256B   | -> ...
+ *                             |                              |                       |----------------------|
+ *                             |                              |                       |    fixed pool:384B*  | -> ...
+ *                             |                              |                       |----------------------|
+ *                             |                              |                       |    fixed pool:512B   | -> ...
+ *                             |                              |                       |----------------------|
+ *                             |                              |                       |    fixed pool:1024B  | -> ...
+ *                             |                              |                       |----------------------|
+ *                             |                              |                       |    fixed pool:2048B  | -> ...
+ *                             |                              |                       |----------------------|
+ *                             |                              |                       |    fixed pool:3072B* | -> ...
+ *                             |                              |                        ---------------------- 
+ *                             |                              |
+ *                             |                              |
+ *  ------------------------------------------------------------------------------ 
+ * |                         >3KB        |                 <=3KB                  |
+ * |------------------------------------------------------------------------------|
+ * |                                  pool[lock]                                  |
+ *  ------------------------------------------------------------------------------
+ *                                       |                                                  
+ *  ------------------------------------------------------------------------------         
+ * |                        malloc, nalloc, strdup, free ...                      |
+ *  ------------------------------------------------------------------------------ 
+ *                                                                     |
+ *                                                          ---------------------- 
+ *                                                         |     string pool      |
+ *                                                          ----------------------
+ *
  * </pre>
  */
 
@@ -60,87 +110,20 @@
 
 /*! init memory
  *
- * @param data 			the memory pool data
- * @param size 			the memory pool size
- * @param align 		the memory pool data align bytes
+ * @param data          the memory pool data
+ * @param size          the memory pool size
  *
- * @return 				tb_true or tb_false
+ * @return              tb_true or tb_false
  */
-tb_bool_t 				tb_memory_init(tb_byte_t* data, tb_size_t size, tb_size_t align);
+tb_bool_t               tb_memory_init(tb_byte_t* data, tb_size_t size);
 
 /// exit memory
-tb_void_t 				tb_memory_exit(tb_noarg_t);
+tb_void_t               tb_memory_exit(tb_noarg_t);
 
-/*! malloc the memory
- *
- * @param size 			the size
- *
- * @return 				the data address
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
  */
-tb_pointer_t 			tb_memory_malloc_(tb_size_t size __tb_debug_decl__);
-
-/*! malloc the memory and fill zero 
- *
- * @param size 			the size
- *
- * @return 				the data address
- */
-tb_pointer_t 			tb_memory_malloc0_(tb_size_t size __tb_debug_decl__);
-
-/*! malloc the memory with the item count
- *
- * @param item 			the item count
- * @param size 			the item size
- *
- * @return 				the data address
- */
-tb_pointer_t  			tb_memory_nalloc_(tb_size_t item, tb_size_t size __tb_debug_decl__);
-
-/*! malloc the memory with the item count and fill zero
- *
- * @param item 			the item count
- * @param size 			the item size
- *
- * @return 				the data address
- */
-tb_pointer_t  			tb_memory_nalloc0_(tb_size_t item, tb_size_t size __tb_debug_decl__);
-
-/*! realloc the memory
- *
- * @param data 			the data address
- * @param size 			the size
- *
- * @return 				the new data address
- */
-tb_pointer_t 			tb_memory_ralloc_(tb_pointer_t data, tb_size_t size __tb_debug_decl__);
-
-/*! free the memory
- *
- * @param data 			the data address
- *
- * @return 				tb_true or tb_false
- */
-tb_bool_t 				tb_memory_free_(tb_pointer_t data __tb_debug_decl__);
-
-#ifdef __tb_debug__
-/// dump memory
-tb_void_t 				tb_memory_dump(tb_noarg_t);
-
-/*! the data size in the memory only for the pool mode
- *
- * @param data 			the data address
- *
- * @return 				the data size, return zero if using the native memory
- */
-tb_size_t 				tb_memory_data_size(tb_cpointer_t data);
-
-/*! dump the memory data only for the pool mode
- *
- * @param data 			the data address
- * @param prefix 		the dump prefix info
- */
-tb_void_t 				tb_memory_data_dump(tb_cpointer_t data, tb_char_t const* prefix);
-#endif
+__tb_extern_c_leave__
 
 #endif
 

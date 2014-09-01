@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		gzip.h
- * @ingroup 	zip
+ * @author      ruki
+ * @file        gzip.h
+ * @ingroup     zip
  *
  */
 #ifndef TB_ZIP_GZIP_H
@@ -28,9 +28,14 @@
  * includes
  */
 #include "prefix.h"
-#ifdef TB_CONFIG_HAVE_ZLIB
-# 	include <zlib.h>
+#ifdef TB_CONFIG_THIRD_HAVE_ZLIB
+#   include <zlib.h>
 #endif
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * types
@@ -39,11 +44,11 @@
 // the gzip zip type
 typedef struct __tb_zip_gzip_t
 {
-	// the zip base
-	tb_zip_t 		base;
+    // the zip base
+    tb_zip_t        base;
 
-#ifdef TB_CONFIG_HAVE_ZLIB
-	z_stream 		zst;
+#ifdef TB_CONFIG_THIRD_HAVE_ZLIB
+    z_stream        zst;
 #endif
 
 }tb_zip_gzip_t;
@@ -52,8 +57,13 @@ typedef struct __tb_zip_gzip_t
  * interfaces
  */
 
-tb_zip_t* 	tb_zip_gzip_init(tb_size_t action);
-tb_void_t 	tb_zip_gzip_exit(tb_zip_t* zip);
+tb_zip_ref_t   tb_zip_gzip_init(tb_size_t action);
+tb_void_t   tb_zip_gzip_exit(tb_zip_ref_t zip);
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 
 #endif
 

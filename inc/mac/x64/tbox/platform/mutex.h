@@ -16,14 +16,13 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		mutex.h
- * @ingroup 	platform
+ * @author      ruki
+ * @file        mutex.h
+ * @ingroup     platform
  *
  */
 #ifndef TB_PLATFORM_MUTEX_H
 #define TB_PLATFORM_MUTEX_H
-
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * includes
@@ -31,43 +30,53 @@
 #include "prefix.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 /*! init mutex
  *
- * @return 			the mutex handle
+ * @return          the mutex 
  */
-tb_handle_t 		tb_mutex_init(tb_noarg_t);
+tb_mutex_ref_t      tb_mutex_init(tb_noarg_t);
 
 /* exit mutex
  *
- * @param handle 	the mutex handle
+ * @param mutex     the mutex 
  */
-tb_void_t 			tb_mutex_exit(tb_handle_t handle);
+tb_void_t           tb_mutex_exit(tb_mutex_ref_t mutex);
 
 /* enter mutex
  *
- * @param handle 	the mutex handle
+ * @param mutex     the mutex 
  *
- * @return 			tb_true or tb_false
+ * @return          tb_true or tb_false
  */
-tb_bool_t 			tb_mutex_enter(tb_handle_t handle);
+tb_bool_t           tb_mutex_enter(tb_mutex_ref_t mutex);
 
 /* try to enter mutex
  *
- * @param handle 	the mutex handle
+ * @param mutex     the mutex 
  *
- * @return 			tb_true or tb_false
+ * @return          tb_true or tb_false
  */
-tb_bool_t 			tb_mutex_enter_try(tb_handle_t handle);
+tb_bool_t           tb_mutex_enter_try(tb_mutex_ref_t mutex);
 
 /* leave mutex
  *
- * @param handle 	the mutex handle
+ * @param mutex     the mutex 
  *
- * @return 			tb_true or tb_false
+ * @return          tb_true or tb_false
  */
-tb_bool_t 			tb_mutex_leave(tb_handle_t handle);
+tb_bool_t           tb_mutex_leave(tb_mutex_ref_t mutex);
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 
 #endif

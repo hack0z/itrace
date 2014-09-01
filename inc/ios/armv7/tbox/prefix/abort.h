@@ -16,8 +16,8 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		abort.h
+ * @author      ruki
+ * @file        abort.h
  *
  */
 #ifndef TB_PREFIX_ABORT_H
@@ -28,21 +28,29 @@
  */
 #include "config.h"
 #include "trace.h"
+#include "assembler.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
 
-// abort impl
+// abort it, @note ud2 cannot be aborted immediately for multi-thread
 #if defined(TB_ARCH_x86) || defined(TB_ARCH_x64)
-# 	define tb_abort_done() 								do { __tb_asm__ __tb_volatile__ ("ud2"); } while (0)
-//# 	define tb_abort_done() 								do { __tb_asm__ __tb_volatile__ ("int3"); } while (0)
-#else
-# 	define tb_abort_done() 								do { *((__tb_volatile__ tb_int_t*)0) = 0; } while (0)
+#   if defined(TB_ASSEMBLER_IS_MASM)
+//#       define tb_abort_done()                          do { __tb_asm__ { ud2 } } while (0)
+#       define tb_abort_done()                          do { __tb_asm__ { int 3 } } while (0)
+#   elif defined(TB_ASSEMBLER_IS_GAS)
+//#       define tb_abort_done()                          do { __tb_asm__ __tb_volatile__ ("ud2"); } while (0)
+#     define tb_abort_done()                            do { __tb_asm__ __tb_volatile__ ("int3"); } while (0)
+#   endif
+#endif
+
+#ifndef tb_abort_done
+#   define tb_abort_done()                              do { *((__tb_volatile__ tb_int_t*)0) = 0; } while (0)
 #endif
 
 // abort
-#define tb_abort()										do { tb_trace_e("abort"); tb_abort_done(); } while(0)
+#define tb_abort()                                      do { tb_trace_e("abort"); tb_abort_done(); } while(0)
 
 #endif
 

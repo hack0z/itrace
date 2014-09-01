@@ -46,7 +46,7 @@ typedef struct __tb_exception_list_t
     tb_thread_store_data_t  base;
 
     // the stack
-    tb_stack_t*             stack;
+    tb_stack_ref_t             stack;
 
 }tb_exception_list_t;
 
@@ -89,7 +89,7 @@ typedef struct __tb_exception_list_t
         } \
         \
         /* init jmpbuf and save sigmask */ \
-        tb_int_t __j = __top? tb_sigsetjmp(*__top, 1) : 0; \
+        __tb_volatile__ tb_int_t __j = __top? tb_sigsetjmp(*__top, 1) : 0; \
         /* done try */ \
         if (!__j) \
         {

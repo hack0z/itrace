@@ -691,14 +691,14 @@ static tb_void_t it_chook_method_trace(tb_xml_node_t const* node, Method method,
     tb_assert_and_check_return(node && method);
 
     // the class name
-    tb_char_t const* cname = tb_scoped_string_cstr(&node->name);
+    tb_char_t const* cname = tb_string_cstr(&node->name);
     tb_assert_and_check_return(cname);
 
     // tracing arguments?
     tb_bool_t args_list = tb_true;
     if (node->ahead
-        && !tb_scoped_string_cstricmp(&node->ahead->name, "args_list")
-        && !tb_scoped_string_cstricmp(&node->ahead->data, "0"))
+        && !tb_string_cstricmp(&node->ahead->name, "args_list")
+        && !tb_string_cstricmp(&node->ahead->data, "0"))
     {
         args_list = tb_false;
     }
@@ -782,7 +782,7 @@ static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t c
     tb_assert_and_check_return_val(node && mmapfunc && mmaptail, mmapfunc);
 
     // the class name
-    tb_char_t const* class_name = tb_scoped_string_cstr(&node->name);
+    tb_char_t const* class_name = tb_string_cstr(&node->name);
     tb_assert_and_check_return_val(class_name, mmapfunc);
 
     // init method list
@@ -1005,7 +1005,7 @@ static __tb_inline__ tb_size_t it_chook_method_size()
     while (node)
     {
         if (node->type == TB_XML_NODE_TYPE_ELEMENT) 
-            size += it_chook_method_size_for_class(tb_scoped_string_cstr(&node->name));
+            size += it_chook_method_size_for_class(tb_string_cstr(&node->name));
         node = node->next;
     }
 
@@ -1049,26 +1049,30 @@ static __tb_inline__ tb_bool_t it_cfg_init()
     tb_trace_i("init: cfg: %s: ..", path);
 
     // init
-    tb_basic_stream_t* stream = tb_basic_stream_init_from_url(path);
+    tb_stream_ref_t stream = tb_stream_init_from_url(path);
     tb_assert_and_check_return_val(stream, tb_false);
 
     // open
-    if (!tb_basic_stream_open(stream)) return tb_false;
+    if (!tb_stream_open(stream)) return tb_false;
 
     // init reader
-    tb_handle_t reader = tb_xml_reader_init(stream);
+    tb_xml_reader_ref_t reader = tb_xml_reader_init();
     if (reader)
     {
-        // load
-        g_cfg = tb_xml_reader_load(reader);
-        tb_assert(g_cfg);
+        // open reader
+        if (tb_xml_reader_open(reader, stream, tb_false))
+        {
+            // load reader
+            g_cfg = tb_xml_reader_load(reader);
+            tb_assert(g_cfg);
 
-        // exit reader & writer 
-        tb_xml_reader_exit(reader);
+            // exit reader
+            tb_xml_reader_exit(reader);
+        }
     }
     
     // exit stream
-    tb_basic_stream_exit(stream);
+    tb_stream_exit(stream);
 
     // check
     if (!tb_xml_node_goto(g_cfg, "/itrace/class") && !tb_xml_node_goto(g_cfg, "/itrace/function"))

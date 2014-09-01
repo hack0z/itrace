@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		count.h
- * @ingroup 	algorithm
+ * @author      ruki
+ * @file        count.h
+ * @ingroup     algorithm
  *
  */
 #ifndef TB_ALGORITHM_COUNT_H
@@ -30,29 +30,36 @@
 #include "prefix.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
-/*! the counter
+/*! count item
  *
- * @param iterator 	the iterator
- * @param head 		the iterator head
- * @param tail 		the iterator tail
- * @param data 		the counted data
- * @param comp 		the comparer
+ * @param iterator  the iterator
+ * @param head      the iterator head
+ * @param tail      the iterator tail
+ * @param item      the counted item
  *
- * @return 			the real count
+ * @return          the real count
  */
-tb_size_t 			tb_count(tb_iterator_t* iterator, tb_size_t head, tb_size_t tail, tb_cpointer_t data, tb_iterator_comp_t comp);
+tb_size_t           tb_count(tb_iterator_ref_t iterator, tb_size_t head, tb_size_t tail, tb_cpointer_t item);
 
-/*! the counter for all
+/*! count item for all
  *
- * @param iterator 	the iterator
- * @param data 		the counted data
- * @param comp 		the comparer
+ * @param iterator  the iterator
+ * @param item      the counted item
  *
- * @return 			the real count
+ * @return          the real count
  */
-tb_size_t 			tb_count_all(tb_iterator_t* iterator, tb_cpointer_t data, tb_iterator_comp_t comp);
+tb_size_t           tb_count_all(tb_iterator_ref_t iterator, tb_cpointer_t item);
 
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 #endif

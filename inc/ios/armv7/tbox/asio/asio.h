@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		asio.h
- * @defgroup 	asio
+ * @author      ruki
+ * @file        asio.h
+ * @defgroup    asio
  *
  */
 #ifndef TB_ASIO_H
@@ -34,7 +34,6 @@
 #include "aico.h"
 #include "aice.h"
 #include "aicp.h"
-#include "pool.h"
 #include "http.h"
 #include "dns.h"
 #include "ssl.h"

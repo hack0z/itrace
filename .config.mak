@@ -3,7 +3,6 @@ IS_CONFIG =y
 
 # project
 PRO_DIR =/Users/ruki/projects/personal/itrace
-PRO_NAME =itrace
 
 # profile
 PROF =n
@@ -13,7 +12,7 @@ DEBUG =y
 DTYPE =d
 
 # small
-SMALL =y
+SMALL =n
 
 # prefix
 PREFIX =
@@ -21,14 +20,26 @@ PREFIX =
 # host
 HOST =mac
 
+# flags
+CFLAG =
+CCFLAG =
+CXFLAG =
+MFLAG =
+MMFLAG =
+MXFLAG =
+LDFLAG =
+ASFLAG =
+ARFLAG =
+SHFLAG =
+
 # platform
-PLAT =ios
+PLAT =mac
 
 # architecture
-ARCH =arm64
-ARM =y
+ARCH =x64
+ARM =n
 x86 =n
-x64 =n
+x64 =y
 SH4 =n
 MIPS =n
 SPARC =n
@@ -37,16 +48,14 @@ SPARC =n
 DEMO =y
 
 # toolchain
-SDK =7.1
-NDK =
+SDK =
 BIN =
-PRE =xcrun -sdk iphoneos
+PRE =
 CCACHE =ccache
 DISTCC =
 
 # export
 export PRO_DIR
-export PRO_NAME
 export DEBUG
 export DTYPE
 export SMALL
@@ -62,8 +71,17 @@ export SPARC
 export PROF
 export DEMO
 export SDK
-export NDK
 export BIN
 export PRE
+export CFLAG
+export CCFLAG
+export CXFLAG
+export MFLAG
+export MMFLAG
+export MXFLAG
+export LDFLAG
+export ASFLAG
+export ARFLAG
+export SHFLAG
 export CCACHE
 export DISTCC

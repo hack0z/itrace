@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		algorithm.h
- * @defgroup 	algorithm
+ * @author      ruki
+ * @file        algorithm.h
+ * @defgroup    algorithm
  *
  */
 #ifndef TB_ALGORITHM_H
@@ -38,10 +38,18 @@
 #include "insert_sort.h"
 #include "bubble_sort.h"
 #include "find.h"
+#include "find_if.h"
 #include "rfind.h"
+#include "rfind_if.h"
 #include "binary_find.h"
+#include "binary_find_if.h"
 #include "walk.h"
 #include "rwalk.h"
 #include "count.h"
+#include "count_if.h"
+#include "remove.h"
+#include "remove_if.h"
+#include "remove_first.h"
+#include "remove_first_if.h"
 
 #endif

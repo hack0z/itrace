@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		data.h
- * @ingroup 	object
+ * @author      ruki
+ * @file        data.h
+ * @ingroup     object
  *
  */
 #ifndef TB_OBJECT_DATA_H
@@ -30,76 +30,86 @@
 #include "prefix.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 /*! init data from url
  *
- * @param data 		the data
- * @param size 		the size
+ * @param data      the data
+ * @param size      the size
  *
- * @return 			the data object
+ * @return          the data object
  */
-tb_object_t* 		tb_data_init_from_url(tb_char_t const* url);
+tb_object_ref_t     tb_object_data_init_from_url(tb_char_t const* url);
 
 /*! init data from data
  *
- * @param data 		the data
- * @param size 		the size
+ * @param data      the data
+ * @param size      the size
  *
- * @return 			the data object
+ * @return          the data object
  */
-tb_object_t* 		tb_data_init_from_data(tb_pointer_t data, tb_size_t size);
+tb_object_ref_t     tb_object_data_init_from_data(tb_pointer_t data, tb_size_t size);
 
-/*! init data from pbuffer
+/*! init data from buffer
  *
- * @param pbuf 		the pbuffer
+ * @param buffer    the buffer
  *
- * @return 			the data object
+ * @return          the data object
  */
-tb_object_t* 		tb_data_init_from_pbuf(tb_scoped_buffer_t* pbuf);
+tb_object_ref_t     tb_object_data_init_from_buffer(tb_buffer_t* buffer);
 
 /*! get the data 
  *
- * @param data 		the data object
+ * @param data      the data object
  *
- * @return 			the data address
+ * @return          the data address
  */
-tb_pointer_t 		tb_data_getp(tb_object_t* data);
+tb_pointer_t        tb_object_data_getp(tb_object_ref_t data);
 
 /*! set the data 
  *
- * @param data 		the data object
- * @param addr 		the data address
- * @param size 		the data size
+ * @param data      the data object
+ * @param addr      the data address
+ * @param size      the data size
  *
- * @return 			tb_true or tb_false
+ * @return          tb_true or tb_false
  */
-tb_bool_t 			tb_data_setp(tb_object_t* data, tb_pointer_t addr, tb_size_t size);
+tb_bool_t           tb_object_data_setp(tb_object_ref_t data, tb_pointer_t addr, tb_size_t size);
 
 /*! the data size
  *
- * @param data 		the data object
+ * @param data      the data object
  *
- * @return 			the data size
+ * @return          the data size
  */
-tb_size_t 			tb_data_size(tb_object_t* data);
+tb_size_t           tb_object_data_size(tb_object_ref_t data);
 
 /*! the data buffer
  *
- * @param data 		the data object
+ * @param data      the data object
  *
- * @return 			the data buffer
+ * @return          the data buffer
  */
-tb_scoped_buffer_t* 		tb_data_buff(tb_object_t* data);
+tb_buffer_t*         tb_object_data_buffer(tb_object_ref_t data);
 
 /*! writ data to url
  *
- * @param data 		the data object
+ * @param data      the data object
  *
- * @return 			tb_true or tb_false
+ * @return          tb_true or tb_false
  */
-tb_bool_t 			tb_data_writ_to_url(tb_object_t* data, tb_char_t const* url);
+tb_bool_t           tb_object_data_writ_to_url(tb_object_ref_t data, tb_char_t const* url);
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 
 #endif
 

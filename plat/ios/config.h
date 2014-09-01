@@ -1,19 +1,19 @@
 #ifndef IT_CONFIG_H
 #define IT_CONFIG_H
 
-// build version
-#define IT_CONFIG_VERSION_BUILD 		[build]
+// major version
+#define IT_CONFIG_VERSION_MAJOR         [major]
 
-// debug
-#define IT_CONFIG_DEBUG					[debug]
+// minor version
+#define IT_CONFIG_VERSION_MINOR         [minor]
+
+// alter version
+#define IT_CONFIG_VERSION_ALTER         [alter]
+
+// build version
+#define IT_CONFIG_VERSION_BUILD         [build]
 
 // small
-#define IT_CONFIG_SMALL					[small]
-
-// trace
-#define TB_TRACE_DEBUG 					[debug]
-
-// assert
-#define TB_ASSERT_DEBUG 				[debug]
+#define IT_CONFIG_SMALL                 [small]
 
 #endif

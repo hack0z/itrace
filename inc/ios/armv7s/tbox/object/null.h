@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		null.h
- * @ingroup 	object
+ * @author      ruki
+ * @file        null.h
+ * @ingroup     object
  *
  */
 #ifndef TB_OBJECT_NULL_H
@@ -30,15 +30,24 @@
 #include "prefix.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 /*! init null
  *
- * @return 			the null object
+ * @return          the null object
  */
-tb_object_t* 		tb_null_init(tb_noarg_t);
+tb_object_ref_t     tb_object_null_init(tb_noarg_t);
 
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 
 #endif
 

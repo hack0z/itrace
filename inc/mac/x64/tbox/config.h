@@ -1,23 +1,28 @@
 #ifndef TB_CONFIG_H
 #define TB_CONFIG_H
 
-// build version
-#define TB_CONFIG_VERSION_BUILD 		201405051331
+// major version
+#define TB_CONFIG_VERSION_MAJOR         1
 
-// debug
-#define TB_CONFIG_DEBUG					(1)
+// minor version
+#define TB_CONFIG_VERSION_MINOR         4
+
+// alter version
+#define TB_CONFIG_VERSION_ALTER         7
+
+// build version
+#define TB_CONFIG_VERSION_BUILD         201409011055
 
 // small
-#define TB_CONFIG_SMALL					(1)
+#define TB_CONFIG_SMALL                 (0)
 
 // os
 #define TB_CONFIG_OS_MAC
+#define TB_CONFIG_OS_LIKE_UNIX
 
-// assembler
-#define TB_CONFIG_ASSEMBLER_GAS
-//#define TB_CONFIG_ASSEMBLER_MASM
-//#define TB_CONFIG_ASSEMBLER_NASM
-//#define TB_CONFIG_ASSEMBLER_YASM
+// api
+#define TB_CONFIG_API_HAVE_POSIX
+#define TB_CONFIG_API_HAVE_SYSTEMV
 
 // type
 #define TB_CONFIG_TYPE_FLOAT
@@ -27,17 +32,6 @@
 
 // exception
 #define TB_CONFIG_EXCEPTION_ENABLE
-
-// semaphore
-//#define TB_CONFIG_SEMAPHORE_HAVE_POSIX
-//#define TB_CONFIG_SEMAPHORE_HAVE_SYSTEMV
-
-// asio
-#define TB_CONFIG_ASIO_HAVE_SELECT
-//#define TB_CONFIG_ASIO_HAVE_EPOLL
-#define TB_CONFIG_ASIO_HAVE_POLL
-//#define TB_CONFIG_ASIO_HAVE_PORT
-#define TB_CONFIG_ASIO_HAVE_KQUEUE
 
 // libc
 #define TB_CONFIG_LIBC_HAVE_MEMCPY
@@ -95,10 +89,10 @@
 #define TB_CONFIG_MODULE_HAVE_DATABASE
 
 // third party
-//#define TB_CONFIG_THIRD_HAVE_ZLIB					
-//#define TB_CONFIG_THIRD_HAVE_OPENSSL	
-//#define TB_CONFIG_THIRD_HAVE_POLARSSL	
-#define TB_CONFIG_THIRD_HAVE_MYSQL
-#define TB_CONFIG_THIRD_HAVE_SQLITE3
+//#define TB_CONFIG_THIRD_HAVE_ZLIB                   
+//#define TB_CONFIG_THIRD_HAVE_OPENSSL  
+//#define TB_CONFIG_THIRD_HAVE_POLARSSL   
+//#define TB_CONFIG_THIRD_HAVE_MYSQL
+//#define TB_CONFIG_THIRD_HAVE_SQLITE3
 
 #endif

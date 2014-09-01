@@ -16,8 +16,8 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		prefix.h
+ * @author      ruki
+ * @file        prefix.h
  *
  */
 #ifndef TB_PREFIX_PREFIX_H
@@ -34,6 +34,7 @@
 #include "endian.h"
 #include "version.h"
 #include "compiler.h"
+#include "assembler.h"
 #include "keyword.h"
 #include "trace.h"
 #include "abort.h"
@@ -43,7 +44,6 @@
 #include "utils.h"
 #include "state.h"
 #include "asm.h"
-
 
 #endif
 

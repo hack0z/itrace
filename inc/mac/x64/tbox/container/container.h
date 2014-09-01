@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		container.h
- * @defgroup 	container
+ * @author      ruki
+ * @file        container.h
+ * @defgroup    container
  *
  */
 #ifndef TB_CONTAINER_H
@@ -29,13 +29,17 @@
  */
 #include "prefix.h"
 #include "item.h"
-#include "hash.h"
+#include "iterator.h"
 #include "heap.h"
-#include "slist.h"
-#include "dlist.h"
-#include "queue.h"
+#include "hash.h"
 #include "stack.h"
 #include "vector.h"
-#include "iterator.h"
+#include "queue.h"
+#include "circle_queue.h"
+#include "list.h"
+#include "list_entry.h"
+#include "single_list.h"
+#include "single_list_entry.h"
+#include "bloom_filter.h"
 
 #endif

@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @path		path.h
- * @ingroup 	platform
+ * @author      ruki
+ * @path        path.h
+ * @ingroup     platform
  *
  */
 #ifndef TB_PLATFORM_PATH_H
@@ -30,9 +30,14 @@
 #include "prefix.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * macros
  */
-#define TB_PATH_MAXN 		(4096)
+#define TB_PATH_MAXN        (4096)
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
@@ -40,12 +45,17 @@
 
 /*! the full path
  * 
- * @param path 			the path path
- * @param full 			the full path
- * @param maxn 			the path maxn
+ * @param path          the path path
+ * @param full          the full path
+ * @param maxn          the path maxn
  *
- * @return 				the full path
+ * @return              the full path
  */
-tb_char_t const* 		tb_path_full(tb_char_t const* path, tb_char_t* full, tb_size_t maxn);
+tb_char_t const*        tb_path_full(tb_char_t const* path, tb_char_t* full, tb_size_t maxn);
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 
 #endif

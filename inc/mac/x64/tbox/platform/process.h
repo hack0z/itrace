@@ -16,14 +16,13 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		process.h
- * @ingroup 	platform
+ * @author      ruki
+ * @file        process.h
+ * @ingroup     platform
  *
  */
 #ifndef TB_PLATFORM_PROCESS_H
 #define TB_PLATFORM_PROCESS_H
-
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * includes
@@ -31,15 +30,25 @@
 #include "prefix.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
  */
 
 /*! done the command line
  * 
- * @param line 			the command line
+ * @param line          the command line
  *
- * @return 				tb_true or tb_false
+ * @return              tb_true or tb_false
  */
-tb_bool_t 				tb_process_done(tb_char_t const* line);
+tb_bool_t               tb_process_done(tb_char_t const* line);
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 
 #endif

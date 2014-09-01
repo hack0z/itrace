@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		dump.h
- * @ingroup 	utils
+ * @author      ruki
+ * @file        dump.h
+ * @ingroup     utils
  *
  */
 #ifndef TB_UTILS_DUMP_H
@@ -28,7 +28,11 @@
  * includes
  */
 #include "prefix.h"
-#include "../stream/basic_stream.h"
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
@@ -36,22 +40,27 @@
 
 /*! dump data
  *
- * @param data 		the data
- * @param size 		the size
+ * @param data      the data
+ * @param size      the size
  */
-tb_void_t 			tb_dump_data(tb_byte_t const* data, tb_size_t size);
+tb_void_t           tb_dump_data(tb_byte_t const* data, tb_size_t size);
 
 /*! dump data from url
  *
- * @param url 		the url
+ * @param url       the url
  */
-tb_void_t 			tb_dump_data_from_url(tb_char_t const* url);
+tb_void_t           tb_dump_data_from_url(tb_char_t const* url);
 
 /*! dump data from stream
  *
- * @param gst 		the stream
+ * @param stream    the stream
  */
-tb_void_t 			tb_dump_data_from_stream(tb_basic_stream_t* gst);
+tb_void_t           tb_dump_data_from_stream(tb_stream_ref_t stream);
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 
 #endif
 

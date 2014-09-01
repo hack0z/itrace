@@ -16,9 +16,9 @@
  * 
  * Copyright (C) 2009 - 2015, ruki All rights reserved.
  *
- * @author		ruki
- * @file		bplist.h
- * @ingroup 	object
+ * @author      ruki
+ * @file        bplist.h
+ * @ingroup     object
  *
  */
 #ifndef TB_OBJECT_READER_BPLIST_H
@@ -30,19 +30,24 @@
 #include "prefix.h"
 
 /* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_enter__
+
+/* //////////////////////////////////////////////////////////////////////////////////////
  * types
  */
 
 /// the bplist reader type
 typedef struct __tb_object_bplist_reader_t
 {
-	/// the stream
-	tb_basic_stream_t* 				stream;
+    /// the stream
+    tb_stream_ref_t              stream;
 
 }tb_object_bplist_reader_t;
 
 /// the bplist reader func type
-typedef tb_object_t* 			(*tb_object_bplist_reader_func_t)(tb_object_bplist_reader_t* reader, tb_size_t type, tb_size_t size, tb_size_t item_size);
+typedef tb_object_ref_t            (*tb_object_bplist_reader_func_t)(tb_object_bplist_reader_t* reader, tb_size_t type, tb_size_t size, tb_size_t item_size);
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
@@ -50,26 +55,31 @@ typedef tb_object_t* 			(*tb_object_bplist_reader_func_t)(tb_object_bplist_reade
 
 /*! the bplist object reader
  *
- * @return 						the bplist object reader
+ * @return                      the bplist object reader
  */
-tb_object_reader_t* 			tb_object_bplist_reader(tb_noarg_t);
+tb_object_reader_t*             tb_object_bplist_reader(tb_noarg_t);
 
 /*! hook the bplist reader
  *
- * @param type 					the object type 
- * @param func 					the reader func
+ * @param type                  the object type 
+ * @param func                  the reader func
  *
- * @return 						tb_true or tb_false
+ * @return                      tb_true or tb_false
  */
-tb_bool_t 						tb_object_bplist_reader_hook(tb_size_t type, tb_object_bplist_reader_func_t func);
+tb_bool_t                       tb_object_bplist_reader_hook(tb_size_t type, tb_object_bplist_reader_func_t func);
 
 /*! the bplist reader func
  *
- * @param type 					the object type 
+ * @param type                  the object type 
  *
- * @return 						the object reader func
+ * @return                      the object reader func
  */
-tb_object_bplist_reader_func_t 	tb_object_bplist_reader_func(tb_size_t type);
+tb_object_bplist_reader_func_t  tb_object_bplist_reader_func(tb_size_t type);
+
+/* //////////////////////////////////////////////////////////////////////////////////////
+ * extern
+ */
+__tb_extern_c_leave__
 
 #endif
 
