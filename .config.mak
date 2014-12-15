@@ -12,7 +12,7 @@ DEBUG =y
 DTYPE =d
 
 # small
-SMALL =n
+SMALL =y
 
 # prefix
 PREFIX =
@@ -33,13 +33,13 @@ ARFLAG =
 SHFLAG =
 
 # platform
-PLAT =mac
+PLAT =ios
 
 # architecture
-ARCH =x64
-ARM =n
+ARCH =arm64
+ARM =y
 x86 =n
-x64 =y
+x64 =n
 SH4 =n
 MIPS =n
 SPARC =n
@@ -48,9 +48,9 @@ SPARC =n
 DEMO =y
 
 # toolchain
-SDK =
+SDK =/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.1.sdk/
 BIN =
-PRE =
+PRE =xcrun -sdk macosx
 CCACHE =ccache
 DISTCC =
 

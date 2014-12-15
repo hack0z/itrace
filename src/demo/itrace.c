@@ -853,6 +853,9 @@ static pid_t it_pid(tb_char_t const* name)
  */
 tb_int_t main(tb_int_t argc, tb_char_t const** argv)
 {
+    // init tbox
+    if (!tb_init(tb_null, 0, 0)) return 0;
+
     // the itrace.dylib path
     tb_char_t path[PATH_MAX] = {0};
     if (!realpath(argv[2]? argv[2] : "./itrace.dylib", path)) return -1;
@@ -869,6 +872,9 @@ tb_int_t main(tb_int_t argc, tb_char_t const** argv)
 
     // inject
     it_inject(pid, path);
+
+    // exit tbox
+    tb_exit();
 
     // ok
     return 0;

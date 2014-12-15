@@ -1151,6 +1151,9 @@ static tb_void_t __attribute__((constructor)) it_init()
     // trace
     tb_trace_i("init: ..");
 
+    // init tbox
+    if (!tb_init(tb_null, 0, 0)) return ;
+
 #if 0
     {
         // init library
