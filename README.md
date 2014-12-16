@@ -112,5 +112,5 @@ donate
 ------
 
 ####alipay
-<img src="res/donate/alipay.png" alt="alipay" width="128" height="128">
+<img src="http://www.tboox.net/ruki/alipay.png" alt="alipay" width="128" height="128">
 
