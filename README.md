@@ -108,4 +108,9 @@ ios objc 方法调用记录插件: itracer v1.2
       )
     ```
 
+donate
+------
+
+####alipay
+<img src="res/donate/alipay.png" alt="alipay" width="128" height="128">
 
