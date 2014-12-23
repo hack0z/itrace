@@ -108,6 +108,13 @@ ios objc 方法调用记录插件: itracer v1.2
       )
     ```
 
+在线文档
+------
+
+1.如何编译：[查看](https://github.com/waruqi/tbox/wiki/%E7%BC%96%E8%AF%91)
+
+2.依赖库：[TBOX](https://github.com/waruqi/tbox/wiki)
+
 donate
 ------
 
