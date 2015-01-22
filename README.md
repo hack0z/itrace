@@ -115,6 +115,16 @@ ios objc 方法调用记录插件: itracer v1.2
 
 2.依赖库：[TBOX](https://github.com/waruqi/tbox/wiki)
 
+
+联系方式
+-------
+qq群：260215194 (ihacker)
+
+邮箱：
+- waruqi@gmail.com 
+- waruqi@126.com
+
+
 donate
 ------
 
