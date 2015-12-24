@@ -108,12 +108,26 @@ ios objc 方法调用记录插件: itracer v1.2
       )
     ```
 
-在线文档
+如何编译
 ------
 
-1.如何编译：[查看](https://github.com/waruqi/tbox/wiki/%E7%BC%96%E8%AF%91)
+1. 编译ios版本：
 
-2.依赖库：[TBOX](https://github.com/waruqi/tbox/wiki)
+```bash
+xmake f -p iphoneos
+xmake 
+```
+
+2. 编译macosx版本：
+
+```bash
+xmake f -p macosx
+xmake 
+```
+
+更详细的xmake使用，请参考：[xmake](https://github.com/waruqi/xmake/wiki)
+
+依赖库介绍：[tbox](https://github.com/waruqi/tbox/wiki)
 
 
 联系方式

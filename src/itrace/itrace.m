@@ -252,7 +252,7 @@ static __tb_inline__ tb_void_t it_clear_cache(tb_pointer_t start, tb_pointer_t e
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_objc(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_pointer_t) == argb);
+    tb_assert(sizeof(tb_pointer_t) == argb);
 
     // the object 
 #ifdef TB_ARCH_ARM64
@@ -279,7 +279,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_objc(it_chook_meth
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_selector(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(SEL) == argb);
+    tb_assert(sizeof(SEL) == argb);
 
     // the selector 
 #ifdef TB_ARCH_ARM64
@@ -297,7 +297,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_selector(it_chook_
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint8(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_sint32_t) == argb);
+    tb_assert(sizeof(tb_sint32_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -312,7 +312,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint8(it_chook_met
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint8(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_uint32_t) == argb);
+    tb_assert(sizeof(tb_uint32_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -327,7 +327,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint8(it_chook_met
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint16(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_sint32_t) == argb);
+    tb_assert(sizeof(tb_sint32_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -342,7 +342,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint16(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint16(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_uint32_t) == argb);
+    tb_assert(sizeof(tb_uint32_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -357,7 +357,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint16(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint32(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_sint32_t) == argb);
+    tb_assert(sizeof(tb_sint32_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -372,7 +372,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint32(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint32(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_uint32_t) == argb);
+    tb_assert(sizeof(tb_uint32_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -387,7 +387,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint32(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint64(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_sint64_t) == argb);
+    tb_assert(sizeof(tb_sint64_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -402,7 +402,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_sint64(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint64(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_uint64_t) == argb);
+    tb_assert(sizeof(tb_uint64_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -417,7 +417,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_uint64(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_long(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_long_t) == argb);
+    tb_assert(sizeof(tb_long_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -432,7 +432,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_long(it_chook_meth
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_size(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_size_t) == argb);
+    tb_assert(sizeof(tb_size_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -447,7 +447,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_size(it_chook_meth
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_bool(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_uint32_t) == argb);
+    tb_assert(sizeof(tb_uint32_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -462,7 +462,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_bool(it_chook_meth
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_float(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(it_float_t) == argb);
+    tb_assert(sizeof(it_float_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -479,7 +479,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_float(it_chook_met
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_double(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(it_double_t) == argb);
+    tb_assert(sizeof(it_double_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -496,7 +496,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_double(it_chook_me
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_data(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_byte_t*) == argb);
+    tb_assert(sizeof(tb_byte_t*) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -520,7 +520,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_data(it_chook_meth
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_pointer(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(sizeof(tb_pointer_t) == argb);
+    tb_assert(sizeof(tb_pointer_t) == argb);
 
     // init
 #ifdef TB_ARCH_ARM64
@@ -535,7 +535,7 @@ static __tb_inline__ tb_void_t it_chook_method_trace_argument_pointer(it_chook_m
 static __tb_inline__ tb_void_t it_chook_method_trace_argument_void(it_chook_method_trace_t* trace, tb_size_t argb)
 {   
     // check
-    tb_assert_return(!argb);
+    tb_assert(!argb);
 
     // format
     if (trace->size < trace->maxn) trace->size += tb_snprintf(trace->info + trace->size, trace->maxn - trace->size, ": <void>");
@@ -682,9 +682,9 @@ static __tb_inline__ tb_void_t it_chook_method_trace_skip_return(it_chook_method
     }
 }
 #ifdef TB_ARCH_ARM64
-static tb_void_t it_chook_method_trace(tb_xml_node_t const* node, Method method, tb_size_t x2, tb_size_t x3, tb_size_t x4, tb_size_t x5, tb_size_t x6, tb_size_t x7, tb_size_t s8, ...)
+static tb_void_t it_chook_method_trace(tb_xml_node_t* node, Method method, tb_size_t x2, tb_size_t x3, tb_size_t x4, tb_size_t x5, tb_size_t x6, tb_size_t x7, tb_size_t s8, ...)
 #else
-static tb_void_t it_chook_method_trace(tb_xml_node_t const* node, Method method, ...)
+static tb_void_t it_chook_method_trace(tb_xml_node_t* node, Method method, ...)
 #endif
 {
     // check
@@ -776,7 +776,7 @@ static __tb_inline__ tb_size_t it_chook_method_size_for_class(tb_char_t const* c
     // the method count
     return method_n;
 }
-static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t const* node, tb_pointer_t mmapfunc, tb_cpointer_t mmaptail)
+static __tb_inline__ tb_pointer_t it_chook_method_done_for_class(tb_xml_node_t* node, tb_pointer_t mmapfunc, tb_cpointer_t mmaptail)
 {
     // check
     tb_assert_and_check_return_val(node && mmapfunc && mmaptail, mmapfunc);
@@ -1152,7 +1152,7 @@ static tb_void_t __attribute__((constructor)) it_init()
     tb_trace_i("init: ..");
 
     // init tbox
-    if (!tb_init(tb_null, 0, 0)) return ;
+    if (!tb_init(tb_null, tb_null)) return ;
 
 #if 0
     {

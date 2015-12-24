@@ -9,7 +9,7 @@
  */
 #include "prefix.h"
 #include <mach/mach.h>
-#ifdef TB_CONFIG_OS_MAC
+#ifdef TB_CONFIG_OS_MACOSX
 #   include <mach/mach_vm.h>
 #endif
 #include <mach-o/loader.h>
@@ -817,7 +817,7 @@ static pid_t it_pid(tb_char_t const* name)
             // try accurate name
             for (i = 0; i < n; i++)
             {
-                if (p[i].kp_proc.p_comm && !tb_stricmp(p[i].kp_proc.p_comm, name))
+                if (!tb_stricmp(p[i].kp_proc.p_comm, name))
                 {
                     tb_trace_i("name: %s, pid: %u", p[i].kp_proc.p_comm, p[i].kp_proc.p_pid);
                     pid = p[i].kp_proc.p_pid;
@@ -830,7 +830,7 @@ static pid_t it_pid(tb_char_t const* name)
             {
                 for (i = 0; i < n; i++)
                 {
-                    if (p[i].kp_proc.p_comm && !tb_strnicmp(p[i].kp_proc.p_comm, name, tb_strlen(name)))
+                    if (!tb_strnicmp(p[i].kp_proc.p_comm, name, tb_strlen(name)))
                     {
                         tb_trace_i("name: %s, pid: %u", p[i].kp_proc.p_comm, p[i].kp_proc.p_pid);
                         pid = p[i].kp_proc.p_pid;
@@ -854,7 +854,7 @@ static pid_t it_pid(tb_char_t const* name)
 tb_int_t main(tb_int_t argc, tb_char_t const** argv)
 {
     // init tbox
-    if (!tb_init(tb_null, 0, 0)) return 0;
+    if (!tb_init(tb_null, tb_null)) return 0;
 
     // the itrace.dylib path
     tb_char_t path[PATH_MAX] = {0};
