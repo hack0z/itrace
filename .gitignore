@@ -24,3 +24,4 @@ build
 *.idl
 *.nam
 *.ti1
+.xmake
