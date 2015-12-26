@@ -28,10 +28,6 @@
  * macros
  */
 
-// the root
-#define IT_ROOT             "/tmp/"
-#define IT_PATH_CFG         IT_ROOT "itrace.xml"
-
 // the argument
 #if defined(TB_ARCH_ARM)
 #   ifdef TB_ARCH_ARM64
@@ -1039,14 +1035,22 @@ static __tb_inline__ tb_bool_t it_cfg_init()
     // check
     tb_check_return_val(!g_cfg, tb_true);
 
-    // the root path
-    tb_char_t path[PATH_MAX] = {0};
-    getcwd(path, PATH_MAX);
-    tb_trace_i("init: root: %s", path);
-
     // the itrace.xml path
-    if (!realpath("./itrace.xml", path)) tb_strcpy(path, IT_PATH_CFG);
-    tb_trace_i("init: cfg: %s: ..", path);
+    tb_char_t data[TB_PATH_MAXN];
+    tb_char_t const* path = "itrace.xml";
+    if (!tb_file_info(path, tb_null) && tb_directory_home(data, sizeof(data))) 
+    {
+        // find itrace from home directory
+        tb_strcat(data, "/itrace.xml");
+        path = data;
+
+        // trace
+        tb_trace_i("init: home: %s", path);
+    }
+    if (!tb_file_info(path, tb_null)) path = "/tmp/itrace.xml";
+
+    // trace
+    tb_trace_i("init: config: %s: ..", path);
 
     // init
     tb_stream_ref_t stream = tb_stream_init_from_url(path);
@@ -1082,7 +1086,7 @@ static __tb_inline__ tb_bool_t it_cfg_init()
     }
 
     // trace
-    tb_trace_i("init: cfg: %s", g_cfg? "ok" : "no");
+    tb_trace_i("init: config: %s", g_cfg? "ok" : "no");
 
     // ok
     return g_cfg? tb_true : tb_false;

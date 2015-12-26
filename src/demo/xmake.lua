@@ -28,12 +28,44 @@ function add_demo(name)
 
         end
 
+        -- itrace?
+        if name == "itracer" then
+
+            -- set package script
+            set_packagescript(  function (target) 
+                    
+                                    -- import modules
+                                    local os = import("os")
+                                    local path = import("path")
+                                    local project = import("project")
+                                    assert(target and os and path and project) 
+
+                                    -- get targetfile
+                                    local targetfile = target.archs[project.arch()].targetfile
+                                    assert(targetfile)
+
+                                    -- the logfile
+                                    local logfile = path.absolute(project.logfile())
+
+                                    -- ldid -S ./itrace
+                                    if 0 ~= os.execute(string.format("ldid -S %s > %s 2>&1", targetfile, logfile)) then
+                                        -- failed
+                                        os.cat(logfile)
+                                        return -1 
+                                    end
+
+                                    -- ok
+                                    return 1
+                                end)
+
+        end
+
 end
 
 -- add demos
 add_demo("demo")
 add_demo("test")
 add_demo("dump")
-add_demo("itrace")
+add_demo("itracer")
 
 
