@@ -1,4 +1,4 @@
-ios objc 方法调用记录插件: itracer v1.2
+ios objc 方法调用记录插件: itracer v1.3
 
 如果你想逆向 某些app的调用流程 或者 系统app的一些功能的 私有 framework class api 调用流程， 可以试试此工具
 
