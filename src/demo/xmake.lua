@@ -48,7 +48,7 @@ function add_demo(name)
                                     local logfile = path.absolute(project.logfile())
 
                                     -- ldid -S ./itrace
-                                    if 0 ~= os.execute(string.format("ldid -S %s > %s 2>&1", targetfile, logfile)) then
+                                    if 0 ~= os.execute(string.format("ldid -S%s %s > %s 2>&1", project.projectdir() .. "/res/ios/entitlements.plist", targetfile, logfile)) then
                                         -- failed
                                         os.cat(logfile)
                                         return -1 

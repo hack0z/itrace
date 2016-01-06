@@ -437,8 +437,9 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
     // trace
     tb_trace_d("inject: pid: %lu, path: %s: ..", (tb_size_t)pid, path);
 
-    // for arm64
 #ifdef TB_ARCH_ARM64
+    // uses libsubstrate first?
+    if (tb_file_info("/usr/lib/libsubstrate.dylib", tb_null))
     {
         // init library
         tb_bool_t   ok = tb_false;
