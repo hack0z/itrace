@@ -1,15 +1,18 @@
-ios objc 方法调用记录插件: itracer v1.3
+#ios objc 方法调用记录插件: itracer v1.3 
+
+[![donate](http://tboox.org/static/img/donate.gif)](http://tboox.org/donation/)
 
 如果你想逆向 某些app的调用流程 或者 系统app的一些功能的 私有 framework class api 调用流程， 可以试试此工具
 
 只需要 配置需要挂接的 类名和app名， 就可以实时追踪 相关功能的 调用流程。 支持批量 hook n多个类名
 
-特性：
+####特性
+
 * 批量跟踪ios下指定class对象的所有调用流程
 * 支持ios for armv6,armv7,arm64 以及mac for x86, x64
 * 自动探测参数类型，并且打印所有参数的详细信息
 
-更新内容：
+####更新内容
 
 * 增加对arm64的支持，刚调通稳定性有待测试。
    arm64进程注入没时间做了，暂时用了substrate的hookprocess， 所以大家需要先装下libsubstrate.dylib
@@ -108,8 +111,7 @@ ios objc 方法调用记录插件: itracer v1.3
       )
     ```
 
-如何编译
-------
+####如何编译
 
 1. 编译ios版本：
 
@@ -130,8 +132,8 @@ xmake
 依赖库介绍：[tbox](https://github.com/waruqi/tbox/wiki)
 
 
-联系方式
--------
+####联系方式
+
 qq群：260215194 (ihacker)
 
 邮箱：
@@ -139,13 +141,3 @@ qq群：260215194 (ihacker)
 - waruqi@126.com
 
 
-donate
-------
-
-####alipay
-<img src="http://www.tboox.net/ruki/alipay.png" alt="alipay" width="128" height="128">
-
-####paypal
-<a href="http://tboox.net/%E6%8D%90%E5%8A%A9/">
-<img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif" alt="paypal">
-</a>
