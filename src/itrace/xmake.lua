@@ -1,6 +1,6 @@
 
 -- add target
-add_target("itrace")
+target("itrace")
 
     -- make as a shared library
     set_kind("shared")

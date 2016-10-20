@@ -2,7 +2,7 @@
 function add_demo(name)
    
     -- add target
-    add_target(name)
+    target(name)
 
         -- make as a binary
         set_kind("binary")
@@ -32,31 +32,11 @@ function add_demo(name)
         if name == "itracer" then
 
             -- set package script
-            set_packagescript(  function (target) 
-                    
-                                    -- import modules
-                                    local os = import("os")
-                                    local path = import("path")
-                                    local project = import("project")
-                                    assert(target and os and path and project) 
+            on_package( function (target) 
 
-                                    -- get targetfile
-                                    local targetfile = target.archs[project.arch()].targetfile
-                                    assert(targetfile)
-
-                                    -- the logfile
-                                    local logfile = path.absolute(project.logfile())
-
-                                    -- ldid -S ./itrace
-                                    if 0 ~= os.execute(string.format("ldid -S%s %s > %s 2>&1", project.projectdir() .. "/res/ios/entitlements.plist", targetfile, logfile)) then
-                                        -- failed
-                                        os.cat(logfile)
-                                        return -1 
-                                    end
-
-                                    -- ok
-                                    return 1
-                                end)
+                            -- ldid -S ./itrace
+                            os.run("ldid -S$(projectdir)/res/ios/entitlements.plist %s", target:targetfile())
+                        end)
 
         end
 
