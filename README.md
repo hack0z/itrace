@@ -141,3 +141,11 @@ qq群：260215194 (ihacker)
 - waruqi@126.com
 
 
+#### 联系方式
+
+* 邮箱：[waruqi@gmail.com](mailto:waruqi@gmail.com)
+* 主页：[TBOOX开源工程](http://www.tboox.org/cn)
+* 社区：[TBOOX开源社区](http://www.tboox.org/forum)
+* QQ群：343118190(TBOOX开源工程), 260215194 (ihacker ios逆向分析)
+* 微信公众号：tboox-os
+
