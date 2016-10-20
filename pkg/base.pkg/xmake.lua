@@ -11,5 +11,6 @@ option("base")
         add_cxflags("-framework Foundation") 
         add_mxflags("-framework Foundation") 
         add_ldflags("-framework Foundation") 
+        add_shflags("-framework Foundation") 
     else add_links("pthread", "dl", "m", "c") end
 

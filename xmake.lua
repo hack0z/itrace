@@ -11,6 +11,8 @@ set_languages("c99", "cxx11")
 -- disable some compiler errors
 add_cxflags("-Wno-error=deprecated-declarations")
 add_mxflags("-Wno-error=deprecated-declarations")
+add_cxflags("-Wno-error=nullability-completeness")
+add_mxflags("-Wno-error=nullability-completeness")
 
 -- the debug mode
 if is_arch("debug") then
