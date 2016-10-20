@@ -131,16 +131,6 @@ xmake
 
 依赖库介绍：[tbox](https://github.com/waruqi/tbox/wiki)
 
-
-####联系方式
-
-qq群：260215194 (ihacker)
-
-邮箱：
-- waruqi@gmail.com 
-- waruqi@126.com
-
-
 #### 联系方式
 
 * 邮箱：[waruqi@gmail.com](mailto:waruqi@gmail.com)
