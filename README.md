@@ -1,4 +1,4 @@
-#ios objc 方法调用记录插件: itracer v1.3 
+#iOS Objc 方法调用记录插件: iTracer v1.3 
 
 [![Join the chat at https://gitter.im/waruqi/tboox](https://badges.gitter.im/waruqi/tboox.svg)](https://gitter.im/waruqi/tboox?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![donate](http://tboox.org/static/img/donate.svg)](http://tboox.org/donation/)
 
