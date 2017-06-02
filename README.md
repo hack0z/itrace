@@ -1,4 +1,4 @@
-#iOS Objc 方法调用记录插件: iTracer v1.3 
+# iOS Objc 方法调用记录插件: iTracer v1.3 
 
 [![Join the chat at https://gitter.im/waruqi/tboox](https://badges.gitter.im/waruqi/tboox.svg)](https://gitter.im/waruqi/tboox?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![donate](http://tboox.org/static/img/donate.svg)](http://tboox.org/donation/)
 
@@ -6,13 +6,13 @@
 
 只需要 配置需要挂接的 类名和app名， 就可以实时追踪 相关功能的 调用流程。 支持批量 hook n多个类名
 
-####特性
+#### 特性
 
 * 批量跟踪ios下指定class对象的所有调用流程
 * 支持ios for armv6,armv7,arm64 以及mac for x86, x64
 * 自动探测参数类型，并且打印所有参数的详细信息
 
-####更新内容
+#### 更新内容
 
 * 增加对arm64的支持，刚调通稳定性有待测试。
    arm64进程注入没时间做了，暂时用了substrate的hookprocess， 所以大家需要先装下libsubstrate.dylib
@@ -72,7 +72,14 @@
       ./itracer springboard (spingboard 为需要挂接的进程名， 支持简单的模糊匹配)
     ```
 
-4. 查看 trace log， 注： log 的实际输出在： Xcode-Windows菜单-Organizer-Console 中：
+4. 使用substrate进行注入`itrace.dylib`来trace
+
+    在ios arm64的新设备上，使用`itracer`注入`itrace.dylib`已经失效，最近一直没怎么去维护，如果要在在arm64上注入进行trace，可以借用substrate，将`itrace.dylib`作为substrate插件进行注入
+    再配置下`itrace.plist`指定需要注入到那个进程中就行了，具体可以看下substrate的插件相关文档。
+
+    放置`itrace.dylib`和`itrace.plist`到substrate插件目录，然后重启springboard即可, `/tmp/itrace.xml`的配置文件路径不变。
+
+5. 查看 trace log， 注： log 的实际输出在： 控制台-设备log 中：
 
     ```
     Jan 21 11:12:58 unknown SpringBoard[5706] <Warning>: [itrace]: [3edc9d98]: [SSDownloadQueue downloads]
@@ -127,7 +134,7 @@ xmake f -p macosx
 xmake 
 ```
 
-更详细的xmake使用，请参考：[xmake](https://github.com/waruqi/xmake/wiki)
+更详细的xmake使用，请参考：[xmake文档](http://xmake.io/#/zh/)
 
 依赖库介绍：[tbox](https://github.com/waruqi/tbox/wiki)
 
