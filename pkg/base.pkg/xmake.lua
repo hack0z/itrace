@@ -2,6 +2,7 @@
 option("base")
     
     -- set category
+    set_default(true)
     set_category("package")
    
     -- add links
