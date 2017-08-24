@@ -79,7 +79,7 @@
 
     放置`itrace.dylib`和`itrace.plist`到substrate插件目录`/Library/MobileSubstrate/DynamicLibraries`，然后重启需要trace的进程即可, `itrace.xml`的配置文件路径变为`/var/root/itrace/itrace.xml`。
     
-    ios arm64设备的`itrace.dylib` 编译时需要使用 `xmake f -p iphoneos -a arm64`命令。
+    ios arm64设备的`itrace.dylib` 编译时使用 `xmake f -p iphoneos -a arm64`命令。
 
 5. 查看 trace log， 注： log 的实际输出在： 控制台-设备log 中：
 
