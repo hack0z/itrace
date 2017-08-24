@@ -1072,7 +1072,11 @@ static __tb_inline__ tb_bool_t it_cfg_init()
         // trace
         tb_trace_i("init: home: %s", path);
     }
+#ifdef TB_ARCH_ARM64
+    if (!tb_file_info(path, tb_null)) path = "/var/root/itrace/itrace.xml";
+#else
     if (!tb_file_info(path, tb_null)) path = "/tmp/itrace.xml";
+#endif
 
     // trace
     tb_trace_i("init: config: %s: ..", path);
