@@ -77,7 +77,9 @@
     在ios arm64的新设备上，使用`itracer`注入`itrace.dylib`已经失效，最近一直没怎么去维护，如果要在在arm64上注入进行trace，可以借用substrate，将`itrace.dylib`作为substrate插件进行注入
     再配置下`itrace.plist`指定需要注入到那个进程中就行了，具体可以看下substrate的插件相关文档。
 
-    放置`itrace.dylib`和`itrace.plist`到substrate插件目录，然后重启springboard即可, `/tmp/itrace.xml`的配置文件路径不变。
+    放置`itrace.dylib`和`itrace.plist`到substrate插件目录`/Library/MobileSubstrate/DynamicLibraries`，然后重启需要trace的进程即可, `itrace.xml`的配置文件路径变为`/var/root/itrace/itrace.xml`。
+    
+    ios arm64设备的`itrace.dylib` 编译时需要使用 `xmake f -p iphoneos -a arm64`命令。
 
 5. 查看 trace log， 注： log 的实际输出在： 控制台-设备log 中：
 
@@ -124,6 +126,10 @@
 
 ```bash
 xmake f -p iphoneos
+xmake 
+```
+```bash
+xmake f -p iphoneos -a arm64
 xmake 
 ```
 
