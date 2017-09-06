@@ -1,6 +1,31 @@
-# iOS Objc 方法调用记录插件: iTracer v1.3 
+<p>
+<div align="center">
+  <h1>itrace</h1>
 
-[![Join the chat at https://gitter.im/waruqi/tboox](https://badges.gitter.im/waruqi/tboox.svg)](https://gitter.im/waruqi/tboox?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge) [![donate](http://tboox.org/static/img/donate.svg)](http://tboox.org/donation/)
+  <div>
+    <a href="https://github.com/tboox/itrace/blob/master/LICENSE.md">
+      <img src="https://img.shields.io/github/license/tboox/vm86.svg?colorB=f48041&style=flat-square" alt="license" />
+    </a>
+    <a href="https://gitter.im/tboox/tboox?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge">
+      <img src="https://img.shields.io/gitter/room/tboox/tboox.svg?style=flat-square&colorB=96c312" alt="Gitter" />
+    </a>
+    <a href="https://t.me/joinchat/F2dIAw5iTkDUMwCQ_8CStw">
+      <img src="https://img.shields.io/badge/chat-on%20telegram-blue.svg?style=flat-square" alt="Telegram" />
+    </a>
+    <a href="https://tboox.bearychat.com/signup/98bf6970b9f889d6ae3fbc3d50ee8a36">
+      <img src="https://img.shields.io/badge/chat-on%20bearychat-brightgreen.svg?style=flat-square" alt="Bearychat" />
+    </a>
+    <a href="https://jq.qq.com/?_wv=1027&k=5hpwWFv">
+      <img src="https://img.shields.io/badge/chat-on%20QQ-ff69b4.svg?style=flat-square" alt="QQ" />
+    </a>
+    <a href="http://tboox.org/donation/">
+      <img src="https://img.shields.io/badge/donate-us-orange.svg?style=flat-square" alt="Donate" />
+    </a>
+  </div>
+
+  <p>Trace objc method call for ios and mac</p>
+</div>
+</p>
 
 如果你想逆向 某些app的调用流程 或者 系统app的一些功能的 私有 framework class api 调用流程， 可以试试此工具
 
@@ -136,13 +161,12 @@ xmake
 
 更详细的xmake使用，请参考：[xmake文档](http://xmake.io/#/zh/)
 
-依赖库介绍：[tbox](https://github.com/waruqi/tbox/wiki)
+依赖库介绍：[tbox](https://github.com/tboox/tbox/wiki)
 
 #### 联系方式
 
 * 邮箱：[waruqi@gmail.com](mailto:waruqi@gmail.com)
 * 主页：[TBOOX开源工程](http://www.tboox.org/cn)
-* 社区：[TBOOX开源社区](http://www.tboox.org/forum)
 * QQ群：343118190(TBOOX开源工程), 260215194 (ihacker ios逆向分析)
 * 微信公众号：tboox-os
 
