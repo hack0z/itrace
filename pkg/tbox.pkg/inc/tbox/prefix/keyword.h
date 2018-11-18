@@ -1,20 +1,22 @@
 /*!The Treasure Box Library
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * 
- * TBox is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or
- * (at your option) any later version.
- * 
- * TBox is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with TBox; 
- * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
- * 
- * Copyright (C) 2009 - 2015, ruki All rights reserved.
+ * Copyright (C) 2009 - 2018, TBOOX Open Source Group.
  *
  * @author      ruki
  * @file        keyword.h
@@ -41,12 +43,12 @@
 #   define __tb_register__                      
 #endif
 #define __tb_volatile__                         volatile
-#define __tb_func__                             __FUNCTION__
-#define __tb_file__                             __FILE__
-#define __tb_line__                             __LINE__
 
 #if defined(TB_COMPILER_IS_MSVC)
 
+#   define __tb_func__                          __FUNCTION__
+#   define __tb_file__                          __FILE__
+#   define __tb_line__                          __LINE__
 #   define __tb_asm__                           __asm
 #   define __tb_inline__                        __inline
 #   define __tb_inline_force__                  __forceinline
@@ -59,6 +61,9 @@
 
 #elif defined(TB_COMPILER_IS_GCC)
 
+#   define __tb_func__                          __FUNCTION__
+#   define __tb_file__                          __FILE__
+#   define __tb_line__                          __LINE__
 #   define __tb_asm__                           __asm__
 #   define __tb_inline__                        __inline__
 #   define __tb_inline_force__                  __inline__ __attribute__((always_inline))
@@ -80,6 +85,22 @@
 #       define __tb_fastcall__                  __attribute__((__fastcall__))
 #       define __tb_thiscall__                  __attribute__((__thiscall__))
 #   endif
+
+#elif defined(TB_COMPILER_IS_TINYC)
+
+#   define __tb_func__                          __func__
+#   define __tb_file__                          __FILE__
+#   define __tb_line__                          __LINE__
+#   define __tb_asm__                           __asm__
+#   define __tb_inline__                        __inline__
+#   define __tb_inline_force__                  __inline__ __attribute__((always_inline))
+#   define __tb_packed__                        __attribute__((packed, aligned(1)))
+#   define __tb_aligned__(a)                    __attribute__((aligned(a)))
+#   define __tb_cdecl__                         __attribute__((cdecl))
+#   define __tb_stdcall__                       __attribute__((stdcall))
+#   define __tb_fastcall__                      __attribute__((fastcall))
+#   define __tb_thiscall__                      __attribute__((thiscall))
+
 #else
 
 #   define __tb_asm__               
@@ -113,7 +134,7 @@
 #endif
 
 // like
-#if defined(TB_COMPILER_IS_GCC) && __GNUC__ > 2
+#if defined(TB_COMPILER_IS_GCC) && TB_COMPILER_VERSION_BT(2, 0)
 #   define __tb_likely__(x)                     __builtin_expect((x), 1)
 #   define __tb_unlikely__(x)                   __builtin_expect((x), 0)
 #else
@@ -179,6 +200,14 @@
 #   define __tb_export__         
 #endif
 
+#if defined(TB_COMPILER_IS_GCC) && TB_COMPILER_VERSION_BE(3, 0)
+#   define __tb_deprecated__                    __attribute__((deprecated))
+#elif defined(TB_COMPILER_IS_MSVC) && defined(_MSC_VER) && _MSC_VER >= 1300
+#   define __tb_deprecated__                    __declspec(deprecated)
+#else
+#   define __tb_deprecated__
+#endif
+
 // has feature
 #ifdef __has_feature
 #   define __tb_has_feature__(x)                            __has_feature(x)
@@ -206,6 +235,43 @@
 #else
 #   define __tb_no_sanitize_address__
 #endif
+
+// thread local
+#if __tb_has_feature__(c_thread_local)
+#   define __tb_thread_local__                              _Thread_local
+#elif defined(TB_COMPILER_IS_GCC) 
+#   if TB_COMPILER_VERSION_BE(4, 9)
+#       define __tb_thread_local__                          _Thread_local
+#   else
+#       define __tb_thread_local__                          __thread
+#   endif
+#elif defined(TB_COMPILER_IS_MSVC) || defined(TB_COMPILER_IS_BORLAND)
+#   define __tb_thread_local__                              __declspec(thread)
+#endif
+
+/*! the type reference keyword for defining tb_xxxx_ref_t
+ *
+ * typedef __tb_typeref__(xxxx);
+ *
+ *
+ * suppress gcc 4.9 on c++ codes warning: '__tb_yyyy_t' has a field '__tb_yyyy_t::xxxx' whose type uses the anonymous namespace
+ *
+ * @code
+ *
+   typedef struct{}*    tb_xxxx_ref_t;
+  
+   typedef struct __tb_yyyy_t
+   {
+       tb_xxxx_ref_t    xxxx;
+  
+   }__tb_yyyy_t;
+
+ *
+ *
+ * @endcode
+ * 
+ */
+#define __tb_typeref__(object)                              struct __tb_##object##_dummy_t{tb_int_t dummy;} const* tb_##object##_ref_t
 
 // macros
 #define __tb_mstring__(x)                                   #x

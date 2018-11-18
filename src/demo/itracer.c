@@ -467,8 +467,8 @@ static tb_bool_t it_inject(pid_t pid, tb_char_t const* path)
     if (tb_file_info("/usr/lib/libsubstrate.dylib", tb_null))
     {
         // init library
-        tb_bool_t   ok = tb_false;
-        tb_handle_t library = tb_dynamic_init("/usr/lib/libsubstrate.dylib");
+        tb_bool_t        ok = tb_false;
+        tb_dynamic_ref_t library = tb_dynamic_init("/usr/lib/libsubstrate.dylib");
         if (library)
         {
             // trace

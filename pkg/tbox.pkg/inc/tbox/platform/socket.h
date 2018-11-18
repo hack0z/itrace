@@ -1,20 +1,22 @@
 /*!The Treasure Box Library
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * 
- * TBox is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or
- * (at your option) any later version.
- * 
- * TBox is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with TBox; 
- * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
- * 
- * Copyright (C) 2009 - 2015, ruki All rights reserved.
+ * Copyright (C) 2009 - 2018, TBOOX Open Source Group.
  *
  * @author      ruki
  * @file        socket.h
@@ -42,9 +44,31 @@ __tb_extern_c_enter__
 /// the socket type enum
 typedef enum __tb_socket_type_e
 {
-    TB_SOCKET_TYPE_NUL                  = 0
-,   TB_SOCKET_TYPE_TCP                  = 1
-,   TB_SOCKET_TYPE_UDP                  = 2
+    TB_SOCKET_TYPE_NONE                 = 0
+
+    // socket types
+,   TB_SOCKET_TYPE_SOCK_STREAM          = 1 << 8
+,   TB_SOCKET_TYPE_SOCK_DGRAM           = 2 << 8
+,   TB_SOCKET_TYPE_SOCK_RAW             = 3 << 8
+
+    // socket ip protocol
+,   TB_SOCKET_TYPE_IPPROTO_TCP          = 1
+,   TB_SOCKET_TYPE_IPPROTO_UDP          = 2
+,   TB_SOCKET_TYPE_IPPROTO_ICMP         = 3
+
+    // socket for tcp 
+,   TB_SOCKET_TYPE_TCP                  = TB_SOCKET_TYPE_SOCK_STREAM | TB_SOCKET_TYPE_IPPROTO_TCP
+
+    // socket for udp
+,   TB_SOCKET_TYPE_UDP                  = TB_SOCKET_TYPE_SOCK_DGRAM  | TB_SOCKET_TYPE_IPPROTO_UDP
+
+#ifdef TB_CONFIG_OS_MACOSX
+    // socket for icmp, only need user permission on macOS
+,   TB_SOCKET_TYPE_ICMP                 = TB_SOCKET_TYPE_SOCK_DGRAM  | TB_SOCKET_TYPE_IPPROTO_ICMP
+#else
+    // socket for icmp, need root permission on linux/macOS
+,   TB_SOCKET_TYPE_ICMP                 = TB_SOCKET_TYPE_SOCK_RAW    | TB_SOCKET_TYPE_IPPROTO_ICMP
+#endif
 
 }tb_socket_type_e;
 
@@ -66,8 +90,22 @@ typedef enum __tb_socket_ctrl_e
 ,   TB_SOCKET_CTRL_GET_RECV_BUFF_SIZE   = 3
 ,   TB_SOCKET_CTRL_SET_SEND_BUFF_SIZE   = 4
 ,   TB_SOCKET_CTRL_GET_SEND_BUFF_SIZE   = 5
+,   TB_SOCKET_CTRL_SET_TCP_NODELAY      = 6
+,   TB_SOCKET_CTRL_GET_TCP_NODELAY      = 7
 
 }tb_socket_ctrl_e;
+
+/// the socket event enum, only for sock
+typedef enum __tb_socket_event_e
+{
+    TB_SOCKET_EVENT_NONE                = 0x0000
+,   TB_SOCKET_EVENT_RECV                = 0x0001
+,   TB_SOCKET_EVENT_SEND                = 0x0002
+,   TB_SOCKET_EVENT_CONN                = TB_SOCKET_EVENT_SEND 
+,   TB_SOCKET_EVENT_ACPT                = TB_SOCKET_EVENT_RECV
+,   TB_SOCKET_EVENT_EALL                = TB_SOCKET_EVENT_RECV | TB_SOCKET_EVENT_SEND
+
+}tb_socket_event_e;
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * interfaces
@@ -106,10 +144,10 @@ tb_bool_t           tb_socket_pair(tb_size_t type, tb_socket_ref_t pair[2]);
  */
 tb_bool_t           tb_socket_ctrl(tb_socket_ref_t sock, tb_size_t ctrl, ...);
 
-/*! connect socket
+/*! connect the given client address
  *
  * @param sock      the socket 
- * @param addr      the address
+ * @param addr      the client address
  *
  * @return          ok: 1, continue: 0; failed: -1
  */
@@ -183,6 +221,26 @@ tb_long_t           tb_socket_recv(tb_socket_ref_t sock, tb_byte_t* data, tb_siz
  */
 tb_long_t           tb_socket_send(tb_socket_ref_t sock, tb_byte_t const* data, tb_size_t size);
 
+/*! recv the socket data for tcp with block mode
+ *
+ * @param sock      the socket 
+ * @param data      the data
+ * @param size      the size
+ *
+ * @return          tb_true or tb_false
+ */
+tb_bool_t           tb_socket_brecv(tb_socket_ref_t sock, tb_byte_t* data, tb_size_t size);
+
+/*! send the socket data for tcp with block mode
+ *
+ * @param sock      the socket 
+ * @param data      the data
+ * @param size      the size
+ *
+ * @return          tb_true or tb_false
+ */
+tb_bool_t           tb_socket_bsend(tb_socket_ref_t sock, tb_byte_t const* data, tb_size_t size);
+
 /*! recvv the socket data for tcp
  * 
  * @param sock      the socket 
@@ -203,7 +261,7 @@ tb_long_t           tb_socket_recvv(tb_socket_ref_t sock, tb_iovec_t const* list
  */
 tb_long_t           tb_socket_sendv(tb_socket_ref_t sock, tb_iovec_t const* list, tb_size_t size);
 
-/*! sendf the socket data
+/*! send file data 
  * 
  * @param sock      the socket 
  * @param file      the file
@@ -257,6 +315,16 @@ tb_long_t           tb_socket_urecvv(tb_socket_ref_t sock, tb_ipaddr_ref_t addr,
  * @return          the real size or -1
  */
 tb_long_t           tb_socket_usendv(tb_socket_ref_t sock, tb_ipaddr_ref_t addr, tb_iovec_t const* list, tb_size_t size);
+
+/*! wait socket events
+ *
+ * @param sock      the sock 
+ * @param events    the socket events
+ * @param timeout   the timeout, infinity: -1
+ *
+ * @return          > 0: the events code, 0: timeout, -1: failed
+ */
+tb_long_t           tb_socket_wait(tb_socket_ref_t sock, tb_size_t events, tb_long_t timeout);
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * extern

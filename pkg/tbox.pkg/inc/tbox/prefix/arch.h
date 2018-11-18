@@ -1,20 +1,22 @@
 /*!The Treasure Box Library
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * 
- * TBox is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or
- * (at your option) any later version.
- * 
- * TBox is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with TBox; 
- * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
- * 
- * Copyright (C) 2009 - 2015, ruki All rights reserved.
+ * Copyright (C) 2009 - 2018, TBOOX Open Source Group.
  *
  * @author      ruki
  * @file        arch.h
@@ -102,6 +104,10 @@
 #       define TB_ARCH_ARM_VERSION          (5)
 #       define TB_ARCH_ARM_v5
 #       define  TB_ARCH_STRING              "armv5"
+#   elif defined(__ARM_ARCH_4T__)
+#       define TB_ARCH_ARM_VERSION          (4)
+#       define TB_ARCH_ARM_v4t
+#       define  TB_ARCH_STRING              "armv4t"
 #   elif defined(__ARM_ARCH)
 #       define TB_ARCH_ARM_VERSION          __ARM_ARCH
 #       if __ARM_ARCH >= 8
@@ -109,6 +115,9 @@
 #           if defined(__arm64) || defined(__arm64__)
 #               define TB_ARCH_ARM64
 #               define TB_ARCH_STRING       "arm64"
+#           elif (defined(__aarch64__) && __aarch64__)
+#               define TB_ARCH_ARM64
+#               define TB_ARCH_STRING       "arm64-v8a"
 #           else
 #               define TB_ARCH_STRING       "armv7s"
 #           endif
@@ -129,7 +138,7 @@
 #   else 
 #       error unknown arm arch version
 #   endif
-#   if !defined(TB_ARCH_ARM64) && (defined(__arm64) || defined(__arm64__))
+#   if !defined(TB_ARCH_ARM64) && (defined(__arm64) || defined(__arm64__) || (defined(__aarch64__) && __aarch64__))
 #       define TB_ARCH_ARM64
 #       ifndef TB_ARCH_STRING
 #           define TB_ARCH_STRING           "arm64"
@@ -151,6 +160,19 @@
     || defined(__mips__)
 #   define TB_ARCH_MIPS
 #   define TB_ARCH_STRING                   "mips"
+#elif defined(TB_COMPILER_IS_TINYC)
+#   if defined(TCC_TARGET_I386)
+#       define TB_ARCH_x86
+#       define TB_ARCH_STRING               "i386"
+#   elif defined(TCC_TARGET_X86_64)
+#       define TB_ARCH_x64
+#       define TB_ARCH_STRING               "x86_64"
+#   elif defined(TCC_TARGET_ARM)
+#       define TB_ARCH_ARM
+#       define TB_ARCH_STRING               "arm"
+#   else
+#       error unknown arch for tiny c, please define target like -DTCC_TARGET_I386
+#   endif
 #else
 //#     define TB_ARCH_SPARC
 //#     define TB_ARCH_PPC
@@ -178,13 +200,13 @@
 #endif
 
 // vfp
-#if defined(__VFP_FP__)
+#if defined(__VFP_FP__) || (defined(TB_COMPILER_IS_TINYC) && defined(TCC_ARM_VFP))
 #   define TB_ARCH_VFP
 #   define TB_ARCH_STRING_4                 "_vfp"
 #endif
 
 // elf
-#if defined(__ELF__)
+#if defined(__ELF__) || (defined(TB_COMPILER_IS_TINYC) && !defined(TCC_ARM_PE))
 #   define TB_ARCH_ELF
 #   define TB_ARCH_STRING_5                 "_elf"
 #endif

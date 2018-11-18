@@ -1,20 +1,22 @@
 /*!The Treasure Box Library
+ *
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  * 
- * TBox is free software; you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation; either version 2.1 of the License, or
- * (at your option) any later version.
- * 
- * TBox is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- * 
- * You should have received a copy of the GNU Lesser General Public License
- * along with TBox; 
- * If not, see <a href="http://www.gnu.org/licenses/"> http://www.gnu.org/licenses/</a>
- * 
- * Copyright (C) 2009 - 2015, ruki All rights reserved.
+ * Copyright (C) 2009 - 2018, TBOOX Open Source Group.
  *
  * @author      ruki
  * @file        trace.h
@@ -55,7 +57,7 @@ __tb_extern_c_enter__
 #endif
 
 // trace prefix
-#if defined(TB_COMPILER_IS_GCC)
+#if defined(TB_COMPILER_IS_GCC) || defined(TB_COMPILER_IS_TINYC)
 #   define tb_trace_p(prefix, fmt, arg ...)                 do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, fmt __tb_newline__, ## arg); } while (0)
 #   define tb_tracef_p(prefix, fmt, arg ...)                do { tb_trace_done(prefix, TB_TRACE_MODULE_NAME, fmt, ## arg); } while (0)
 #   ifdef __tb_debug__
@@ -134,7 +136,7 @@ __tb_extern_c_enter__
  *
  */
 #if TB_TRACE_MODULE_DEBUG && defined(__tb_debug__) 
-#   if defined(TB_COMPILER_IS_GCC)
+#   if defined(TB_COMPILER_IS_GCC) || defined(TB_COMPILER_IS_TINYC)
 #       define TB_TRACE_DEBUG
 #       define tb_trace_d(fmt, arg ...)                 tb_trace_p(__tb_prefix__, fmt, ## arg)
 #       define tb_tracef_d(fmt, arg ...)                tb_tracef_p(__tb_prefix__, fmt, ## arg)
@@ -150,7 +152,7 @@ __tb_extern_c_enter__
 #       define tb_tracet_d
 #   endif
 #else
-#   if defined(TB_COMPILER_IS_GCC) || (defined(TB_COMPILER_IS_MSVC) && TB_COMPILER_VERSION_BE(13, 0))
+#   if defined(TB_COMPILER_IS_GCC) || (defined(TB_COMPILER_IS_MSVC) && TB_COMPILER_VERSION_BE(13, 0)) || defined(TB_COMPILER_IS_TINYC)
 #       define tb_trace_d(fmt, ...)         
 #       define tb_tracef_d(fmt, ...)            
 #       define tb_tracet_d(fmt, ...)            
@@ -161,7 +163,7 @@ __tb_extern_c_enter__
 #   endif
 #endif
 
-#if defined(TB_COMPILER_IS_GCC)
+#if defined(TB_COMPILER_IS_GCC) || defined(TB_COMPILER_IS_TINYC)
 #   define tb_trace_i(fmt, arg ...)                 tb_trace_p(__tb_prefix__, fmt, ## arg)
 #   define tb_trace_e(fmt, arg ...)                 tb_trace_error_p(__tb_prefix__, fmt, ## arg)
 #   define tb_trace_a(fmt, arg ...)                 tb_trace_assert_p(__tb_prefix__, fmt, ## arg)
@@ -203,7 +205,7 @@ __tb_extern_c_enter__
 #endif
 
 // trace once
-#if defined(TB_COMPILER_IS_GCC)
+#if defined(TB_COMPILER_IS_GCC) || defined(TB_COMPILER_IS_TINYC)
 #   define tb_trace1_d(fmt, arg ...)                do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_d(fmt, ## arg); __trace_once = tb_true; } } while (0)
 #   define tb_trace1_i(fmt, arg ...)                do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_i(fmt, ## arg); __trace_once = tb_true; } } while (0)
 #   define tb_trace1_e(fmt, arg ...)                do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_e(fmt, ## arg); __trace_once = tb_true; } } while (0)
@@ -217,10 +219,11 @@ __tb_extern_c_enter__
 #   define tb_trace1_w(fmt, ...)                    do { static tb_bool_t __trace_once = tb_false; if (!__trace_once) { tb_trace_w(fmt, __VA_ARGS__); __trace_once = tb_true; } } while (0)
 #else
 #   define tb_trace1_i
+#   define tb_trace1_w
 #endif
 
-// trace info only?
-#ifdef TB_CONFIG_TRACE_INFO_ONLY
+// trace more info?
+#if !defined(__tb_debug__) && !defined(TB_CONFIG_INFO_TRACE_MORE)
 #   undef TB_TRACE_DEBUG
 #   undef TB_TRACE_MODULE_DEBUG
 #   undef tb_trace_d
@@ -240,7 +243,7 @@ __tb_extern_c_enter__
 #   undef tb_trace1_a
 #   undef tb_trace1_w
 #   define TB_TRACE_MODULE_DEBUG    (0)
-#   if defined(TB_COMPILER_IS_GCC)
+#   if defined(TB_COMPILER_IS_GCC) || defined(TB_COMPILER_IS_TINYC)
 #       define tb_trace_d(fmt, arg ...)                 
 #       define tb_trace_e(fmt, arg ...)                 
 #       define tb_trace_a(fmt, arg ...)                 
@@ -299,6 +302,9 @@ __tb_extern_c_enter__
 
 // nosafe
 #define tb_trace_nosafe()                           tb_trace1_w("nosafe")
+
+// deprecated
+#define tb_trace_deprecated()                       tb_trace1_w("deprecated")
 
 /* //////////////////////////////////////////////////////////////////////////////////////
  * declaration
