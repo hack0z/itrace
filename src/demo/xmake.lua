@@ -10,11 +10,8 @@ function add_demo(name)
         -- add defines
         add_defines("__tb_prefix__=\"" .. name .. "\"")
 
-        -- set the object files directory
-        set_objectdir("$(buildir)/.objs")
-
         -- add packages
-        add_options("tbox", "base")
+        add_packages("tbox")
 
         -- test?
         if name == "test" then

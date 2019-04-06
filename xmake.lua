@@ -1,7 +1,7 @@
 
 -- version
 set_version("1.0.3")
-set_xmakever("2.1.6")
+set_xmakever("2.2.5")
 
 -- set warning all as error
 set_warnings("all", "error")
@@ -68,6 +68,20 @@ if not is_arch("i386", "x86_64") then
 
 end
 
+-- add links
+if is_plat("windows") then 
+    add_syslinks("ws2_32") 
+elseif is_plat("android") then
+    add_syslinks("m", "c") 
+elseif is_plat("macosx", "iphoneos") then 
+    add_frameworks("Foundation") 
+else 
+    add_syslinks("pthread", "dl", "m", "c") 
+end
+
+-- add requires
+add_requires("tbox", {configs = {xml = true}})
+
 -- add option: demo
 option("demo")
     set_default(true)
@@ -75,8 +89,5 @@ option("demo")
     set_category("option")
     set_description("Enable or disable the demo module")
 
--- add packages
-add_packagedirs("pkg") 
-
 -- add projects
-add_subdirs("src/itrace", "src/demo") 
+includes("src/itrace", "src/demo") 
